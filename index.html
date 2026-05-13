@@ -285,6 +285,27 @@
   .bus-1 { animation: bus-right 45s linear infinite; animation-delay: 8s; }
   .bus-2 { animation: bus-left  65s linear infinite; animation-delay: 25s; }
 
+  /* Cars and taxis on the highway — different speeds and staggered starts */
+  .car-vehicle { filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+  @keyframes car-right {
+    0%   { transform: translate(-40px, 670px); opacity: 0; }
+    4%   { opacity: 1; }
+    50%  { transform: translate(620px, 670px); opacity: 1; }
+    96%  { opacity: 1; }
+    100% { transform: translate(1240px, 670px); opacity: 0; }
+  }
+  @keyframes car-left {
+    0%   { transform: translate(1240px, 672px) scaleX(-1); opacity: 0; }
+    4%   { opacity: 1; }
+    96%  { opacity: 1; }
+    100% { transform: translate(-40px, 672px) scaleX(-1); opacity: 0; }
+  }
+  .car-v1     { animation: car-right 22s linear infinite; animation-delay: 0s; }
+  .car-v2     { animation: car-left  26s linear infinite; animation-delay: -8s; }
+  .car-grab   { animation: car-right 19s linear infinite; animation-delay: -5s; }
+  .car-grab2  { animation: car-left  24s linear infinite; animation-delay: -14s; }
+  .car-v3     { animation: car-right 28s linear infinite; animation-delay: -19s; }
+
   /* Bullet train — zips by on an elevated track between mid-layer and near-layer (y≈530) */
   .bullet-train {
     transform: translate(-150px, 530px);
@@ -491,11 +512,13 @@
   /* Surprise toast — random fun messages */
   .easter-toast {
     position: fixed; top: 80px; left: 50%;
-    transform: translateX(-50%) translateY(-160%);
+    transform: translateX(-50%) translateY(-180%);
     background: linear-gradient(135deg, var(--accent) 0%, #ff8fa3 100%);
-    color: white; padding: 10px 18px; border-radius: 999px;
-    font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 13px;
-    letter-spacing: .02em;
+    color: white; padding: 12px 20px; border-radius: 22px;
+    font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 13px;
+    letter-spacing: .01em;
+    line-height: 1.35; text-align: center;
+    max-width: min(92vw, 380px);
     box-shadow: 0 8px 24px rgba(214, 51, 108, .45);
     z-index: 90; pointer-events: none; opacity: 0;
     transition: transform .5s cubic-bezier(.68,-.55,.27,1.55), opacity .3s;
@@ -826,6 +849,7 @@
     border-color: rgba(34, 184, 207, .35) !important;
   }
   html[data-theme="light"] .distance-pill { color: #1098ad !important; }
+  .medal-mini { width: 18px; height: 18px; margin-left: 2px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); vertical-align: -3px; }
   html[data-theme="light"] .red-flag-pill { color: #c92a2a !important; background: rgba(224, 49, 49, .12) !important; }
 
   /* schedule grid — taller, easier taps */
@@ -869,6 +893,7 @@
     cursor: pointer;
   }
   .toggle-cb.cream-cb { accent-color: #d4a76a; }
+  .medal-icon { flex: none; vertical-align: -5px; margin-right: 6px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
   .toggle-row .toggle-label {
     display: inline-flex; align-items: center;
   }
@@ -1453,10 +1478,10 @@
       <!-- Mall windows on center Kota mall -->
       <rect x="430" y="568" width="95" height="14" fill="rgba(120,180,255,.18)"/>
       <rect x="430" y="588" width="95" height="14" fill="rgba(120,180,255,.13)"/>
-      <!-- "KOTA KASABLANKA" sign on the visible center mall -->
-      <g transform="translate(477, 565)">
-        <rect x="-58" y="-12" width="116" height="20" rx="3" fill="#1a1525" stroke="#22b8cf" stroke-width="1.2"/>
-        <text class="neon-text neon-cyan" x="0" y="2" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="10" fill="#22b8cf">KOTA KASABLANKA</text>
+      <!-- "KOTA" sign on the visible center mall -->
+      <g transform="translate(477, 568)">
+        <rect x="-26" y="-11" width="52" height="20" rx="3" fill="#1a1525" stroke="#22b8cf" stroke-width="1.2"/>
+        <text class="neon-text neon-cyan" x="0" y="3" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="10" fill="#22b8cf">KOTA</text>
       </g>
 
       <!-- General residential / low-rise filler -->
@@ -1562,7 +1587,7 @@
       <!-- NEON MALL SIGNS — clustered in the center of the viewBox so they're all visible on a phone -->
       <!-- Grand Indo (leftmost in cluster, around x≈450) -->
       <g transform="translate(450, 610)">
-        <rect x="-32" y="-11" width="64" height="20" rx="3" fill="#1a1525" stroke="#74c0fc" stroke-width="1.2"/>
+        <rect x="-42" y="-12" width="84" height="22" rx="3" fill="#1a1525" stroke="#74c0fc" stroke-width="1.2"/>
         <text class="neon-text neon-blue" x="0" y="3" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="11" fill="#74c0fc">GRAND INDO</text>
       </g>
       <!-- Senayan (slightly up & right) -->
@@ -1736,6 +1761,72 @@
       <circle cx="9" cy="5" r="1.2" fill="#3a3a3a"/>
       <circle cx="35" cy="5" r="1.2" fill="#3a3a3a"/>
       <circle cx="1" cy="-2" r="1" fill="#ff8080"/>
+    </g>
+
+    <!-- Cars and Grab taxis cruising along the highway -->
+    <!-- White sedan -->
+    <g class="car-vehicle car-v1">
+      <ellipse cx="16" cy="13" rx="16" ry="2" fill="#000" opacity=".35"/>
+      <path d="M2 8 Q4 4 8 4 L24 4 Q28 4 30 8 L30 11 L2 11 Z" fill="#e8e8e8"/>
+      <path d="M9 4.5 L23 4.5 L26 8 L6 8 Z" fill="#7fd4f5" opacity=".75"/>
+      <rect x="2" y="8" width="28" height="3" fill="#d0d0d0"/>
+      <circle cx="7" cy="11.5" r="2.2" fill="#1a1a1a"/>
+      <circle cx="7" cy="11.5" r="1" fill="#3a3a3a"/>
+      <circle cx="25" cy="11.5" r="2.2" fill="#1a1a1a"/>
+      <circle cx="25" cy="11.5" r="1" fill="#3a3a3a"/>
+      <rect x="29" y="6.5" width="1.5" height="2" fill="#fffce0"/>
+    </g>
+    <!-- Black sedan -->
+    <g class="car-vehicle car-v2">
+      <ellipse cx="16" cy="13" rx="16" ry="2" fill="#000" opacity=".35"/>
+      <path d="M2 8 Q4 4 8 4 L24 4 Q28 4 30 8 L30 11 L2 11 Z" fill="#1a1a1a"/>
+      <path d="M9 4.5 L23 4.5 L26 8 L6 8 Z" fill="#5599cc" opacity=".7"/>
+      <rect x="2" y="8" width="28" height="3" fill="#0a0a0a"/>
+      <circle cx="7" cy="11.5" r="2.2" fill="#1a1a1a"/>
+      <circle cx="7" cy="11.5" r="1" fill="#3a3a3a"/>
+      <circle cx="25" cy="11.5" r="2.2" fill="#1a1a1a"/>
+      <circle cx="25" cy="11.5" r="1" fill="#3a3a3a"/>
+      <rect x="1" y="9.5" width="1.5" height="1.5" fill="#ff5252"/>
+    </g>
+    <!-- Grab taxi — signature Grab green with the GRAB wordmark -->
+    <g class="car-vehicle car-grab">
+      <ellipse cx="17" cy="13" rx="17" ry="2" fill="#000" opacity=".35"/>
+      <path d="M2 8 Q4 4 8 4 L26 4 Q30 4 32 8 L32 11 L2 11 Z" fill="#00B14F"/>
+      <path d="M9 4.5 L25 4.5 L28 8 L6 8 Z" fill="#7fd4f5" opacity=".7"/>
+      <rect x="2" y="8" width="30" height="3" fill="#008f3f"/>
+      <!-- GRAB wordmark on side -->
+      <text x="17" y="10.5" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="3.2" fill="#ffffff">GRAB</text>
+      <!-- Roof sign -->
+      <rect x="12" y="2" width="10" height="2.5" rx="0.4" fill="#ffd43b"/>
+      <circle cx="7" cy="11.5" r="2.2" fill="#1a1a1a"/>
+      <circle cx="7" cy="11.5" r="1" fill="#3a3a3a"/>
+      <circle cx="27" cy="11.5" r="2.2" fill="#1a1a1a"/>
+      <circle cx="27" cy="11.5" r="1" fill="#3a3a3a"/>
+      <rect x="31" y="6.5" width="1.5" height="2" fill="#fffce0"/>
+    </g>
+    <!-- Grab taxi #2 going the other way -->
+    <g class="car-vehicle car-grab2">
+      <ellipse cx="17" cy="13" rx="17" ry="2" fill="#000" opacity=".35"/>
+      <path d="M2 8 Q4 4 8 4 L26 4 Q30 4 32 8 L32 11 L2 11 Z" fill="#00B14F"/>
+      <path d="M9 4.5 L25 4.5 L28 8 L6 8 Z" fill="#7fd4f5" opacity=".7"/>
+      <rect x="2" y="8" width="30" height="3" fill="#008f3f"/>
+      <text x="17" y="10.5" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="3.2" fill="#ffffff">GRAB</text>
+      <rect x="12" y="2" width="10" height="2.5" rx="0.4" fill="#ffd43b"/>
+      <circle cx="7" cy="11.5" r="2.2" fill="#1a1a1a"/>
+      <circle cx="7" cy="11.5" r="1" fill="#3a3a3a"/>
+      <circle cx="27" cy="11.5" r="2.2" fill="#1a1a1a"/>
+      <circle cx="27" cy="11.5" r="1" fill="#3a3a3a"/>
+      <rect x="1" y="9.5" width="1.5" height="1.5" fill="#ff5252"/>
+    </g>
+    <!-- Red hatchback -->
+    <g class="car-vehicle car-v3">
+      <ellipse cx="14" cy="12" rx="14" ry="1.8" fill="#000" opacity=".35"/>
+      <path d="M2 7 Q4 3.5 7 3.5 L21 3.5 Q25 3.5 26 7 L26 10 L2 10 Z" fill="#c92a2a"/>
+      <path d="M8 4 L20 4 L23 7 L5 7 Z" fill="#7fd4f5" opacity=".7"/>
+      <rect x="2" y="7" width="24" height="3" fill="#9a1f1f"/>
+      <circle cx="7" cy="10.5" r="2" fill="#1a1a1a"/>
+      <circle cx="21" cy="10.5" r="2" fill="#1a1a1a"/>
+      <rect x="25" y="6" width="1.2" height="1.8" fill="#fffce0"/>
     </g>
 
     <!-- Bullet train — sleek silver MRT/HSR streaking along an elevated rail behind the buildings -->
@@ -1932,6 +2023,35 @@
       </div>
 
       <label class="toggle-row" style="margin-top:18px">
+        <input type="checkbox" id="f-medal-met" class="toggle-cb" />
+        <span class="toggle-label">
+          <svg class="medal-icon" width="22" height="22" viewBox="0 0 24 24"><defs><radialGradient id="medalBronze" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffd9a8"/><stop offset="50%" stop-color="#cd7f32"/><stop offset="100%" stop-color="#6e3f10"/></radialGradient></defs><path d="M8 2 L12 9 L16 2 L19 4 L15 11" fill="#c92a2a" stroke="#8a1a1a" stroke-width=".5"/><path d="M16 2 L12 9 L8 2 L5 4 L9 11" fill="#1864ab" stroke="#103e6e" stroke-width=".5"/><circle cx="12" cy="16" r="6" fill="url(#medalBronze)" stroke="#6e3f10" stroke-width=".8"/><text x="12" y="19" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="6" fill="#6e3f10">1</text></svg>
+          Had a meeting
+        </span>
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="f-medal-sex" class="toggle-cb" />
+        <span class="toggle-label">
+          <svg class="medal-icon" width="22" height="22" viewBox="0 0 24 24"><defs><radialGradient id="medalSilver" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#c0c0c0"/><stop offset="100%" stop-color="#6a6a6a"/></radialGradient></defs><path d="M8 2 L12 9 L16 2 L19 4 L15 11" fill="#c92a2a" stroke="#8a1a1a" stroke-width=".5"/><path d="M16 2 L12 9 L8 2 L5 4 L9 11" fill="#1864ab" stroke="#103e6e" stroke-width=".5"/><circle cx="12" cy="16" r="6" fill="url(#medalSilver)" stroke="#6a6a6a" stroke-width=".8"/><text x="12" y="19" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="6" fill="#444">★</text></svg>
+          Had sex
+        </span>
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="f-medal-flower" class="toggle-cb" />
+        <span class="toggle-label">
+          <svg class="medal-icon" width="22" height="22" viewBox="0 0 24 24"><defs><radialGradient id="medalGold" cx="40%" cy="35%"><stop offset="0%" stop-color="#fff7c2"/><stop offset="45%" stop-color="#ffd43b"/><stop offset="100%" stop-color="#a8841a"/></radialGradient></defs><path d="M8 2 L12 9 L16 2 L19 4 L15 11" fill="#c92a2a" stroke="#8a1a1a" stroke-width=".5"/><path d="M16 2 L12 9 L8 2 L5 4 L9 11" fill="#1864ab" stroke="#103e6e" stroke-width=".5"/><circle cx="12" cy="16" r="6.5" fill="url(#medalGold)" stroke="#a8841a" stroke-width=".8"/><text x="12" y="19" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="7" fill="#7a5410">★</text></svg>
+          Deflowered
+        </span>
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="f-medal-flaked" class="toggle-cb" />
+        <span class="toggle-label">
+          <svg class="medal-icon" width="22" height="22" viewBox="0 0 24 24"><defs><radialGradient id="medalPurple" cx="40%" cy="35%"><stop offset="0%" stop-color="#d4b3ff"/><stop offset="55%" stop-color="#6a2a99"/><stop offset="100%" stop-color="#2e0d52"/></radialGradient></defs><path d="M8 2 L12 9 L16 2 L19 4 L15 11" fill="#ffffff" stroke="#999" stroke-width=".5"/><path d="M16 2 L12 9 L8 2 L5 4 L9 11" fill="#7a3535" stroke="#4a1414" stroke-width=".5"/><path d="M12 11 C 8 13 6 16 8 19 C 9 20.5 10.5 21 12 19.5 C 13.5 21 15 20.5 16 19 C 18 16 16 13 12 11 Z" fill="url(#medalPurple)" stroke="#2e0d52" stroke-width=".6"/><circle cx="12" cy="15.5" r="1.4" fill="#ffd700"/></svg>
+          Flaked on me
+        </span>
+      </label>
+
+      <label class="toggle-row" style="margin-top:18px">
         <input type="checkbox" id="f-hidden" class="toggle-cb" />
         <span class="toggle-label">Hide from this week's roster</span>
       </label>
@@ -2005,14 +2125,16 @@
 
       <label>Startup music 🎸</label>
       <div class="bg-choice-row" id="songChoices">
+        <button class="bg-choice" data-song="shuffle">🔀 Surprise me</button>
         <button class="bg-choice" data-song="back-in-black">Back in Black</button>
         <button class="bg-choice" data-song="jarvis">Jarvis Startup</button>
         <button class="bg-choice" data-song="mask">M.A.S.K. Theme</button>
         <button class="bg-choice" data-song="heman">He-Man Theme</button>
+        <button class="bg-choice" data-song="goodtimes">Good Times</button>
         <button class="bg-choice" data-song="off">Off</button>
       </div>
       <div class="hint" style="margin-top:8px; font-size:11px; line-height:1.5">
-        Tip: YouTube often blocks embedded music. For reliable playback, drop a local MP3 in the app folder named exactly: <code>back-in-black.mp3</code>, <code>jarvis.mp3</code>, <code>mask.mp3</code>, or <code>heman.mp3</code>. The app uses the MP3 first and falls back to YouTube if the file isn't there.
+        Drop MP3s in the app folder: <code>back-in-black.mp3</code>, <code>jarvis.mp3</code>, <code>mask.mp3</code>, <code>heman.mp3</code>, <code>goodtimes.mp3</code>. Each plays from a baked-in start offset and fades out after 25 seconds.
       </div>
 
       <label>Privacy</label>
@@ -2096,7 +2218,15 @@ const STORE_KEY = 'rotation.v2';
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (raw) return Object.assign(defaultState(), JSON.parse(raw));
+    if (raw) {
+      const merged = Object.assign(defaultState(), JSON.parse(raw));
+      // One-time migration: if user is still on the old default-song, switch to shuffle
+      if (!merged._shuffleMigrationDone) {
+        merged.startupSong = 'shuffle';
+        merged._shuffleMigrationDone = true;
+      }
+      return merged;
+    }
     // migrate from v1
     const old = localStorage.getItem('rotation.v1');
     if (old) {
@@ -2123,7 +2253,7 @@ function defaultState() {
     priorityOrder: [],
     pinHash: '',
     rosterSort: 'priority',
-    startupSong: 'back-in-black' // 'back-in-black' | 'eye-of-the-tiger' | 'kashmir' | 'sympathy' | 'off'
+    startupSong: 'shuffle' // 'shuffle' | one of the song keys | 'off'
   };
 }
 
@@ -2138,16 +2268,15 @@ const SLOTS = [
   {key:'night', label:'Night'}
 ];
 const DEFAULT_TAGS = [
-  'virgin','introvert','fun','boring','narcissist',
-  'kiss only','jobless',
-  'lives with parents','single mom','open for 3some',
+  'virgin','introvert','fun','boring',
+  'jobless',
+  'open for 3some',
   'classic hotel','daytime only',
-  'flakey','needs taxi money','can meet late'
+  'flakey','needs taxi money','meet late','borderline'
 ];
 const DEFAULT_RED_FLAGS = [
   'was late','was disrespectful','asked for money/gift',
-  'insisted on meeting near her',
-  'dodged video call'
+  'insisted on meeting near her'
 ];
 
 let state = loadState();
@@ -2353,6 +2482,12 @@ function renderProfilesList() {
     const moreTags = (p.tags || []).length - tags.length;
     const flagCount = (p.redFlags || []).length;
     const distance = p.distanceMin;
+    const medals = p.medals || {};
+    const medalRow =
+      (medals.met    ? '<svg class="medal-mini" viewBox="0 0 24 24"><defs><radialGradient id="bm_'+p.id+'" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffd9a8"/><stop offset="50%" stop-color="#cd7f32"/><stop offset="100%" stop-color="#6e3f10"/></radialGradient></defs><path d="M8 2L12 9L16 2L19 4L15 11" fill="#c92a2a"/><path d="M16 2L12 9L8 2L5 4L9 11" fill="#1864ab"/><circle cx="12" cy="16" r="6" fill="url(#bm_'+p.id+')"/></svg>' : '') +
+      (medals.sex    ? '<svg class="medal-mini" viewBox="0 0 24 24"><defs><radialGradient id="sm_'+p.id+'" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#c0c0c0"/><stop offset="100%" stop-color="#6a6a6a"/></radialGradient></defs><path d="M8 2L12 9L16 2L19 4L15 11" fill="#c92a2a"/><path d="M16 2L12 9L8 2L5 4L9 11" fill="#1864ab"/><circle cx="12" cy="16" r="6" fill="url(#sm_'+p.id+')"/></svg>' : '') +
+      (medals.flower ? '<svg class="medal-mini" viewBox="0 0 24 24"><defs><radialGradient id="gm_'+p.id+'" cx="40%" cy="35%"><stop offset="0%" stop-color="#fff7c2"/><stop offset="45%" stop-color="#ffd43b"/><stop offset="100%" stop-color="#a8841a"/></radialGradient></defs><path d="M8 2L12 9L16 2L19 4L15 11" fill="#c92a2a"/><path d="M16 2L12 9L8 2L5 4L9 11" fill="#1864ab"/><circle cx="12" cy="16" r="6.5" fill="url(#gm_'+p.id+')"/></svg>' : '') +
+      (medals.flaked ? '<svg class="medal-mini" viewBox="0 0 24 24"><defs><radialGradient id="pm_'+p.id+'" cx="40%" cy="35%"><stop offset="0%" stop-color="#d4b3ff"/><stop offset="55%" stop-color="#6a2a99"/><stop offset="100%" stop-color="#2e0d52"/></radialGradient></defs><path d="M8 2L12 9L16 2L19 4L15 11" fill="#ffffff"/><path d="M16 2L12 9L8 2L5 4L9 11" fill="#7a3535"/><path d="M12 11C8 13 6 16 8 19C9 20.5 10.5 21 12 19.5C13.5 21 15 20.5 16 19C18 16 16 13 12 11Z" fill="url(#pm_'+p.id+')"/></svg>' : '');
     const thumbStyle = thumb ? `background-image:url('${cssEscape(thumb)}')` : '';
     const waButton = p.phone
       ? `<button class="wa-btn" title="Message on WhatsApp" data-wa="${escapeHtml(p.phone)}">
@@ -2365,6 +2500,7 @@ function renderProfilesList() {
         <div class="name-row">
           <span>${escapeHtml(p.name || 'Untitled')}</span>
           ${p.cream ? `<span class="cream-icon" title="Cream of the crop"><svg width="16" height="16" viewBox="0 0 24 24"><defs><radialGradient id="creamGradList_${escapeHtml(p.id)}" cx="35%" cy="30%"><stop offset="0%" stop-color="#fff4dc"/><stop offset="60%" stop-color="#e8c896"/><stop offset="100%" stop-color="#c79a5c"/></radialGradient></defs><path fill="url(#creamGradList_${escapeHtml(p.id)})" d="M12 3c-1 2-3 2-3 5 0 1 .5 1.5 1 2-2 0-4 2-4 5 0 4 3 6 6 6s6-2 6-6c0-3-2-5-4-5 .5-.5 1-1 1-2 0-3-2-3-3-5z"/><ellipse cx="10" cy="11" rx="1.4" ry="1" fill="white" opacity=".6"/></svg></span>` : ''}
+          ${medalRow}
           ${p.age ? `<span class="age">${escapeHtml(String(p.age))}</span>` : ''}
           ${distance ? `<span class="mini-tag distance-pill" title="${distance} min by car">🚗 ${distance} min</span>` : ''}
           ${flagCount > 0 ? `<span class="mini-tag red-flag-pill" title="${flagCount} red flag${flagCount===1?'':'s'}">🚩 ${flagCount}</span>` : ''}
@@ -2438,6 +2574,10 @@ function openEditor(id) {
   document.getElementById('f-notes').value = editorDraft.notes || '';
   document.getElementById('f-hidden').checked = !!editorDraft.hidden;
   document.getElementById('f-cream').checked = !!editorDraft.cream;
+  document.getElementById('f-medal-met').checked    = !!(editorDraft.medals && editorDraft.medals.met);
+  document.getElementById('f-medal-sex').checked    = !!(editorDraft.medals && editorDraft.medals.sex);
+  document.getElementById('f-medal-flower').checked = !!(editorDraft.medals && editorDraft.medals.flower);
+  document.getElementById('f-medal-flaked').checked = !!(editorDraft.medals && editorDraft.medals.flaked);
   document.getElementById('f-distance').value = editorDraft.distanceMin || '';
   document.getElementById('f-maps-link').value = editorDraft.mapsLink || '';
   document.getElementById('distanceStatus').textContent = '';
@@ -2792,6 +2932,12 @@ function saveProfileHandler() {
   editorDraft.notes = document.getElementById('f-notes').value.trim();
   editorDraft.hidden = document.getElementById('f-hidden').checked;
   editorDraft.cream = document.getElementById('f-cream').checked;
+  editorDraft.medals = {
+    met:    document.getElementById('f-medal-met').checked,
+    sex:    document.getElementById('f-medal-sex').checked,
+    flower: document.getElementById('f-medal-flower').checked,
+    flaked: document.getElementById('f-medal-flaked').checked
+  };
   const distVal = document.getElementById('f-distance').value.trim();
   editorDraft.distanceMin = distVal ? parseInt(distVal, 10) : null;
   editorDraft.mapsLink = document.getElementById('f-maps-link').value.trim();
@@ -3283,6 +3429,7 @@ function buildShareSnapshot() {
       notes: p.notes || '', tags: p.tags || [], redFlags: p.redFlags || [],
       schedule: p.schedule, cycle: p.cycle || null,
       cream: !!p.cream, hidden: !!p.hidden,
+      medals: p.medals || null,
       distanceMin: p.distanceMin || null,
       mapsLink: p.mapsLink || ''
     })),
@@ -4143,7 +4290,8 @@ const SONG_IDS = {
   'back-in-black': 'rrim6_9VSeM',
   'jarvis':        'KN4rI9siayg',
   'mask':          'o2Z1yLO9C-Q',
-  'heman':         'lf4Ft_gy-sA'
+  'heman':         'lf4Ft_gy-sA',
+  'goodtimes':     ''  // local-only by default; you can add a YouTube ID later if you want
 };
 // Local MP3 fallback — if you drop a file named e.g. "back-in-black.mp3" into the app folder,
 // it'll be used instead of YouTube (much more reliable, no embed permissions to fight).
@@ -4151,9 +4299,23 @@ const SONG_MP3_FILES = {
   'back-in-black': 'back-in-black.mp3',
   'jarvis':        'jarvis.mp3',
   'mask':          'mask.mp3',
-  'heman':         'heman.mp3'
+  'heman':         'heman.mp3',
+  'goodtimes':     'goodtimes.mp3'
 };
+// Each song's start offset in seconds — skips intro/silence to get to the good part
+const SONG_START_OFFSETS = {
+  'back-in-black': 6,
+  'jarvis':        6,
+  'mask':          6,
+  'heman':         6,
+  'goodtimes':     55
+};
+const SHUFFLE_POOL = ['back-in-black','jarvis','mask','heman','goodtimes'];
+const PLAY_DURATION_MS = 25000;   // play for 25 seconds total
+const FADE_DURATION_MS = 4000;    // last 4 seconds = fade-out
 let localAudio = null;
+let fadeTimer = null;
+let stopTimer = null;
 
 // Use YouTube IFrame API so we can detect playback failures & control audio properly.
 let ytPlayer = null;
@@ -4171,7 +4333,7 @@ window.onYouTubeIframeAPIReady = function() {
     height: '1', width: '1',
     playerVars: { autoplay: 0, controls: 0, playsinline: 1, rel: 0, modestbranding: 1 },
     events: {
-      onReady: () => { ytReady = true; if (pendingPlay) { const v = pendingPlay; pendingPlay = null; playVideo(v); } },
+      onReady: () => { ytReady = true; if (pendingPlay) { const p = pendingPlay; pendingPlay = null; playVideo(p.videoId, p.startSec); } },
       onError: (e) => {
         // 101 / 150 = embedding disabled by uploader (very common for major-label music)
         // 100 = video removed/private
@@ -4185,42 +4347,90 @@ window.onYouTubeIframeAPIReady = function() {
   });
 };
 
-function playVideo(videoId) {
-  if (!ytReady) { pendingPlay = videoId; return; }
+function clearMusicTimers() {
+  if (fadeTimer) { clearInterval(fadeTimer); fadeTimer = null; }
+  if (stopTimer) { clearTimeout(stopTimer); stopTimer = null; }
+}
+
+function playVideo(videoId, startSec) {
+  if (!ytReady) { pendingPlay = { videoId, startSec }; return; }
   try {
-    ytPlayer.loadVideoById(videoId);
+    ytPlayer.loadVideoById({ videoId, startSeconds: startSec || 0 });
     ytPlayer.unMute();
     ytPlayer.setVolume(80);
     ytPlayer.playVideo();
+    scheduleFadeAndStop((vol) => {
+      try { ytPlayer.setVolume(Math.max(0, Math.round(vol * 80))); } catch (e) {}
+    }, () => {
+      try { ytPlayer.stopVideo(); } catch (e) {}
+    });
   } catch (e) { /* swallow */ }
 }
+
 function stopMusic() {
+  clearMusicTimers();
   try { ytPlayer && ytPlayer.stopVideo(); } catch (e) {}
   if (localAudio) { localAudio.pause(); localAudio.currentTime = 0; localAudio = null; }
+}
+
+// Schedule the fade-out + final stop based on PLAY_DURATION_MS / FADE_DURATION_MS
+function scheduleFadeAndStop(setVolNorm, stopFn) {
+  clearMusicTimers();
+  const fadeStartMs = PLAY_DURATION_MS - FADE_DURATION_MS;  // 21s in
+  setTimeout(() => {
+    const steps = 40;
+    const stepMs = FADE_DURATION_MS / steps;
+    let i = 0;
+    fadeTimer = setInterval(() => {
+      i++;
+      const v = Math.max(0, 1 - (i / steps));
+      setVolNorm(v);
+      if (i >= steps) { clearInterval(fadeTimer); fadeTimer = null; }
+    }, stepMs);
+  }, fadeStartMs);
+  stopTimer = setTimeout(() => {
+    stopFn();
+    clearMusicTimers();
+  }, PLAY_DURATION_MS);
 }
 
 // Try to play a local MP3 if it exists, otherwise fall back to YouTube
 function tryLocalMp3Then(songKey, fallback) {
   const mp3 = SONG_MP3_FILES[songKey];
-  if (!mp3) { fallback(); return; }
-  // Probe whether the MP3 exists by attempting to load it
+  const startSec = SONG_START_OFFSETS[songKey] || 0;
+  if (!mp3) { fallback(songKey, startSec); return; }
   const audio = new Audio(mp3);
   audio.volume = 0.7;
   let resolved = false;
-  audio.addEventListener('canplaythrough', () => {
+  // Use 'loadedmetadata' (fires earlier than canplaythrough) so we can set currentTime
+  audio.addEventListener('loadedmetadata', () => {
+    try { audio.currentTime = startSec; } catch (e) {}
+  }, { once: true });
+  audio.addEventListener('canplay', () => {
     if (resolved) return; resolved = true;
     localAudio = audio;
-    audio.play().catch(() => fallback());
+    audio.play().then(() => {
+      scheduleFadeAndStop((v) => { audio.volume = v * 0.7; }, () => {
+        audio.pause(); audio.currentTime = 0; localAudio = null;
+      });
+    }).catch(() => fallback(songKey, startSec));
   }, { once: true });
   audio.addEventListener('error', () => {
     if (resolved) return; resolved = true;
-    fallback();
+    fallback(songKey, startSec);
   }, { once: true });
-  // Safety: if neither event fires within 1.5s, give up and use YouTube
   setTimeout(() => {
-    if (!resolved) { resolved = true; fallback(); }
-  }, 1500);
+    if (!resolved) { resolved = true; fallback(songKey, startSec); }
+  }, 2000);
   audio.load();
+}
+
+// Resolve "shuffle" choice → a random song key from the pool
+function resolveSongChoice(choice) {
+  if (choice === 'shuffle' || !choice) {
+    return SHUFFLE_POOL[Math.floor(Math.random() * SHUFFLE_POOL.length)];
+  }
+  return choice;
 }
 
 function startMusic() {
@@ -4228,11 +4438,12 @@ function startMusic() {
     document.getElementById('musicPrompt').style.display = 'none';
     return;
   }
-  const songKey = state.startupSong;
-  const videoId = SONG_IDS[songKey];
-  if (!videoId) return;
-  // Try local mp3 first (bulletproof), fall back to YouTube embed
-  tryLocalMp3Then(songKey, () => playVideo(videoId));
+  const songKey = resolveSongChoice(state.startupSong);
+  stopMusic();
+  tryLocalMp3Then(songKey, (key, startSec) => {
+    const videoId = SONG_IDS[key];
+    if (videoId) playVideo(videoId, startSec);
+  });
   document.getElementById('musicPrompt').style.display = 'none';
 }
 
@@ -4262,8 +4473,12 @@ document.querySelectorAll('[data-song]').forEach(btn => {
     if (state.startupSong === 'off') stopMusic();
     else {
       stopMusic();
-      // Preview using same fallback chain as boot
-      tryLocalMp3Then(state.startupSong, () => playVideo(SONG_IDS[state.startupSong]));
+      // Preview using same fallback chain as boot — resolves shuffle to a random track
+      const songKey = resolveSongChoice(state.startupSong);
+      tryLocalMp3Then(songKey, (key, startSec) => {
+        const videoId = SONG_IDS[key];
+        if (videoId) playVideo(videoId, startSec);
+      });
     }
   });
 });
@@ -4364,7 +4579,9 @@ function showToast(text) {
   const t = document.getElementById('easterToast');
   t.textContent = text;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3200);
+  // Hold longer for longer messages (Tinder openers run wordy)
+  const ms = Math.min(7000, Math.max(3200, text.length * 50));
+  setTimeout(() => t.classList.remove('show'), ms);
 }
 // Hook into tab-switching: ~12% chance of a toast on each switch
 const originalShowView = showView;
@@ -4372,6 +4589,55 @@ showView = function(name) {
   originalShowView(name);
   if (Math.random() < 0.12) {
     setTimeout(() => showToast(TOASTS[Math.floor(Math.random() * TOASTS.length)]), 400);
+  }
+};
+
+// 2b) Funny Tinder opener lines — fires occasionally on the Profiles tab specifically
+const TINDER_OPENERS = [
+  '"Roses are red, violets are fine, you be the 6, I\'ll be the 9"',
+  '"Are you Indonesian? Because you\'re Indo-mie nice"',
+  '"Do you have a map? I keep getting lost in your eyes"',
+  '"Is your name Wi-Fi? Because I\'m feeling a connection"',
+  '"Hi, I\'m writing a phone book. Can I get your number?"',
+  '"Are you a parking ticket? You\'ve got fine written all over you"',
+  '"Do you believe in love at first swipe?"',
+  '"Was your dad a boxer? Because you\'re a knockout"',
+  '"If I were a cat I\'d spend all 9 lives with you"',
+  '"On a scale of 1 to America, how free are you tonight?"',
+  '"Was your dad a baker? Because you\'ve got nice buns"',
+  '"Quick — what\'s your favorite kind of nasi goreng?"',
+  '"Two truths and a lie. Go."',
+  '"Sudirman or Kemang for the first date?"',
+  '"I bet your bio is more interesting than mine"',
+  '"You look like trouble. I like trouble."',
+  '"Be honest — what\'s your red flag?"',
+  '"Are you a magician? Because everyone else disappears when I see you"',
+  '"Pineapple on pizza — yes or war crime?"',
+  '"You\'re the Monas to my Jakarta"',
+  '"Quick question: who hurt you?"',
+  '"If we got married, would you take my last name or hyphenate?"',
+  '"What\'s your most controversial food opinion?"',
+  '"You\'re cute. That\'s a problem."',
+  '"Do you do this often? (date guys with my exact vibe)"',
+  '"Coffee, drinks, or instant chaos?"',
+  '"What\'s your toxic trait?"',
+  '"Hello. This is the part where you say hi back."',
+  '"You\'re the first match I\'ve actually messaged this week. Make it count."',
+  '"Tell me your zodiac so I can pretend to care"'
+];
+// Show one opener on every 4th visit to Profiles tab (or every 2-5 visits randomly)
+let profilesTabVisits = 0;
+let nextOpenerAt = 2 + Math.floor(Math.random() * 4);
+const originalShowView2 = showView;
+showView = function(name) {
+  originalShowView2(name);
+  if (name === 'profiles') {
+    profilesTabVisits++;
+    if (profilesTabVisits >= nextOpenerAt) {
+      profilesTabVisits = 0;
+      nextOpenerAt = 2 + Math.floor(Math.random() * 4);
+      setTimeout(() => showToast(TINDER_OPENERS[Math.floor(Math.random() * TINDER_OPENERS.length)]), 600);
+    }
   }
 };
 
