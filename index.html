@@ -595,6 +595,80 @@
     opacity: 1;
   }
 
+  /* Fullscreen photo preview — appears on long-press of any thumbnail */
+  .photo-preview {
+    position: fixed; inset: 0; z-index: 250;
+    background: rgba(0, 0, 0, .92);
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .photo-preview.show { display: flex; animation: launchFadeIn .25s ease-out; }
+  .photo-preview img {
+    max-width: 100%; max-height: 100%;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.7);
+    animation: photoPopIn .25s cubic-bezier(.34, 1.56, .64, 1);
+  }
+  @keyframes photoPopIn {
+    from { transform: scale(.7); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  /* Big launch-time motivational popup */
+  .launch-popup {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(10, 12, 18, .75);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 24px;
+    animation: launchFadeIn .4s ease-out;
+  }
+  .launch-popup.show { display: flex; }
+  @keyframes launchFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .launch-popup-inner {
+    position: relative;
+    background: linear-gradient(135deg, var(--accent) 0%, #ff8fa3 100%);
+    color: white;
+    padding: 36px 28px;
+    border-radius: 20px;
+    max-width: 420px; width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(214, 51, 108, .55), inset 0 1px 1px rgba(255,255,255,.3);
+    animation: launchPopIn .55s cubic-bezier(.34, 1.56, .64, 1);
+  }
+  @keyframes launchPopIn {
+    from { transform: scale(.7); opacity: 0; }
+    to   { transform: scale(1);  opacity: 1; }
+  }
+  .launch-popup-eyebrow {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .25em;
+    color: rgba(255,255,255,.85);
+    margin-bottom: 14px;
+  }
+  .launch-popup-text {
+    font-family: "Instrument Serif", "Georgia", serif;
+    font-size: 28px; font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -.01em;
+    text-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  .launch-popup-close {
+    position: absolute; top: 8px; right: 8px;
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,.18);
+    border: none; border-radius: 50%;
+    color: white; font-size: 22px; line-height: 1;
+    cursor: pointer;
+  }
+  .launch-popup-close:hover { background: rgba(255,255,255,.3); }
+
   /* Konami / streak / milestone ribbon */
   .milestone-ribbon {
     position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) scale(.6);
@@ -733,6 +807,23 @@
     margin-top: 6px; min-height: 38px; min-width: 56px;
     font-family: "Space Grotesk", sans-serif; font-weight: 600; letter-spacing: .02em;
   }
+  .header-clock {
+    margin-top: 6px;
+    font-family: "Space Grotesk", "Menlo", "SF Mono", monospace;
+    font-size: 16px; font-weight: 700;
+    color: var(--text);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 10px;
+    min-height: 38px;
+    display: inline-flex; align-items: center; gap: 4px;
+    letter-spacing: .05em;
+    text-shadow: 0 0 4px rgba(255, 92, 138, .25);
+    font-variant-numeric: tabular-nums;
+  }
+  .header-clock .colon { animation: clockBlink 1s steps(1, end) infinite; opacity: .9; }
+  @keyframes clockBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: .35; } }
 
   nav.tabs {
     display: flex; gap: 4px; padding: 6px;
@@ -842,12 +933,45 @@
     background: var(--chip); color: var(--chip-text); padding: 2px 8px; border-radius: 6px;
     font-size: 10px; font-weight: 600;
   }
-  .profile-card .del-x {
-    background: transparent; color: var(--muted); border: none;
-    font-size: 22px; line-height: 1; cursor: pointer; padding: 6px 4px;
-    flex: none;
+  .profile-card.dragging { opacity: .55; cursor: grabbing; box-shadow: var(--shadow); transform: scale(1.02); z-index: 10; }
+  .profile-card.drop-target { border-color: var(--accent); border-width: 2px; }
+
+  /* Peak risk pill — bright red warning */
+  .peak-risk-pill {
+    background: rgba(255, 77, 109, .25) !important;
+    color: #ff8fa3 !important;
+    border-color: rgba(255, 77, 109, .55) !important;
+    font-weight: 800 !important;
+    letter-spacing: .03em;
   }
-  .profile-card .del-x:hover { color: var(--danger); }
+  html[data-theme="light"] .peak-risk-pill { color: #c92a2a !important; }
+
+  /* Archive section */
+  .archive-header {
+    margin-top: 28px; padding: 10px 14px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700; font-size: 12px;
+    letter-spacing: .15em; text-transform: uppercase;
+    color: var(--muted);
+    user-select: none;
+  }
+  .archive-header::after {
+    content: '▾'; transition: transform .2s; font-size: 14px; margin-left: 8px;
+  }
+  .archive-header.open::after { transform: rotate(180deg); }
+  .archive-count {
+    background: var(--accent); color: white;
+    border-radius: 999px; padding: 2px 8px;
+    font-size: 11px;
+  }
+  .profile-list.archived { margin-top: 8px; }
+  .profile-card.archived-card { opacity: .6; }
+  .profile-card.archived-card .thumb { filter: grayscale(.7); }
   .profile-card .wa-btn {
     background: #25d366; color: white; border: none;
     width: 34px; height: 34px; border-radius: 50%;
@@ -917,9 +1041,9 @@
     border-color: rgba(224, 49, 49, .35) !important;
   }
   .cream-icon { display: inline-flex; align-items: center; margin-left: 2px;
-    filter: drop-shadow(0 1px 2px rgba(199, 154, 92, .5));
+    filter: drop-shadow(0 0 4px rgba(120, 220, 255, .8));
   }
-  .cream-inline { filter: drop-shadow(0 1px 2px rgba(199, 154, 92, .5)); }
+  .cream-inline { filter: drop-shadow(0 0 4px rgba(120, 220, 255, .8)); }
   .distance-pill {
     background: rgba(34, 184, 207, .2) !important;
     color: #4dc8db !important;
@@ -1002,7 +1126,7 @@
   .brand-btn.grab    { background: #00B14F; }           /* Grab green */
   .brand-btn.gojek   { background: #00AA13; }           /* Gojek green */
   .brand-btn.okcupid { background: #0E59F2; }           /* OkCupid royal blue */
-  .brand-btn.tantan  { background: #FF4081; }           /* Tantan pink */
+  .brand-btn.badoo   { background: #7B2CBF; }           /* Badoo purple */
 
   /* Labeled brand button used inside floating bars */
   .brand-btn-label {
@@ -1037,14 +1161,30 @@
 
   /* Cycle preview strip — 35 day rolling window starting from today */
   .cycle-preview { margin-top: 10px; }
-  .cycle-strip { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 8px; }
+  .cycle-grid-header {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+    margin-top: 10px;
+  }
+  .cgh-day {
+    text-align: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 4px 0;
+  }
+  .cycle-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+    margin-top: 2px;
+  }
   .cycle-day {
     aspect-ratio: 1/1; border-radius: 6px; background: var(--panel-2);
-    font-size: 12px; font-weight: 600;
+    font-size: 13px; font-weight: 600;
     display: flex; align-items: center; justify-content: center; color: rgba(0,0,0,.55);
     position: relative;
     font-family: "Space Grotesk", sans-serif;
   }
+  .cycle-day.empty { background: transparent; }
   html[data-theme="dark"] .cycle-day { color: rgba(255,255,255,.45); }
   .cycle-day.period   { background: #6b1620; color: #ffb3b3; position: relative; }
   .cycle-day.period::before {
@@ -1253,11 +1393,12 @@
     </div>
     <span>OKCUPID</span>
   </button>
-  <button class="brand-btn-label" id="tantanBtn" title="Tantan">
-    <div class="brand-btn tantan">
-      <svg viewBox="0 0 24 24"><path fill="white" d="M12 21 3.5 12.5C1 10 1 6.5 3.5 4S10 1.5 12 4c2-2.5 6-2.5 8.5 0S23 10 20.5 12.5z"/></svg>
+  <button class="brand-btn-label" id="badooBtn" title="Badoo">
+    <div class="brand-btn badoo">
+      <!-- Badoo "b" mark: circle with a small dot, in their signature purple -->
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="white"/><text x="12" y="17" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="15" fill="#7B2CBF">b</text></svg>
     </div>
-    <span>TANTAN</span>
+    <span>BADOO</span>
   </button>
 </div>
 
@@ -1331,6 +1472,20 @@
 
 <!-- Easter-egg surprise toast -->
 <div id="easterToast" class="easter-toast" aria-live="polite"></div>
+
+<!-- Fullscreen photo preview (long-press on any photo) -->
+<div id="photoPreview" class="photo-preview" aria-hidden="true">
+  <img id="photoPreviewImg" alt="" />
+</div>
+
+<!-- Big launch-time motivational popup -->
+<div id="launchPopup" class="launch-popup" aria-live="polite">
+  <div class="launch-popup-inner">
+    <div class="launch-popup-eyebrow">TODAY'S VIBE</div>
+    <div class="launch-popup-text"></div>
+    <button class="launch-popup-close" id="launchPopupClose">×</button>
+  </div>
+</div>
 
 <div class="bg-decor" id="bgDecor" aria-hidden="true">
   <div class="sky"></div>
@@ -2021,8 +2176,8 @@
       <h1>Rotation</h1>
     </div>
   </div>
-  <div class="row" style="gap:6px">
-    <button class="theme-toggle" id="shareBtn" title="Share / sync with friend">Share</button>
+  <div class="row" style="gap:8px">
+    <div id="headerClock" class="header-clock" title="Local time">--:--</div>
     <button class="theme-toggle" id="settingsBtn" title="Settings">⚙</button>
   </div>
 </header>
@@ -2192,7 +2347,19 @@
       <label class="toggle-row">
         <input type="checkbox" id="f-medal-flower" class="toggle-cb" />
         <span class="toggle-label">
-          <svg class="medal-icon" viewBox="0 0 28 32"><path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="#c92a2a"/><path d="M9 0 L11 0 L12 7 L11 7 Z" fill="#1864ab" opacity=".75"/><path d="M17 0 L19 0 L17 7 Z" fill="#1864ab" opacity=".75"/><defs><radialGradient id="iconGold" cx="40%" cy="35%"><stop offset="0%" stop-color="#fff7c2"/><stop offset="50%" stop-color="#ffd43b"/><stop offset="100%" stop-color="#a8841a"/></radialGradient></defs><polygon points="14,9 16.6,17 25,17 18.2,22 20.8,30 14,25 7.2,30 9.8,22 3,17 11.4,17" fill="url(#iconGold)" stroke="#a8841a" stroke-width=".5"/><polygon points="14,13 15.3,17.5 19,17.5 16,20 17,24 14,22 11,24 12,20 9,17.5 12.7,17.5" fill="#fff7c2" opacity=".5"/></svg>
+          <svg class="medal-icon" viewBox="0 0 28 32">
+            <!-- Light-blue ribbon with tiny white stars (Medal of Honor style) -->
+            <path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="#1c63a8"/>
+            <circle cx="11.5" cy="2" r=".5" fill="#fff"/><circle cx="14" cy="2" r=".5" fill="#fff"/><circle cx="16.5" cy="2" r=".5" fill="#fff"/>
+            <circle cx="12.5" cy="4" r=".5" fill="#fff"/><circle cx="15.5" cy="4" r=".5" fill="#fff"/>
+            <circle cx="14" cy="5.5" r=".5" fill="#fff"/>
+            <defs><radialGradient id="iconGold" cx="40%" cy="35%"><stop offset="0%" stop-color="#fff7c2"/><stop offset="50%" stop-color="#ffd43b"/><stop offset="100%" stop-color="#a8841a"/></radialGradient></defs>
+            <!-- Inverted 5-point star (point downward) -->
+            <g transform="rotate(180 14 19.5)">
+              <polygon points="14,9 16.6,17 25,17 18.2,22 20.8,30 14,25 7.2,30 9.8,22 3,17 11.4,17" fill="url(#iconGold)" stroke="#a8841a" stroke-width=".5"/>
+              <polygon points="14,13 15.3,17.5 19,17.5 16,20 17,24 14,22 11,24 12,20 9,17.5 12.7,17.5" fill="#fff7c2" opacity=".5"/>
+            </g>
+          </svg>
           Deflowered
         </span>
       </label>
@@ -2209,9 +2376,38 @@
         <span class="toggle-label">Hide from this week's roster</span>
       </label>
       <label class="toggle-row">
+        <input type="checkbox" id="f-archived" class="toggle-cb" />
+        <span class="toggle-label">🗄 Move to archive (gone cold)</span>
+      </label>
+      <label class="toggle-row">
         <input type="checkbox" id="f-cream" class="toggle-cb cream-cb" />
         <span class="toggle-label">
-          <svg width="18" height="18" viewBox="0 0 24 24" style="flex:none; vertical-align:-3px; margin-right:4px"><defs><radialGradient id="creamGrad" cx="35%" cy="30%"><stop offset="0%" stop-color="#fff4dc"/><stop offset="60%" stop-color="#e8c896"/><stop offset="100%" stop-color="#c79a5c"/></radialGradient></defs><path fill="url(#creamGrad)" d="M12 3c-1 2-3 2-3 5 0 1 .5 1.5 1 2-2 0-4 2-4 5 0 4 3 6 6 6s6-2 6-6c0-3-2-5-4-5 .5-.5 1-1 1-2 0-3-2-3-3-5z"/><ellipse cx="10" cy="11" rx="1.4" ry="1" fill="white" opacity=".6"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" style="flex:none; vertical-align:-5px; margin-right:6px">
+            <defs>
+              <linearGradient id="diaGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="40%" stop-color="#a0e7ff"/>
+                <stop offset="100%" stop-color="#5ec2ee"/>
+              </linearGradient>
+              <linearGradient id="diaGrad2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#bdf2ff"/>
+                <stop offset="100%" stop-color="#3a9ec8"/>
+              </linearGradient>
+            </defs>
+            <!-- Crown (top faceted band) -->
+            <polygon points="6,9 9,4 15,4 18,9" fill="url(#diaGrad)" stroke="#2d80a8" stroke-width=".5"/>
+            <!-- Pavilion (bottom faceted point) -->
+            <polygon points="6,9 18,9 12,21" fill="url(#diaGrad2)" stroke="#2d80a8" stroke-width=".5"/>
+            <!-- Facet lines -->
+            <line x1="6" y1="9" x2="12" y2="21" stroke="#1f6b8a" stroke-width=".4" opacity=".5"/>
+            <line x1="18" y1="9" x2="12" y2="21" stroke="#1f6b8a" stroke-width=".4" opacity=".5"/>
+            <line x1="9" y1="4" x2="11" y2="9" stroke="#1f6b8a" stroke-width=".3" opacity=".5"/>
+            <line x1="15" y1="4" x2="13" y2="9" stroke="#1f6b8a" stroke-width=".3" opacity=".5"/>
+            <line x1="11" y1="9" x2="12" y2="21" stroke="#1f6b8a" stroke-width=".3" opacity=".4"/>
+            <line x1="13" y1="9" x2="12" y2="21" stroke="#1f6b8a" stroke-width=".3" opacity=".4"/>
+            <!-- Sparkle highlight -->
+            <polygon points="9,6 11,5.5 10.5,7.5" fill="#ffffff" opacity=".75"/>
+          </svg>
           Cream of the crop
         </span>
       </label>
@@ -2262,7 +2458,13 @@
       </div>
       <div class="hint" id="photoStatus">Photo backgrounds will appear here once you drop the image files into the app folder. See instructions below.</div>
 
-      <label>Your data</label>
+      <label>Sync with friend</label>
+      <div class="actions-row" style="margin-top:6px">
+        <button class="btn" id="shareBtn" style="background:#25d366">📤 Share with friend</button>
+      </div>
+      <div class="hint">Generates a code with your roster, schedules, dates &amp; tags (no photos). Send it over WhatsApp. Friend pastes it into the same screen on their app to merge in your data.</div>
+
+      <label style="margin-top:14px">Your data</label>
       <div class="actions-row" style="margin-top:6px">
         <button class="btn secondary" id="exportFileBtn">Export to file</button>
         <button class="btn secondary" id="importFileBtn">Import from file</button>
@@ -2320,9 +2522,9 @@
       <button class="btn small" id="shareCalBtn" style="background:#25d366">📷 Share to WhatsApp</button>
     </div>
     <div class="cal-controls">
-      <span class="hint">Look ahead:</span>
-      <input type="range" id="weeksAhead" min="1" max="12" value="2" />
-      <span id="weeksLabel" style="font-size:13px; min-width: 60px; text-align:right">2 weeks</span>
+      <span class="hint">Days ahead:</span>
+      <input type="range" id="weeksAhead" min="1" max="14" value="4" />
+      <span id="weeksLabel" style="font-size:13px; min-width: 60px; text-align:right">4 days</span>
     </div>
     <div class="cal-grid" id="calGrid"></div>
   </section>
@@ -2444,6 +2646,18 @@ function applyTheme() {
   document.documentElement.setAttribute('data-theme', state.theme);
 }
 applyTheme();
+
+/* HEADER DIGITAL CLOCK — 24h local time */
+function updateClock() {
+  const el = document.getElementById('headerClock');
+  if (!el) return;
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  el.innerHTML = hh + '<span class="colon">:</span>' + mm;
+}
+updateClock();
+setInterval(updateClock, 1000);
 
 /* =========================================================
    BACKGROUND CHOICES
@@ -2624,11 +2838,18 @@ function renderProfilesList() {
     root.innerHTML = '<div class="empty-state">No profiles yet. Tap <strong>+ New</strong>.</div>';
     return;
   }
+  root.innerHTML = '';
+  // Active list — ordered by priorityOrder. Excludes archived.
+  const activeProfiles = orderedProfiles().filter(p => !p.archived);
+  const archivedProfiles = state.profiles.filter(p => p.archived);
+
   const list = document.createElement('div');
   list.className = 'profile-list';
-  state.profiles.forEach(p => {
+  list.id = 'activeProfileList';
+  activeProfiles.forEach(p => {
     const card = document.createElement('div');
     card.className = 'profile-card' + (p.hidden ? ' hidden-roster' : '');
+    card.dataset.profileId = p.id;
     const idx = (typeof p.primaryPhotoIdx === 'number') ? p.primaryPhotoIdx : 0;
     const thumb = p.photos && p.photos[idx] ? p.photos[idx] : '';
     const tags = (p.tags || []).slice(0, 3);
@@ -2637,13 +2858,13 @@ function renderProfilesList() {
     const distance = p.distanceMin;
     const medals = p.medals || {};
     // Reusable star-medal SVG: short ribbon + 5-pointed star body. Color comes from gradient id.
-    const starMedalSvg = (id, gradId, stopA, stopB, stopC, ribA, ribB) =>
+    // `inverted` flips the star upside-down (Medal of Honor style — one point downward).
+    const starMedalSvg = (id, gradId, stopA, stopB, stopC, ribA, ribB, inverted) =>
       `<svg class="medal-mini" viewBox="0 0 28 32">
         <!-- Ribbon (short, only 8px tall) -->
         <path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="${ribA}"/>
         <path d="M9 0 L11 0 L12 7 L11 7 Z" fill="${ribB}" opacity=".75"/>
         <path d="M17 0 L19 0 L17 7 Z" fill="${ribB}" opacity=".75"/>
-        <!-- Star (5-pointed, big — the focus of the medal) -->
         <defs>
           <radialGradient id="${gradId}${id}" cx="40%" cy="35%">
             <stop offset="0%" stop-color="${stopA}"/>
@@ -2651,11 +2872,13 @@ function renderProfilesList() {
             <stop offset="100%" stop-color="${stopC}"/>
           </radialGradient>
         </defs>
-        <polygon points="14,9 16.6,17 25,17 18.2,22 20.8,30 14,25 7.2,30 9.8,22 3,17 11.4,17"
-                 fill="url(#${gradId}${id})" stroke="${stopC}" stroke-width=".5"/>
-        <!-- Inner highlight -->
-        <polygon points="14,13 15.3,17.5 19,17.5 16,20 17,24 14,22 11,24 12,20 9,17.5 12.7,17.5"
-                 fill="${stopA}" opacity=".5"/>
+        <g ${inverted ? 'transform="rotate(180 14 19.5)"' : ''}>
+          <!-- 5-pointed star (rotated 180° via group transform when inverted) -->
+          <polygon points="14,9 16.6,17 25,17 18.2,22 20.8,30 14,25 7.2,30 9.8,22 3,17 11.4,17"
+                   fill="url(#${gradId}${id})" stroke="${stopC}" stroke-width=".5"/>
+          <polygon points="14,13 15.3,17.5 19,17.5 16,20 17,24 14,22 11,24 12,20 9,17.5 12.7,17.5"
+                   fill="${stopA}" opacity=".5"/>
+        </g>
       </svg>`;
     // Purple Heart: full heart shape with gold profile bust silhouette + gold border + short ribbon
     const purpleHeartSvg = (id) =>
@@ -2675,9 +2898,10 @@ function renderProfilesList() {
               fill="#d4a017"/>
       </svg>`;
     const medalRow =
-      (medals.met    ? starMedalSvg(p.id, 'bm', '#ffd9a8', '#cd7f32', '#6e3f10', '#c92a2a', '#1864ab') : '') +
-      (medals.sex    ? starMedalSvg(p.id, 'sm', '#ffffff', '#c0c0c0', '#6a6a6a', '#c92a2a', '#1864ab') : '') +
-      (medals.flower ? starMedalSvg(p.id, 'gm', '#fff7c2', '#ffd43b', '#a8841a', '#c92a2a', '#1864ab') : '') +
+      (medals.met    ? starMedalSvg(p.id, 'bm', '#ffd9a8', '#cd7f32', '#6e3f10', '#c92a2a', '#1864ab', false) : '') +
+      (medals.sex    ? starMedalSvg(p.id, 'sm', '#ffffff', '#c0c0c0', '#6a6a6a', '#c92a2a', '#1864ab', false) : '') +
+      // Gold "Deflowered" medal: inverted star + light-blue ribbon with white stars, Medal of Honor style
+      (medals.flower ? starMedalSvg(p.id, 'gm', '#fff7c2', '#ffd43b', '#a8841a', '#1c63a8', '#3a86d3', true) : '') +
       (medals.flaked ? purpleHeartSvg(p.id) : '');
     const thumbStyle = thumb ? `background-image:url('${cssEscape(thumb)}')` : '';
     const waButton = p.phone
@@ -2691,39 +2915,174 @@ function renderProfilesList() {
         <div class="name-row">
           <span class="name-text">${escapeHtml(p.name || 'Untitled')}</span>
           ${p.age ? `<span class="age">${escapeHtml(String(p.age))}</span>` : ''}
-          ${p.cream ? `<span class="cream-icon" title="Cream of the crop"><svg width="16" height="16" viewBox="0 0 24 24"><defs><radialGradient id="creamGradList_${escapeHtml(p.id)}" cx="35%" cy="30%"><stop offset="0%" stop-color="#fff4dc"/><stop offset="60%" stop-color="#e8c896"/><stop offset="100%" stop-color="#c79a5c"/></radialGradient></defs><path fill="url(#creamGradList_${escapeHtml(p.id)})" d="M12 3c-1 2-3 2-3 5 0 1 .5 1.5 1 2-2 0-4 2-4 5 0 4 3 6 6 6s6-2 6-6c0-3-2-5-4-5 .5-.5 1-1 1-2 0-3-2-3-3-5z"/><ellipse cx="10" cy="11" rx="1.4" ry="1" fill="white" opacity=".6"/></svg></span>` : ''}
-          ${(medalRow || distance || flagCount > 0) ? `<div class="badge-row">
-            ${medalRow}
-            ${distance ? `<span class="mini-tag distance-pill" title="${distance} min by car">🚗 ${distance} min</span>` : ''}
-            ${flagCount > 0 ? `<span class="mini-tag red-flag-pill" title="${flagCount} red flag${flagCount===1?'':'s'}">🚩 ${flagCount}</span>` : ''}
-          </div>` : ''}
+          ${p.cream ? `<span class="cream-icon" title="Cream of the crop"><svg width="20" height="20" viewBox="0 0 24 24"><defs><linearGradient id="diaList_${escapeHtml(p.id)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#a0e7ff"/><stop offset="100%" stop-color="#5ec2ee"/></linearGradient><linearGradient id="diaList2_${escapeHtml(p.id)}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bdf2ff"/><stop offset="100%" stop-color="#3a9ec8"/></linearGradient></defs><polygon points="6,9 9,4 15,4 18,9" fill="url(#diaList_${escapeHtml(p.id)})" stroke="#2d80a8" stroke-width=".5"/><polygon points="6,9 18,9 12,21" fill="url(#diaList2_${escapeHtml(p.id)})" stroke="#2d80a8" stroke-width=".5"/><line x1="6" y1="9" x2="12" y2="21" stroke="#1f6b8a" stroke-width=".4" opacity=".5"/><line x1="18" y1="9" x2="12" y2="21" stroke="#1f6b8a" stroke-width=".4" opacity=".5"/><line x1="11" y1="9" x2="12" y2="21" stroke="#1f6b8a" stroke-width=".3" opacity=".4"/><line x1="13" y1="9" x2="12" y2="21" stroke="#1f6b8a" stroke-width=".3" opacity=".4"/><polygon points="9,6 11,5.5 10.5,7.5" fill="#ffffff" opacity=".75"/></svg></span>` : ''}
+          ${(() => {
+            const todayCycle = p.cycle && p.cycle.lastPeriod ? classifyCycleDay(new Date(), p.cycle) : null;
+            const peakBadge = (todayCycle === 'peak' || todayCycle === 'ovulation')
+              ? `<span class="mini-tag peak-risk-pill" title="Peak fertility today — high pregnancy risk">⚠️ peak</span>` : '';
+            const hasBadges = medalRow || distance || flagCount > 0 || peakBadge;
+            return hasBadges ? `<div class="badge-row">
+              ${medalRow}
+              ${peakBadge}
+              ${distance ? `<span class="mini-tag distance-pill" title="${distance} min by car">🚗 ${distance} min</span>` : ''}
+              ${flagCount > 0 ? `<span class="mini-tag red-flag-pill" title="${flagCount} red flag${flagCount===1?'':'s'}">🚩 ${flagCount}</span>` : ''}
+            </div>` : '';
+          })()}
         </div>
         <div class="sub">
           ${tags.map(t => `<span class="mini-tag">${escapeHtml(t)}</span>`).join('')}
           ${moreTags > 0 ? `<span class="mini-tag">+${moreTags}</span>` : ''}
         </div>
       </div>
-      ${waButton}
-      <button class="del-x" title="Delete" data-del="${p.id}">×</button>`;
+      ${waButton}`;
     card.addEventListener('click', (e) => {
+      if (card.dataset.wasDragged) { card.dataset.wasDragged = ''; return; }
       const waEl = e.target.closest('.wa-btn');
       if (waEl) {
         e.stopPropagation();
         openWhatsApp(waEl.dataset.wa);
         return;
       }
-      if (e.target.closest('.del-x')) {
-        if (confirm(`Delete ${p.name}?`)) deleteProfile(p.id);
-        return;
-      }
       openEditor(p.id);
     });
+    // Long-press the avatar thumbnail to preview at full size
+    if (thumb) {
+      const thumbEl = card.querySelector('.thumb');
+      attachPhotoPreviewHold(thumbEl, thumb);
+    }
     list.appendChild(card);
   });
-  root.innerHTML = '';
   root.appendChild(list);
+  attachProfileDragHandlers();
+
+  // ARCHIVE section — collapsible, at the bottom
+  if (archivedProfiles.length) {
+    const archHeader = document.createElement('div');
+    archHeader.className = 'archive-header';
+    archHeader.innerHTML = `<span>🗄 Archive</span><span class="archive-count">${archivedProfiles.length}</span>`;
+    archHeader.addEventListener('click', () => {
+      const isOpen = archHeader.classList.toggle('open');
+      document.getElementById('archivedList').style.display = isOpen ? '' : 'none';
+    });
+    root.appendChild(archHeader);
+
+    const archList = document.createElement('div');
+    archList.id = 'archivedList';
+    archList.className = 'profile-list archived';
+    archList.style.display = 'none';
+    archivedProfiles.forEach(p => {
+      const idx = (typeof p.primaryPhotoIdx === 'number') ? p.primaryPhotoIdx : 0;
+      const thumb = p.photos && p.photos[idx] ? p.photos[idx] : '';
+      const thumbStyle = thumb ? `background-image:url('${cssEscape(thumb)}')` : '';
+      const card = document.createElement('div');
+      card.className = 'profile-card archived-card';
+      card.innerHTML = `
+        <div class="thumb" style="${thumbStyle}">${thumb ? '' : initials(p.name)}</div>
+        <div class="meta">
+          <div class="name-row"><span class="name-text">${escapeHtml(p.name || 'Untitled')}</span>${p.age ? `<span class="age">${escapeHtml(String(p.age))}</span>` : ''}</div>
+        </div>`;
+      card.addEventListener('click', () => openEditor(p.id));
+      archList.appendChild(card);
+    });
+    root.appendChild(archList);
+  }
 }
 document.getElementById('newProfileBtn').addEventListener('click', () => openEditor(null));
+
+/* =========================================================
+   PROFILE LIST — drag-to-reorder via long-press hold (touch + mouse)
+   ========================================================= */
+function attachProfileDragHandlers() {
+  document.querySelectorAll('#activeProfileList .profile-card').forEach(card => {
+    let holdTimer = null;
+    let isDragging = false;
+    let startY = null;
+
+    // Mouse drag (desktop)
+    card.draggable = true;
+    card.addEventListener('dragstart', (e) => {
+      isDragging = true;
+      card.classList.add('dragging');
+      card.dataset.wasDragged = '1';
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', card.dataset.profileId); } catch(_){}
+    });
+    card.addEventListener('dragend', () => {
+      isDragging = false;
+      card.classList.remove('dragging');
+      document.querySelectorAll('.profile-card.drop-target').forEach(r => r.classList.remove('drop-target'));
+    });
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      card.classList.add('drop-target');
+    });
+    card.addEventListener('dragleave', () => card.classList.remove('drop-target'));
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      card.classList.remove('drop-target');
+      const srcId = e.dataTransfer.getData('text/plain');
+      const tgtId = card.dataset.profileId;
+      if (!srcId || srcId === tgtId) return;
+      reorderProfilePriority(srcId, tgtId);
+      saveState();
+      renderProfilesList();
+    });
+
+    // Touch: long-press (250ms) to enter drag mode, then track with finger
+    card.addEventListener('touchstart', (e) => {
+      startY = e.touches[0].clientY;
+      holdTimer = setTimeout(() => {
+        isDragging = true;
+        card.classList.add('dragging');
+        card.dataset.wasDragged = '1';
+        if (navigator.vibrate) navigator.vibrate(40);
+      }, 250);
+    }, { passive: true });
+    card.addEventListener('touchmove', (e) => {
+      if (!startY) return;
+      const t = e.touches[0];
+      if (!isDragging) {
+        // If user moves too much before long-press fires, cancel as scroll
+        if (Math.abs(t.clientY - startY) > 12) { clearTimeout(holdTimer); startY = null; }
+        return;
+      }
+      e.preventDefault();
+      const el = document.elementFromPoint(t.clientX, t.clientY);
+      const over = el && el.closest('.profile-card');
+      document.querySelectorAll('.profile-card.drop-target').forEach(r => r.classList.remove('drop-target'));
+      if (over && over !== card && over.dataset.profileId) over.classList.add('drop-target');
+    }, { passive: false });
+    card.addEventListener('touchend', (e) => {
+      clearTimeout(holdTimer);
+      if (isDragging) {
+        const t = (e.changedTouches && e.changedTouches[0]);
+        const el = t ? document.elementFromPoint(t.clientX, t.clientY) : null;
+        const over = el && el.closest('.profile-card');
+        card.classList.remove('dragging');
+        if (over && over !== card && over.dataset.profileId) {
+          over.classList.remove('drop-target');
+          reorderProfilePriority(card.dataset.profileId, over.dataset.profileId);
+          saveState();
+          renderProfilesList();
+        }
+      }
+      startY = null; isDragging = false;
+    });
+    card.addEventListener('touchcancel', () => {
+      clearTimeout(holdTimer); startY = null; isDragging = false;
+      card.classList.remove('dragging');
+    });
+  });
+}
+function reorderProfilePriority(srcId, tgtId) {
+  const order = state.priorityOrder.slice();
+  const sIdx = order.indexOf(srcId);
+  if (sIdx >= 0) order.splice(sIdx, 1);
+  const tIdx = order.indexOf(tgtId);
+  order.splice(tIdx, 0, srcId);
+  state.priorityOrder = order;
+}
 
 function deleteProfile(id) {
   state.profiles = state.profiles.filter(p => p.id !== id);
@@ -2746,7 +3105,8 @@ function blankProfile() {
     id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
     name: '', age: '', phone: '', notes: '', photos: [], primaryPhotoIdx: 0,
     tags: [], redFlags: [], schedule: sched,
-    cycle: { lastPeriod: '', cycleLength: 28, periodLength: 5 }
+    cycle: { lastPeriod: '', cycleLength: 28, periodLength: 5 },
+    archived: false
   };
 }
 function openEditor(id) {
@@ -2766,6 +3126,7 @@ function openEditor(id) {
   document.getElementById('f-phone').value = editorDraft.phone || '+62';
   document.getElementById('f-notes').value = editorDraft.notes || '';
   document.getElementById('f-hidden').checked = !!editorDraft.hidden;
+  document.getElementById('f-archived').checked = !!editorDraft.archived;
   document.getElementById('f-cream').checked = !!editorDraft.cream;
   document.getElementById('f-medal-met').checked    = !!(editorDraft.medals && editorDraft.medals.met);
   document.getElementById('f-medal-sex').checked    = !!(editorDraft.medals && editorDraft.medals.sex);
@@ -2843,17 +3204,26 @@ function renderCyclePreview() {
   };
   const today = new Date(); today.setHours(0,0,0,0);
   const days = 30;
-  let html = '<div class="cycle-strip">';
   let nextPeriodDay = null, nextOvulation = null, todayClass = null;
-  // count tiers for the "how many low-risk days" reality check
-  const tally = {period:0, peak:0, ovulation:0, fertile:0, elevated:0, safer:0};
+
+  // Build a Mon-Sun grid: header row first, then start at today's column position
+  // JS: Sunday=0..Saturday=6. We want Monday=0..Sunday=6.
+  let html = '<div class="cycle-grid-header">';
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
+    html += `<div class="cgh-day">${d}</div>`;
+  });
+  html += '</div><div class="cycle-grid">';
+
+  // Pad the start so today lands in the correct weekday column
+  const todayDow = (today.getDay() + 6) % 7;  // Monday=0..Sunday=6
+  for (let i = 0; i < todayDow; i++) html += '<div class="cycle-day empty"></div>';
+
   for (let i = 0; i < days; i++) {
     const d = addDays(today, i);
     const cls = classifyCycleDay(d, cycle) || '';
     if (i === 0) todayClass = cls;
     if (cls === 'period' && nextPeriodDay === null) nextPeriodDay = d;
     if (cls === 'ovulation' && nextOvulation === null) nextOvulation = d;
-    if (cls && tally[cls] !== undefined) tally[cls]++;
     const isToday = i === 0 ? ' today' : '';
     html += `<div class="cycle-day ${cls}${isToday}" title="${fmtDate(d)}">${d.getDate()}</div>`;
   }
@@ -2877,8 +3247,8 @@ function renderCyclePreview() {
   })[todayClass] || '';
   let summary = `<div class="cycle-summary">`;
   if (todayLabel) summary += `Today: <strong>${todayLabel}</strong>.`;
-  if (nextPeriodDay) summary += ` Next period likely starts <strong>${fmtDateShort(nextPeriodDay)}</strong>.`;
-  if (nextOvulation) summary += ` Next ovulation around <strong>${fmtDateShort(nextOvulation)}</strong>.`;
+  if (nextPeriodDay) summary += ` Next period likely starts <strong>${fmtDateLong(nextPeriodDay)}</strong>.`;
+  if (nextOvulation) summary += ` Next ovulation around <strong>${fmtDateLong(nextOvulation)}</strong>.`;
   summary += `</div>`;
   root.innerHTML = html + summary;
 }
@@ -2919,6 +3289,14 @@ function renderAvatar() {
       av.querySelector('.av-initials').textContent = initials(document.getElementById('f-name').value || editorDraft.name);
     }
   }
+  // Re-attach the long-press preview to the avatar (only if there's a photo to preview)
+  if (src && !av.dataset.previewBound) {
+    attachPhotoPreviewHold(av, src);
+    av.dataset.previewBound = '1';
+  } else if (src && av.dataset.previewBound) {
+    // Update the bound src if photo changed
+    attachPhotoPreviewHold(av, src);
+  }
 }
 document.getElementById('avatarEditBtn').addEventListener('click', () => document.getElementById('photoInput').click());
 
@@ -2955,7 +3333,7 @@ document.getElementById('gojekBtn').addEventListener('click', openGojek);
 document.getElementById('bumbleBtn').addEventListener('click', openBumble);
 document.getElementById('tinderBtn').addEventListener('click', openTinder);
 document.getElementById('okcupidBtn').addEventListener('click', openOkCupid);
-document.getElementById('tantanBtn').addEventListener('click', openTantan);
+document.getElementById('badooBtn').addEventListener('click', openBadoo);
 // Show the WA button only when there's a phone number; live-toggle as user types
 document.getElementById('f-phone').addEventListener('input', (e) => {
   document.getElementById('waProfileBtn').style.display = e.target.value.trim() ? '' : 'none';
@@ -2983,6 +3361,7 @@ function renderPhotoRow() {
       renderPhotoRow(); renderAvatar();
     });
     div.appendChild(x);
+    attachPhotoPreviewHold(div, src);
     row.appendChild(div);
   });
 }
@@ -3124,6 +3503,7 @@ function saveProfileHandler() {
   editorDraft.phone = document.getElementById('f-phone').value.trim();
   editorDraft.notes = document.getElementById('f-notes').value.trim();
   editorDraft.hidden = document.getElementById('f-hidden').checked;
+  editorDraft.archived = document.getElementById('f-archived').checked;
   editorDraft.cream = document.getElementById('f-cream').checked;
   editorDraft.medals = {
     met:    document.getElementById('f-medal-met').checked,
@@ -3253,7 +3633,7 @@ function renderAvailability() {
     col.className = 'day-col'; col.dataset.day = key;
     col.innerHTML = `<h3>${d.toLocaleDateString('en-US',{weekday:'long'})}<span class="date ${i===0?'today':''}">${d.getDate()}. ${d.toLocaleDateString('en-US',{month:'long'})}</span></h3>`;
     const available = orderedProfiles().filter(p => {
-      if (p.hidden) return false;
+      if (p.hidden || p.archived) return false;
       const s = p.schedule && p.schedule[key];
       return s && (s.lunch || s.evening || s.night);
     });
@@ -3285,7 +3665,7 @@ function buildAvailRow(p, dayKey, jsDate) {
   const name = document.createElement('div');
   name.className = 'av-name';
   if (p.cream) {
-    name.innerHTML = `<svg class="cream-inline" width="14" height="14" viewBox="0 0 24 24" style="vertical-align:-2px; margin-right:4px"><defs><radialGradient id="creamGradAv_${p.id}" cx="35%" cy="30%"><stop offset="0%" stop-color="#fff4dc"/><stop offset="60%" stop-color="#e8c896"/><stop offset="100%" stop-color="#c79a5c"/></radialGradient></defs><path fill="url(#creamGradAv_${p.id})" d="M12 3c-1 2-3 2-3 5 0 1 .5 1.5 1 2-2 0-4 2-4 5 0 4 3 6 6 6s6-2 6-6c0-3-2-5-4-5 .5-.5 1-1 1-2 0-3-2-3-3-5z"/><ellipse cx="10" cy="11" rx="1.4" ry="1" fill="white" opacity=".6"/></svg>` + escapeHtml(p.name);
+    name.innerHTML = `<svg class="cream-inline" width="14" height="14" viewBox="0 0 24 24" style="vertical-align:-2px; margin-right:4px"><defs><linearGradient id="diaAv_${p.id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#a0e7ff"/><stop offset="100%" stop-color="#5ec2ee"/></linearGradient><linearGradient id="diaAv2_${p.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bdf2ff"/><stop offset="100%" stop-color="#3a9ec8"/></linearGradient></defs><polygon points="6,9 9,4 15,4 18,9" fill="url(#diaAv_${p.id})" stroke="#2d80a8" stroke-width=".5"/><polygon points="6,9 18,9 12,21" fill="url(#diaAv2_${p.id})" stroke="#2d80a8" stroke-width=".5"/></svg>` + escapeHtml(p.name);
   } else {
     name.textContent = p.name;
   }
@@ -3465,17 +3845,17 @@ document.getElementById('addDateModal').addEventListener('click', (e) => {
    DATE CALENDAR — simplified: just who, no time dropdown
    ========================================================= */
 document.getElementById('weeksAhead').addEventListener('input', (e) => {
-  document.getElementById('weeksLabel').textContent = e.target.value + ' wk' + (e.target.value === '1' ? '' : 's');
+  const days = parseInt(e.target.value, 10) || 4;
+  document.getElementById('weeksLabel').textContent = days + ' day' + (days === 1 ? '' : 's');
   renderCalendar();
 });
 
 function renderCalendar() {
-  const weeks = parseInt(document.getElementById('weeksAhead').value, 10) || 2;
-  document.getElementById('weeksLabel').textContent = weeks + ' wk' + (weeks===1?'':'s');
+  const totalDays = parseInt(document.getElementById('weeksAhead').value, 10) || 4;
+  document.getElementById('weeksLabel').textContent = totalDays + ' day' + (totalDays === 1 ? '' : 's');
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
   const today = new Date(); today.setHours(0,0,0,0);
-  const totalDays = weeks * 7;
   for (let i = 0; i < totalDays; i++) {
     const d = new Date(today); d.setDate(today.getDate() + i);
     const key = isoDate(d);
@@ -3621,7 +4001,7 @@ function buildShareSnapshot() {
       id: p.id, name: p.name, age: p.age, phone: p.phone || '',
       notes: p.notes || '', tags: p.tags || [], redFlags: p.redFlags || [],
       schedule: p.schedule, cycle: p.cycle || null,
-      cream: !!p.cream, hidden: !!p.hidden,
+      cream: !!p.cream, hidden: !!p.hidden, archived: !!p.archived,
       medals: p.medals || null,
       distanceMin: p.distanceMin || null,
       mapsLink: p.mapsLink || ''
@@ -3728,6 +4108,35 @@ function escapeHtml(s) {
   return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function cssEscape(s) { return String(s || '').replace(/'/g, "\\'"); }
+
+// Long-press → show fullscreen photo preview. Attach to any element with a `data-photo-src` attr.
+function attachPhotoPreviewHold(el, src) {
+  if (!el || !src) return;
+  let holdTimer = null;
+  let canceled = false;
+  const start = () => {
+    canceled = false;
+    holdTimer = setTimeout(() => {
+      if (canceled) return;
+      const pv = document.getElementById('photoPreview');
+      document.getElementById('photoPreviewImg').src = src;
+      pv.classList.add('show');
+      if (navigator.vibrate) navigator.vibrate(30);
+    }, 400);
+  };
+  const cancel = () => { canceled = true; clearTimeout(holdTimer); };
+  el.addEventListener('mousedown', start);
+  el.addEventListener('touchstart', start, { passive: true });
+  el.addEventListener('mouseup', cancel);
+  el.addEventListener('mouseleave', cancel);
+  el.addEventListener('touchend', cancel);
+  el.addEventListener('touchcancel', cancel);
+  el.addEventListener('touchmove', cancel, { passive: true });
+}
+// Tap anywhere on preview to dismiss
+document.getElementById('photoPreview').addEventListener('click', () => {
+  document.getElementById('photoPreview').classList.remove('show');
+});
 // Single source of truth for date formatting across the whole app.
 // Format: "Tuesday 12. May"
 function fmtDate(d) {
@@ -3742,6 +4151,12 @@ function fmtDateShort(d) {
   const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
   const month   = date.toLocaleDateString('en-US', { month: 'short' });
   return `${weekday} ${date.getDate()}. ${month}`;
+}
+// Numeric-day + month + year — "22. May 2026"
+function fmtDateLong(d) {
+  const date = new Date(d);
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  return `${date.getDate()}. ${month} ${date.getFullYear()}`;
 }
 function openWhatsApp(phone) {
   if (!phone) return;
@@ -3771,20 +4186,20 @@ function openGojek() {
   setTimeout(() => window.open('https://www.gojek.com/', '_blank'), 1200);
 }
 function openBumble() {
-  window.location.href = 'bumble://';
-  setTimeout(() => window.open('https://bumble.com/', '_blank'), 1200);
+  // Bumble's App Links: tapping the official URL opens the installed app, or web if not installed.
+  // The bumble:// scheme isn't reliably handled — App Links are the supported path.
+  window.open('https://bumble.com/get-started', '_blank');
 }
 function openTinder() {
-  window.location.href = 'tinder://';
-  setTimeout(() => window.open('https://tinder.com/', '_blank'), 1200);
+  // Tinder's universal link
+  window.open('https://tinder.com/app/recs', '_blank');
 }
 function openOkCupid() {
-  window.location.href = 'okcupid://';
-  setTimeout(() => window.open('https://www.okcupid.com/', '_blank'), 1200);
+  window.open('https://www.okcupid.com/', '_blank');
 }
-function openTantan() {
-  window.location.href = 'tantan://';
-  setTimeout(() => window.open('https://tantanapp.com/', '_blank'), 1200);
+function openBadoo() {
+  // Badoo also uses App Links / Universal Links
+  window.open('https://badoo.com/', '_blank');
 }
 
 /* =========================================================
@@ -3794,8 +4209,8 @@ function openTantan() {
    so the user can attach it manually.
    ========================================================= */
 async function renderCalendarToCanvas() {
-  const weeks = parseInt(document.getElementById('weeksAhead').value, 10) || 2;
-  const totalDays = weeks * 7;
+  const totalDays = parseInt(document.getElementById('weeksAhead').value, 10) || 4;
+  const weeks = Math.max(1, Math.ceil(totalDays / 7)); // used only for the header text
   const today = new Date(); today.setHours(0,0,0,0);
 
   // Look up profile names
@@ -4526,7 +4941,7 @@ window.onYouTubeIframeAPIReady = function() {
     height: '1', width: '1',
     playerVars: { autoplay: 0, controls: 0, playsinline: 1, rel: 0, modestbranding: 1 },
     events: {
-      onReady: () => { ytReady = true; if (pendingPlay) { const p = pendingPlay; pendingPlay = null; playVideo(p.videoId, p.startSec); } },
+      onReady: () => { ytReady = true; if (pendingPlay) { const p = pendingPlay; pendingPlay = null; playYouTube(p.videoId, p.startSec); } },
       onError: (e) => {
         // 101 / 150 = embedding disabled by uploader (very common for major-label music)
         // 100 = video removed/private
@@ -4545,31 +4960,19 @@ function clearMusicTimers() {
   if (stopTimer) { clearTimeout(stopTimer); stopTimer = null; }
 }
 
-function playVideo(videoId, startSec) {
-  if (!ytReady) { pendingPlay = { videoId, startSec }; return; }
-  try {
-    ytPlayer.loadVideoById({ videoId, startSeconds: startSec || 0 });
-    ytPlayer.unMute();
-    ytPlayer.setVolume(80);
-    ytPlayer.playVideo();
-    scheduleFadeAndStop((vol) => {
-      try { ytPlayer.setVolume(Math.max(0, Math.round(vol * 80))); } catch (e) {}
-    }, () => {
-      try { ytPlayer.stopVideo(); } catch (e) {}
-    });
-  } catch (e) { /* swallow */ }
-}
-
 function stopMusic() {
   clearMusicTimers();
   try { ytPlayer && ytPlayer.stopVideo(); } catch (e) {}
-  if (localAudio) { localAudio.pause(); localAudio.currentTime = 0; localAudio = null; }
+  if (localAudio) {
+    try { localAudio.pause(); localAudio.src = ''; } catch (e) {}
+    localAudio = null;
+  }
 }
 
 // Schedule the fade-out + final stop based on PLAY_DURATION_MS / FADE_DURATION_MS
 function scheduleFadeAndStop(setVolNorm, stopFn) {
   clearMusicTimers();
-  const fadeStartMs = PLAY_DURATION_MS - FADE_DURATION_MS;  // 21s in
+  const fadeStartMs = PLAY_DURATION_MS - FADE_DURATION_MS;
   setTimeout(() => {
     const steps = 40;
     const stepMs = FADE_DURATION_MS / steps;
@@ -4587,35 +4990,53 @@ function scheduleFadeAndStop(setVolNorm, stopFn) {
   }, PLAY_DURATION_MS);
 }
 
-// Try to play a local MP3 if it exists, otherwise fall back to YouTube
-function tryLocalMp3Then(songKey, fallback) {
-  const mp3 = SONG_MP3_FILES[songKey];
+function playYouTube(videoId, startSec) {
+  if (!ytReady) { pendingPlay = { videoId, startSec }; return; }
+  try {
+    ytPlayer.loadVideoById({ videoId, startSeconds: startSec || 0 });
+    ytPlayer.unMute();
+    ytPlayer.setVolume(80);
+    ytPlayer.playVideo();
+    scheduleFadeAndStop((vol) => {
+      try { ytPlayer.setVolume(Math.max(0, Math.round(vol * 80))); } catch (e) {}
+    }, () => {
+      try { ytPlayer.stopVideo(); } catch (e) {}
+    });
+  } catch (e) {}
+}
+
+// Play a local MP3 directly — no probing, no fallback dance.
+// If the file genuinely doesn't exist we'll catch it via the play() promise rejection.
+function playLocalMp3(songKey, onError) {
+  const file    = SONG_MP3_FILES[songKey];
   const startSec = SONG_START_OFFSETS[songKey] || 0;
-  if (!mp3) { fallback(songKey, startSec); return; }
-  const audio = new Audio(mp3);
+  if (!file) { onError && onError(); return; }
+  const audio = new Audio();
+  audio.preload = 'auto';
   audio.volume = 0.7;
-  let resolved = false;
-  // Use 'loadedmetadata' (fires earlier than canplaythrough) so we can set currentTime
+  // Set src LAST so all listeners attach first
   audio.addEventListener('loadedmetadata', () => {
     try { audio.currentTime = startSec; } catch (e) {}
   }, { once: true });
-  audio.addEventListener('canplay', () => {
-    if (resolved) return; resolved = true;
-    localAudio = audio;
+  audio.addEventListener('error', () => onError && onError(), { once: true });
+  audio.src = file;
+  localAudio = audio;
+  // Try play immediately. Browser will buffer if needed; play() returns a promise.
+  const tryPlay = () => {
     audio.play().then(() => {
-      scheduleFadeAndStop((v) => { audio.volume = v * 0.7; }, () => {
-        audio.pause(); audio.currentTime = 0; localAudio = null;
-      });
-    }).catch(() => fallback(songKey, startSec));
-  }, { once: true });
-  audio.addEventListener('error', () => {
-    if (resolved) return; resolved = true;
-    fallback(songKey, startSec);
-  }, { once: true });
-  setTimeout(() => {
-    if (!resolved) { resolved = true; fallback(songKey, startSec); }
-  }, 2000);
-  audio.load();
+      scheduleFadeAndStop(
+        (v) => { try { audio.volume = v * 0.7; } catch (e) {} },
+        () => { try { audio.pause(); audio.src = ''; } catch (e) {} ; localAudio = null; }
+      );
+    }).catch((err) => {
+      // Common reasons: file 404, decode error, autoplay rejected
+      console.log('MP3 play failed:', songKey, err && err.message);
+      onError && onError();
+    });
+  };
+  // If metadata isn't loaded yet, wait for it before play so currentTime sticks
+  if (audio.readyState >= 1) tryPlay();
+  else audio.addEventListener('loadedmetadata', tryPlay, { once: true });
 }
 
 // Resolve "shuffle" choice → a random song key from the pool
@@ -4631,11 +5052,13 @@ function startMusic() {
     document.getElementById('musicPrompt').style.display = 'none';
     return;
   }
+  stopMusic();  // hard reset before launching anything new
   const songKey = resolveSongChoice(state.startupSong);
-  stopMusic();
-  tryLocalMp3Then(songKey, (key, startSec) => {
-    const videoId = SONG_IDS[key];
-    if (videoId) playVideo(videoId, startSec);
+  // Try local MP3 first; if it fails, fall back to YouTube
+  playLocalMp3(songKey, () => {
+    const videoId = SONG_IDS[songKey];
+    if (videoId) playYouTube(videoId, SONG_START_OFFSETS[songKey] || 0);
+    else showToast('🎸 ' + songKey + '.mp3 not found');
   });
   document.getElementById('musicPrompt').style.display = 'none';
 }
@@ -4668,9 +5091,9 @@ document.querySelectorAll('[data-song]').forEach(btn => {
       stopMusic();
       // Preview using same fallback chain as boot — resolves shuffle to a random track
       const songKey = resolveSongChoice(state.startupSong);
-      tryLocalMp3Then(songKey, (key, startSec) => {
-        const videoId = SONG_IDS[key];
-        if (videoId) playVideo(videoId, startSec);
+      playLocalMp3(songKey, () => {
+        const videoId = SONG_IDS[songKey];
+        if (videoId) playYouTube(videoId, SONG_START_OFFSETS[songKey] || 0);
       });
     }
   });
@@ -4776,6 +5199,26 @@ function showToast(text) {
   const ms = Math.min(7000, Math.max(3200, text.length * 50));
   setTimeout(() => t.classList.remove('show'), ms);
 }
+
+// Big launch-time popup — picks a fortune and shows it center-screen
+function showLaunchPopup() {
+  const popup = document.getElementById('launchPopup');
+  const textEl = popup.querySelector('.launch-popup-text');
+  textEl.textContent = TOASTS[Math.floor(Math.random() * TOASTS.length)];
+  popup.classList.add('show');
+  // Auto-dismiss after 5 seconds
+  setTimeout(() => popup.classList.remove('show'), 5000);
+}
+document.getElementById('launchPopupClose').addEventListener('click', () => {
+  document.getElementById('launchPopup').classList.remove('show');
+});
+document.getElementById('launchPopup').addEventListener('click', (e) => {
+  if (e.target.id === 'launchPopup') {
+    document.getElementById('launchPopup').classList.remove('show');
+  }
+});
+// Show the launch popup 600ms after page load
+setTimeout(showLaunchPopup, 600);
 // Hook into tab-switching: ~12% chance of a toast on each switch
 const originalShowView = showView;
 showView = function(name) {
@@ -4938,18 +5381,18 @@ const PHILOSOPHICAL_QUOTES = [
   { t: 'To love is to recognize yourself in another.', a: 'Eckhart Tolle' },
 
   // Miyamoto Musashi — life advice from the Book of Five Rings & Dokkōdō
-  { t: 'Do not regret what you have done.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'Accept everything just the way it is.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'Do not seek pleasure for its own sake.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'Be detached from desire your whole life.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'Today is victory over yourself of yesterday.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'In all things have no preferences.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'Do nothing which is of no use.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'The way is in training.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'Think lightly of yourself and deeply of the world.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'You can only fight the way you practice.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'If you do not control the enemy, the enemy will control you.', a: '🗾 Miyamoto Musashi ⚔️' },
-  { t: 'Truth is not what you want it to be; it is what it is.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'Do not regret what you have done.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'Accept everything just the way it is.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'Do not seek pleasure for its own sake.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'Be detached from desire your whole life.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'Today is victory over yourself of yesterday.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'In all things have no preferences.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'Do nothing which is of no use.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'The way is in training.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'Think lightly of yourself and deeply of the world.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'You can only fight the way you practice.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'If you do not control the enemy, the enemy will control you.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
+  { t: 'Truth is not what you want it to be; it is what it is.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
 
   // Witty / dating
   { t: 'Always pass on what you have learned.', a: 'Yoda' },
