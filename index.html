@@ -285,6 +285,73 @@
   .bus-1 { animation: bus-right 45s linear infinite; animation-delay: 8s; }
   .bus-2 { animation: bus-left  65s linear infinite; animation-delay: 25s; }
 
+  /* 747 jumbo jet — high altitude, rarest of all vehicles to appear */
+  .jumbo-jet {
+    transform: translate(-200px, 80px);
+    opacity: 0;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.45));
+  }
+  @keyframes jet-cross-right {
+    0%   { transform: translate(-200px, 80px); opacity: 0; }
+    1%   { opacity: .9; }
+    14%  { transform: translate(1400px, 80px); opacity: .9; }
+    16%  { opacity: 0; }
+    100% { transform: translate(1400px, 80px); opacity: 0; }
+  }
+  @keyframes jet-cross-left {
+    0%   { transform: translate(1400px, 95px) scaleX(-1); opacity: 0; }
+    1%   { opacity: .9; }
+    14%  { transform: translate(-200px, 95px) scaleX(-1); opacity: .9; }
+    16%  { opacity: 0; }
+    100% { transform: translate(-200px, 95px) scaleX(-1); opacity: 0; }
+  }
+  /* 180s cycle = appears about once every 3 minutes, takes ~25s to cross when it does */
+  .jumbo-jet { animation: jet-cross-right 180s linear infinite; animation-delay: 60s; }
+
+  /* Navigation lights — red & green (steady), strobe (rapid white flash) */
+  .nav-red, .nav-green { animation: navSteady 1.6s ease-in-out infinite; }
+  .nav-red   { filter: drop-shadow(0 0 4px #ff2020); }
+  .nav-green { filter: drop-shadow(0 0 4px #20ff60); animation-delay: -0.8s; }
+  @keyframes navSteady {
+    0%, 50%, 100% { opacity: 1; }
+    60%, 90%      { opacity: .35; }
+  }
+  .nav-strobe {
+    filter: drop-shadow(0 0 6px #ffffff);
+    animation: navStrobe 1.2s steps(1, end) infinite;
+  }
+  @keyframes navStrobe {
+    0%, 4%   { opacity: 1; }
+    5%, 12%  { opacity: 0; }
+    13%, 16% { opacity: 1; }
+    17%, 100%{ opacity: 0; }
+  }
+  .nav-belly { animation: navStrobe 1.2s steps(1, end) infinite; animation-delay: -0.6s; }
+
+  /* Helicopter — foreground, lower, rotor spinning */
+  .helicopter {
+    transform: translate(-100px, 230px);
+    opacity: 0;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,.5));
+  }
+  @keyframes heli-cross-right {
+    0%   { transform: translate(-100px, 230px); opacity: 0; }
+    3%   { opacity: 1; }
+    50%  { transform: translate(620px, 245px); opacity: 1; }
+    97%  { opacity: 1; }
+    100% { transform: translate(1320px, 215px); opacity: 0; }
+  }
+  /* Helicopter cycle: about every 70s a slow pass across the sky */
+  .helicopter { animation: heli-cross-right 70s linear infinite; animation-delay: 18s; }
+  /* Rotor spin — too fast to see individual blades, looks like a blur */
+  .heli-rotor { transform-origin: 22px 2px; animation: rotorSpin .1s linear infinite; }
+  .heli-tail-rotor { transform-origin: -14px 13.5px; animation: rotorSpin .08s linear infinite; }
+  @keyframes rotorSpin {
+    from { transform: scaleX(1); }
+    50%  { transform: scaleX(.1); }
+    to   { transform: scaleX(1); }
+  }
+
   /* Cars and taxis on the highway — different speeds and staggered starts */
   .car-vehicle { filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
   @keyframes car-right {
@@ -1761,6 +1828,82 @@
       <circle cx="9" cy="5" r="1.2" fill="#3a3a3a"/>
       <circle cx="35" cy="5" r="1.2" fill="#3a3a3a"/>
       <circle cx="1" cy="-2" r="1" fill="#ff8080"/>
+    </g>
+
+    <!-- 747 jumbo jet — high altitude, rarest of all vehicles, blinking nav lights -->
+    <g class="jumbo-jet">
+      <!-- Drop shadow streak -->
+      <ellipse cx="60" cy="14" rx="50" ry="1.5" fill="#000" opacity=".18"/>
+      <!-- Fuselage (long, slim, 747 proportions) -->
+      <path d="M0 8 Q4 6 18 6 L108 6 Q116 6 120 8.5 Q116 11 108 11 L18 11 Q4 11 0 9 Z" fill="#e8eaed"/>
+      <!-- Cockpit windows -->
+      <path d="M112 7 L118 8.5 L112 10 Z" fill="#1a2a3a"/>
+      <!-- Iconic 747 hump (upper deck) -->
+      <path d="M82 6 Q92 1 102 6 Z" fill="#e8eaed"/>
+      <rect x="86" y="3.5" width="14" height="1.6" fill="#1a2a3a" opacity=".7"/>
+      <!-- Cabin windows (long row of dots) -->
+      <g fill="#1a2a3a">
+        <rect x="20" y="7.5" width="1.5" height="1.5"/>
+        <rect x="26" y="7.5" width="1.5" height="1.5"/>
+        <rect x="32" y="7.5" width="1.5" height="1.5"/>
+        <rect x="38" y="7.5" width="1.5" height="1.5"/>
+        <rect x="44" y="7.5" width="1.5" height="1.5"/>
+        <rect x="50" y="7.5" width="1.5" height="1.5"/>
+        <rect x="56" y="7.5" width="1.5" height="1.5"/>
+        <rect x="62" y="7.5" width="1.5" height="1.5"/>
+        <rect x="68" y="7.5" width="1.5" height="1.5"/>
+        <rect x="74" y="7.5" width="1.5" height="1.5"/>
+        <rect x="80" y="7.5" width="1.5" height="1.5"/>
+      </g>
+      <!-- Wings (swept back) -->
+      <path d="M40 9 L62 9 L72 22 L52 22 Z" fill="#d0d4d8"/>
+      <path d="M58 9 L80 9 L88 22 L66 22 Z" fill="#c0c4c8"/>
+      <!-- Engines under wings (4 engines = signature 747) -->
+      <ellipse cx="55" cy="18" rx="3" ry="1.5" fill="#1a1a1a"/>
+      <ellipse cx="63" cy="18" rx="3" ry="1.5" fill="#1a1a1a"/>
+      <ellipse cx="73" cy="18" rx="3" ry="1.5" fill="#1a1a1a"/>
+      <ellipse cx="81" cy="18" rx="3" ry="1.5" fill="#1a1a1a"/>
+      <!-- Vertical stabilizer (tail fin) -->
+      <path d="M8 6 L18 6 L14 -1 L10 -1 Z" fill="#d0d4d8"/>
+      <!-- Horizontal stabilizers (tail wings) -->
+      <path d="M0 7 L12 7 L8 12 L0 11 Z" fill="#c0c4c8"/>
+      <!-- Navigation lights -->
+      <circle class="nav-light nav-red"    cx="52" cy="22.5" r="1.4" fill="#ff2020"/>
+      <circle class="nav-light nav-green"  cx="88" cy="22.5" r="1.4" fill="#20ff60"/>
+      <circle class="nav-light nav-strobe" cx="14" cy="-1.5" r="1.2" fill="#ffffff"/>
+      <circle class="nav-light nav-belly"  cx="60" cy="11" r="1" fill="#ffffff"/>
+    </g>
+
+    <!-- Helicopter — foreground, lower than the jet, prominent rotor blur -->
+    <g class="helicopter">
+      <!-- Drop shadow -->
+      <ellipse cx="22" cy="22" rx="20" ry="1.8" fill="#000" opacity=".3"/>
+      <!-- Main rotor (blurred — animated for spin effect) -->
+      <ellipse class="heli-rotor" cx="22" cy="2" rx="26" ry="1.2" fill="#888" opacity=".5"/>
+      <ellipse class="heli-rotor" cx="22" cy="2" rx="2" ry="0.5" fill="#444"/>
+      <!-- Rotor mast -->
+      <rect x="21" y="2" width="2" height="4" fill="#3a3a3a"/>
+      <!-- Body -->
+      <path d="M6 8 Q4 6 8 6 L34 6 Q42 6 44 12 L44 16 Q42 20 36 20 L10 20 Q6 20 4 16 Q4 12 6 8 Z" fill="#1c3d5a"/>
+      <!-- Cockpit windows -->
+      <path d="M36 8 Q42 8 43 12 L43 14 L33 14 L33 8 Z" fill="#7fd4f5" opacity=".9"/>
+      <!-- Side windows -->
+      <rect x="12" y="9" width="5" height="4" rx="1" fill="#7fd4f5" opacity=".8"/>
+      <rect x="19" y="9" width="5" height="4" rx="1" fill="#7fd4f5" opacity=".8"/>
+      <rect x="26" y="9" width="5" height="4" rx="1" fill="#7fd4f5" opacity=".8"/>
+      <!-- Tail boom -->
+      <path d="M4 13 L4 15 L-14 14 L-14 13 Z" fill="#1c3d5a"/>
+      <!-- Tail rotor -->
+      <ellipse class="heli-tail-rotor" cx="-14" cy="13.5" rx="0.8" ry="3" fill="#888" opacity=".55"/>
+      <circle cx="-14" cy="13.5" r="0.8" fill="#3a3a3a"/>
+      <!-- Skids -->
+      <rect x="6" y="20" width="36" height="1.5" fill="#1a1a1a"/>
+      <rect x="10" y="20" width="1.2" height="3" fill="#1a1a1a"/>
+      <rect x="36" y="20" width="1.2" height="3" fill="#1a1a1a"/>
+      <!-- Lights -->
+      <circle class="nav-light nav-red"    cx="6" cy="14" r="0.9" fill="#ff2020"/>
+      <circle class="nav-light nav-green"  cx="42" cy="14" r="0.9" fill="#20ff60"/>
+      <circle class="nav-light nav-strobe" cx="22" cy="6" r="0.8" fill="#ffffff"/>
     </g>
 
     <!-- Cars and Grab taxis cruising along the highway -->
@@ -4740,6 +4883,20 @@ const PHILOSOPHICAL_QUOTES = [
   { t: 'The wound is the place where the light enters you.', a: 'Rumi' },
   { t: 'Whoever you are, no matter how lonely, the world offers itself to your imagination.', a: 'Mary Oliver' },
   { t: 'To love is to recognize yourself in another.', a: 'Eckhart Tolle' },
+
+  // Miyamoto Musashi — life advice from the Book of Five Rings & Dokkōdō
+  { t: 'Do not regret what you have done.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'Accept everything just the way it is.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'Do not seek pleasure for its own sake.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'Be detached from desire your whole life.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'Today is victory over yourself of yesterday.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'In all things have no preferences.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'Do nothing which is of no use.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'The way is in training.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'Think lightly of yourself and deeply of the world.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'You can only fight the way you practice.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'If you do not control the enemy, the enemy will control you.', a: '🗾 Miyamoto Musashi ⚔️' },
+  { t: 'Truth is not what you want it to be; it is what it is.', a: '🗾 Miyamoto Musashi ⚔️' },
 
   // Witty / dating
   { t: 'Always pass on what you have learned.', a: 'Yoda' },
