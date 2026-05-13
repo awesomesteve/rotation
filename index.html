@@ -810,7 +810,7 @@
     overflow: hidden; cursor: pointer; box-shadow: var(--shadow); position: relative;
     transition: transform .15s ease;
     backdrop-filter: blur(12px) saturate(1.2); -webkit-backdrop-filter: blur(12px) saturate(1.2);
-    display: flex; align-items: center; gap: 20px; padding: 10px 14px 10px 12px;
+    display: flex; align-items: center; gap: 16px; padding: 8px 12px 8px 10px;
   }
   .profile-card:active { transform: scale(0.98); }
   .profile-card .thumb {
@@ -822,11 +822,21 @@
   }
   .profile-card .meta { flex: 1; min-width: 0; }
   .profile-card .name-row {
-    display: flex; align-items: baseline; gap: 8px;
+    display: flex; align-items: center; gap: 8px;
     font-weight: 700; font-size: 17px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .profile-card .name-row .name-text {
+    flex: 0 1 auto;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;
   }
   .profile-card .age { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .02em; }
+  .profile-card .badge-row {
+    display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+    width: 100%;
+    margin-top: 2px;
+  }
   .profile-card .sub { font-size: 11px; color: var(--muted); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; }
   .profile-card .mini-tag {
     background: var(--chip); color: var(--chip-text); padding: 2px 8px; border-radius: 6px;
@@ -916,7 +926,7 @@
     border-color: rgba(34, 184, 207, .35) !important;
   }
   html[data-theme="light"] .distance-pill { color: #1098ad !important; }
-  .medal-mini { width: 18px; height: 18px; margin-left: 2px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); vertical-align: -3px; }
+  .medal-mini { width: 26px; height: 30px; margin-right: 1px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); flex: none; }
   html[data-theme="light"] .red-flag-pill { color: #c92a2a !important; background: rgba(224, 49, 49, .12) !important; }
 
   /* schedule grid — taller, easier taps */
@@ -960,7 +970,7 @@
     cursor: pointer;
   }
   .toggle-cb.cream-cb { accent-color: #d4a76a; }
-  .medal-icon { flex: none; vertical-align: -5px; margin-right: 6px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+  .medal-icon { width: 24px; height: 28px; flex: none; vertical-align: -8px; margin-right: 6px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
   .toggle-row .toggle-label {
     display: inline-flex; align-items: center;
   }
@@ -2168,28 +2178,28 @@
       <label class="toggle-row" style="margin-top:18px">
         <input type="checkbox" id="f-medal-met" class="toggle-cb" />
         <span class="toggle-label">
-          <svg class="medal-icon" width="22" height="22" viewBox="0 0 24 24"><defs><radialGradient id="medalBronze" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffd9a8"/><stop offset="50%" stop-color="#cd7f32"/><stop offset="100%" stop-color="#6e3f10"/></radialGradient></defs><path d="M8 2 L12 9 L16 2 L19 4 L15 11" fill="#c92a2a" stroke="#8a1a1a" stroke-width=".5"/><path d="M16 2 L12 9 L8 2 L5 4 L9 11" fill="#1864ab" stroke="#103e6e" stroke-width=".5"/><circle cx="12" cy="16" r="6" fill="url(#medalBronze)" stroke="#6e3f10" stroke-width=".8"/><text x="12" y="19" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="6" fill="#6e3f10">1</text></svg>
+          <svg class="medal-icon" viewBox="0 0 28 32"><path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="#c92a2a"/><path d="M9 0 L11 0 L12 7 L11 7 Z" fill="#1864ab" opacity=".75"/><path d="M17 0 L19 0 L17 7 Z" fill="#1864ab" opacity=".75"/><defs><radialGradient id="iconBronze" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffd9a8"/><stop offset="50%" stop-color="#cd7f32"/><stop offset="100%" stop-color="#6e3f10"/></radialGradient></defs><polygon points="14,9 16.6,17 25,17 18.2,22 20.8,30 14,25 7.2,30 9.8,22 3,17 11.4,17" fill="url(#iconBronze)" stroke="#6e3f10" stroke-width=".5"/><polygon points="14,13 15.3,17.5 19,17.5 16,20 17,24 14,22 11,24 12,20 9,17.5 12.7,17.5" fill="#ffd9a8" opacity=".5"/></svg>
           Had a meeting
         </span>
       </label>
       <label class="toggle-row">
         <input type="checkbox" id="f-medal-sex" class="toggle-cb" />
         <span class="toggle-label">
-          <svg class="medal-icon" width="22" height="22" viewBox="0 0 24 24"><defs><radialGradient id="medalSilver" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#c0c0c0"/><stop offset="100%" stop-color="#6a6a6a"/></radialGradient></defs><path d="M8 2 L12 9 L16 2 L19 4 L15 11" fill="#c92a2a" stroke="#8a1a1a" stroke-width=".5"/><path d="M16 2 L12 9 L8 2 L5 4 L9 11" fill="#1864ab" stroke="#103e6e" stroke-width=".5"/><circle cx="12" cy="16" r="6" fill="url(#medalSilver)" stroke="#6a6a6a" stroke-width=".8"/><text x="12" y="19" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="6" fill="#444">★</text></svg>
+          <svg class="medal-icon" viewBox="0 0 28 32"><path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="#c92a2a"/><path d="M9 0 L11 0 L12 7 L11 7 Z" fill="#1864ab" opacity=".75"/><path d="M17 0 L19 0 L17 7 Z" fill="#1864ab" opacity=".75"/><defs><radialGradient id="iconSilver" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#c0c0c0"/><stop offset="100%" stop-color="#6a6a6a"/></radialGradient></defs><polygon points="14,9 16.6,17 25,17 18.2,22 20.8,30 14,25 7.2,30 9.8,22 3,17 11.4,17" fill="url(#iconSilver)" stroke="#6a6a6a" stroke-width=".5"/><polygon points="14,13 15.3,17.5 19,17.5 16,20 17,24 14,22 11,24 12,20 9,17.5 12.7,17.5" fill="#ffffff" opacity=".5"/></svg>
           Had sex
         </span>
       </label>
       <label class="toggle-row">
         <input type="checkbox" id="f-medal-flower" class="toggle-cb" />
         <span class="toggle-label">
-          <svg class="medal-icon" width="22" height="22" viewBox="0 0 24 24"><defs><radialGradient id="medalGold" cx="40%" cy="35%"><stop offset="0%" stop-color="#fff7c2"/><stop offset="45%" stop-color="#ffd43b"/><stop offset="100%" stop-color="#a8841a"/></radialGradient></defs><path d="M8 2 L12 9 L16 2 L19 4 L15 11" fill="#c92a2a" stroke="#8a1a1a" stroke-width=".5"/><path d="M16 2 L12 9 L8 2 L5 4 L9 11" fill="#1864ab" stroke="#103e6e" stroke-width=".5"/><circle cx="12" cy="16" r="6.5" fill="url(#medalGold)" stroke="#a8841a" stroke-width=".8"/><text x="12" y="19" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="7" fill="#7a5410">★</text></svg>
+          <svg class="medal-icon" viewBox="0 0 28 32"><path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="#c92a2a"/><path d="M9 0 L11 0 L12 7 L11 7 Z" fill="#1864ab" opacity=".75"/><path d="M17 0 L19 0 L17 7 Z" fill="#1864ab" opacity=".75"/><defs><radialGradient id="iconGold" cx="40%" cy="35%"><stop offset="0%" stop-color="#fff7c2"/><stop offset="50%" stop-color="#ffd43b"/><stop offset="100%" stop-color="#a8841a"/></radialGradient></defs><polygon points="14,9 16.6,17 25,17 18.2,22 20.8,30 14,25 7.2,30 9.8,22 3,17 11.4,17" fill="url(#iconGold)" stroke="#a8841a" stroke-width=".5"/><polygon points="14,13 15.3,17.5 19,17.5 16,20 17,24 14,22 11,24 12,20 9,17.5 12.7,17.5" fill="#fff7c2" opacity=".5"/></svg>
           Deflowered
         </span>
       </label>
       <label class="toggle-row">
         <input type="checkbox" id="f-medal-flaked" class="toggle-cb" />
         <span class="toggle-label">
-          <svg class="medal-icon" width="22" height="22" viewBox="0 0 24 24"><defs><radialGradient id="medalPurple" cx="40%" cy="35%"><stop offset="0%" stop-color="#d4b3ff"/><stop offset="55%" stop-color="#6a2a99"/><stop offset="100%" stop-color="#2e0d52"/></radialGradient></defs><path d="M8 2 L12 9 L16 2 L19 4 L15 11" fill="#ffffff" stroke="#999" stroke-width=".5"/><path d="M16 2 L12 9 L8 2 L5 4 L9 11" fill="#7a3535" stroke="#4a1414" stroke-width=".5"/><path d="M12 11 C 8 13 6 16 8 19 C 9 20.5 10.5 21 12 19.5 C 13.5 21 15 20.5 16 19 C 18 16 16 13 12 11 Z" fill="url(#medalPurple)" stroke="#2e0d52" stroke-width=".6"/><circle cx="12" cy="15.5" r="1.4" fill="#ffd700"/></svg>
+          <svg class="medal-icon" viewBox="0 0 28 32"><path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="#6a2a99"/><rect x="9" y="0" width="1.5" height="8" fill="#ffffff"/><rect x="17.5" y="0" width="1.5" height="8" fill="#ffffff"/><path d="M14 11 C 8 11 5 14 5 19 C 5 24 14 30 14 30 C 14 30 23 24 23 19 C 23 14 20 11 14 11 Z" fill="#d4a017" stroke="#8a6810" stroke-width=".4"/><path d="M14 13 C 9.5 13 7.5 15 7.5 19 C 7.5 23 14 28 14 28 C 14 28 20.5 23 20.5 19 C 20.5 15 18.5 13 14 13 Z" fill="#6a2a99"/><path d="M11 17 Q10.5 19 11 20.5 Q10.5 21.5 11 22 L13.5 22 L13.5 23.5 L11.5 23.5 L11.5 24.5 L16 24.5 L16 23 Q16 21 14.5 20 Q14 19 14 17.5 Q13.5 16 12.5 16 Q11.5 16 11 17 Z" fill="#d4a017"/></svg>
           Flaked on me
         </span>
       </label>
@@ -2626,11 +2636,49 @@ function renderProfilesList() {
     const flagCount = (p.redFlags || []).length;
     const distance = p.distanceMin;
     const medals = p.medals || {};
+    // Reusable star-medal SVG: short ribbon + 5-pointed star body. Color comes from gradient id.
+    const starMedalSvg = (id, gradId, stopA, stopB, stopC, ribA, ribB) =>
+      `<svg class="medal-mini" viewBox="0 0 28 32">
+        <!-- Ribbon (short, only 8px tall) -->
+        <path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="${ribA}"/>
+        <path d="M9 0 L11 0 L12 7 L11 7 Z" fill="${ribB}" opacity=".75"/>
+        <path d="M17 0 L19 0 L17 7 Z" fill="${ribB}" opacity=".75"/>
+        <!-- Star (5-pointed, big — the focus of the medal) -->
+        <defs>
+          <radialGradient id="${gradId}${id}" cx="40%" cy="35%">
+            <stop offset="0%" stop-color="${stopA}"/>
+            <stop offset="50%" stop-color="${stopB}"/>
+            <stop offset="100%" stop-color="${stopC}"/>
+          </radialGradient>
+        </defs>
+        <polygon points="14,9 16.6,17 25,17 18.2,22 20.8,30 14,25 7.2,30 9.8,22 3,17 11.4,17"
+                 fill="url(#${gradId}${id})" stroke="${stopC}" stroke-width=".5"/>
+        <!-- Inner highlight -->
+        <polygon points="14,13 15.3,17.5 19,17.5 16,20 17,24 14,22 11,24 12,20 9,17.5 12.7,17.5"
+                 fill="${stopA}" opacity=".5"/>
+      </svg>`;
+    // Purple Heart: full heart shape with gold profile bust silhouette + gold border + short ribbon
+    const purpleHeartSvg = (id) =>
+      `<svg class="medal-mini" viewBox="0 0 28 32">
+        <!-- Ribbon (purple, short, white edge stripes like the real Purple Heart) -->
+        <path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="#6a2a99"/>
+        <rect x="9" y="0" width="1.5" height="8" fill="#ffffff"/>
+        <rect x="17.5" y="0" width="1.5" height="8" fill="#ffffff"/>
+        <!-- Gold heart border -->
+        <path d="M14 11 C 8 11 5 14 5 19 C 5 24 14 30 14 30 C 14 30 23 24 23 19 C 23 14 20 11 14 11 Z"
+              fill="#d4a017" stroke="#8a6810" stroke-width=".4"/>
+        <!-- Purple heart inner -->
+        <path d="M14 13 C 9.5 13 7.5 15 7.5 19 C 7.5 23 14 28 14 28 C 14 28 20.5 23 20.5 19 C 20.5 15 18.5 13 14 13 Z"
+              fill="#6a2a99"/>
+        <!-- Gold Washington profile bust silhouette in the center -->
+        <path d="M11 17 Q10.5 19 11 20.5 Q10.5 21.5 11 22 L13.5 22 L13.5 23.5 L11.5 23.5 L11.5 24.5 L16 24.5 L16 23 Q16 21 14.5 20 Q14 19 14 17.5 Q13.5 16 12.5 16 Q11.5 16 11 17 Z"
+              fill="#d4a017"/>
+      </svg>`;
     const medalRow =
-      (medals.met    ? '<svg class="medal-mini" viewBox="0 0 24 24"><defs><radialGradient id="bm_'+p.id+'" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffd9a8"/><stop offset="50%" stop-color="#cd7f32"/><stop offset="100%" stop-color="#6e3f10"/></radialGradient></defs><path d="M8 2L12 9L16 2L19 4L15 11" fill="#c92a2a"/><path d="M16 2L12 9L8 2L5 4L9 11" fill="#1864ab"/><circle cx="12" cy="16" r="6" fill="url(#bm_'+p.id+')"/></svg>' : '') +
-      (medals.sex    ? '<svg class="medal-mini" viewBox="0 0 24 24"><defs><radialGradient id="sm_'+p.id+'" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#c0c0c0"/><stop offset="100%" stop-color="#6a6a6a"/></radialGradient></defs><path d="M8 2L12 9L16 2L19 4L15 11" fill="#c92a2a"/><path d="M16 2L12 9L8 2L5 4L9 11" fill="#1864ab"/><circle cx="12" cy="16" r="6" fill="url(#sm_'+p.id+')"/></svg>' : '') +
-      (medals.flower ? '<svg class="medal-mini" viewBox="0 0 24 24"><defs><radialGradient id="gm_'+p.id+'" cx="40%" cy="35%"><stop offset="0%" stop-color="#fff7c2"/><stop offset="45%" stop-color="#ffd43b"/><stop offset="100%" stop-color="#a8841a"/></radialGradient></defs><path d="M8 2L12 9L16 2L19 4L15 11" fill="#c92a2a"/><path d="M16 2L12 9L8 2L5 4L9 11" fill="#1864ab"/><circle cx="12" cy="16" r="6.5" fill="url(#gm_'+p.id+')"/></svg>' : '') +
-      (medals.flaked ? '<svg class="medal-mini" viewBox="0 0 24 24"><defs><radialGradient id="pm_'+p.id+'" cx="40%" cy="35%"><stop offset="0%" stop-color="#d4b3ff"/><stop offset="55%" stop-color="#6a2a99"/><stop offset="100%" stop-color="#2e0d52"/></radialGradient></defs><path d="M8 2L12 9L16 2L19 4L15 11" fill="#ffffff"/><path d="M16 2L12 9L8 2L5 4L9 11" fill="#7a3535"/><path d="M12 11C8 13 6 16 8 19C9 20.5 10.5 21 12 19.5C13.5 21 15 20.5 16 19C18 16 16 13 12 11Z" fill="url(#pm_'+p.id+')"/></svg>' : '');
+      (medals.met    ? starMedalSvg(p.id, 'bm', '#ffd9a8', '#cd7f32', '#6e3f10', '#c92a2a', '#1864ab') : '') +
+      (medals.sex    ? starMedalSvg(p.id, 'sm', '#ffffff', '#c0c0c0', '#6a6a6a', '#c92a2a', '#1864ab') : '') +
+      (medals.flower ? starMedalSvg(p.id, 'gm', '#fff7c2', '#ffd43b', '#a8841a', '#c92a2a', '#1864ab') : '') +
+      (medals.flaked ? purpleHeartSvg(p.id) : '');
     const thumbStyle = thumb ? `background-image:url('${cssEscape(thumb)}')` : '';
     const waButton = p.phone
       ? `<button class="wa-btn" title="Message on WhatsApp" data-wa="${escapeHtml(p.phone)}">
@@ -2641,12 +2689,14 @@ function renderProfilesList() {
       <div class="thumb" style="${thumbStyle}">${thumb ? '' : initials(p.name)}</div>
       <div class="meta">
         <div class="name-row">
-          <span>${escapeHtml(p.name || 'Untitled')}</span>
-          ${p.cream ? `<span class="cream-icon" title="Cream of the crop"><svg width="16" height="16" viewBox="0 0 24 24"><defs><radialGradient id="creamGradList_${escapeHtml(p.id)}" cx="35%" cy="30%"><stop offset="0%" stop-color="#fff4dc"/><stop offset="60%" stop-color="#e8c896"/><stop offset="100%" stop-color="#c79a5c"/></radialGradient></defs><path fill="url(#creamGradList_${escapeHtml(p.id)})" d="M12 3c-1 2-3 2-3 5 0 1 .5 1.5 1 2-2 0-4 2-4 5 0 4 3 6 6 6s6-2 6-6c0-3-2-5-4-5 .5-.5 1-1 1-2 0-3-2-3-3-5z"/><ellipse cx="10" cy="11" rx="1.4" ry="1" fill="white" opacity=".6"/></svg></span>` : ''}
-          ${medalRow}
+          <span class="name-text">${escapeHtml(p.name || 'Untitled')}</span>
           ${p.age ? `<span class="age">${escapeHtml(String(p.age))}</span>` : ''}
-          ${distance ? `<span class="mini-tag distance-pill" title="${distance} min by car">🚗 ${distance} min</span>` : ''}
-          ${flagCount > 0 ? `<span class="mini-tag red-flag-pill" title="${flagCount} red flag${flagCount===1?'':'s'}">🚩 ${flagCount}</span>` : ''}
+          ${p.cream ? `<span class="cream-icon" title="Cream of the crop"><svg width="16" height="16" viewBox="0 0 24 24"><defs><radialGradient id="creamGradList_${escapeHtml(p.id)}" cx="35%" cy="30%"><stop offset="0%" stop-color="#fff4dc"/><stop offset="60%" stop-color="#e8c896"/><stop offset="100%" stop-color="#c79a5c"/></radialGradient></defs><path fill="url(#creamGradList_${escapeHtml(p.id)})" d="M12 3c-1 2-3 2-3 5 0 1 .5 1.5 1 2-2 0-4 2-4 5 0 4 3 6 6 6s6-2 6-6c0-3-2-5-4-5 .5-.5 1-1 1-2 0-3-2-3-3-5z"/><ellipse cx="10" cy="11" rx="1.4" ry="1" fill="white" opacity=".6"/></svg></span>` : ''}
+          ${(medalRow || distance || flagCount > 0) ? `<div class="badge-row">
+            ${medalRow}
+            ${distance ? `<span class="mini-tag distance-pill" title="${distance} min by car">🚗 ${distance} min</span>` : ''}
+            ${flagCount > 0 ? `<span class="mini-tag red-flag-pill" title="${flagCount} red flag${flagCount===1?'':'s'}">🚩 ${flagCount}</span>` : ''}
+          </div>` : ''}
         </div>
         <div class="sub">
           ${tags.map(t => `<span class="mini-tag">${escapeHtml(t)}</span>`).join('')}
@@ -4768,21 +4818,24 @@ const TINDER_OPENERS = [
   '"You\'re the first match I\'ve actually messaged this week. Make it count."',
   '"Tell me your zodiac so I can pretend to care"'
 ];
-// Show one opener on every 4th visit to Profiles tab (or every 2-5 visits randomly)
-let profilesTabVisits = 0;
-let nextOpenerAt = 2 + Math.floor(Math.random() * 4);
+// Tinder openers fire on ANY tab switch (~30% chance each switch) AND on a slow timer in the background.
+// First one fires 8-15s after page load so you see one quickly.
+function showRandomOpener() {
+  showToast(TINDER_OPENERS[Math.floor(Math.random() * TINDER_OPENERS.length)]);
+}
 const originalShowView2 = showView;
 showView = function(name) {
   originalShowView2(name);
-  if (name === 'profiles') {
-    profilesTabVisits++;
-    if (profilesTabVisits >= nextOpenerAt) {
-      profilesTabVisits = 0;
-      nextOpenerAt = 2 + Math.floor(Math.random() * 4);
-      setTimeout(() => showToast(TINDER_OPENERS[Math.floor(Math.random() * TINDER_OPENERS.length)]), 600);
-    }
+  if (Math.random() < 0.30) {
+    setTimeout(showRandomOpener, 500);
   }
 };
+// First opener pops up 8-15 seconds after the app loads
+setTimeout(showRandomOpener, 8000 + Math.random() * 7000);
+// Then keep going: a fresh opener every 45-90 seconds in the background
+setInterval(() => {
+  if (Math.random() < 0.55) showRandomOpener();
+}, 45000 + Math.random() * 45000);
 
 // 3) Milestone ribbons — celebrates when you cross profile-count or date-count thresholds
 function showMilestone(big, sub) {
