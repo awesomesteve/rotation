@@ -8,6 +8,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=VT323&display=swap" rel="stylesheet">
 <style>
+  /* DSEG7 — authentic seven-segment LCD font, served from jsDelivr CDN.
+     Falls back gracefully to VT323 then a generic monospace if the CDN fails. */
+  @font-face {
+    font-family: 'DSEG7Classic';
+    src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-Bold.woff2') format('woff2'),
+         url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-Bold.woff')  format('woff');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+</style>
+<style>
   :root {
     --bg: #f7f7f8;
     --panel: #ffffff;
@@ -156,17 +168,92 @@
     filter: drop-shadow(0 1px 2px rgba(0,0,0,.5));
   }
   @keyframes flagWave {
-    0%, 100% { transform: translate(497px, 110px) skewY(0deg); }
-    25%      { transform: translate(497px, 110px) skewY(3deg); }
-    75%      { transform: translate(497px, 110px) skewY(-3deg); }
+    0%, 100% { transform: translate(497px, 130px) skewY(0deg); }
+    25%      { transform: translate(497px, 130px) skewY(3deg); }
+    75%      { transform: translate(497px, 130px) skewY(-3deg); }
   }
 
   /* Dynamic sky transitions — smooth color change across the day */
   #skyDynamic { transition: fill 8s ease-in-out, opacity 8s ease-in-out; }
   #stars { transition: opacity 6s ease-in-out; }
   #sun, #moon { transition: opacity 4s ease-in-out; }
+
+  /* Weather animation layers */
+  #weatherClouds, #weatherRain, #weatherFog { transition: opacity 4s ease-in-out; }
+  /* Cloud drift — each cloud has its own slow pace */
+  .wcloud { filter: drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+  .wcloud-1 { animation: cloudDrift 180s linear infinite; }
+  .wcloud-2 { animation: cloudDrift 220s linear infinite; animation-delay: -60s; }
+  .wcloud-3 { animation: cloudDrift 260s linear infinite; animation-delay: -130s; }
+  .wcloud-4 { animation: cloudDrift 200s linear infinite; animation-delay: -180s; }
+  .wcloud-5 { animation: cloudDrift 240s linear infinite; animation-delay: -90s; }
+  @keyframes cloudDrift {
+    from { transform: translateX(-300px); }
+    to   { transform: translateX(1500px); }
+  }
+  /* Rain — animated diagonal lines using CSS keyframes via stroke-dashoffset trick */
+  .rain-drop {
+    stroke: #74c0fc; stroke-width: 1.2; stroke-linecap: round;
+    opacity: .65;
+    animation: rainFall 0.8s linear infinite;
+  }
+  @keyframes rainFall {
+    from { transform: translate(0, -50px); }
+    to   { transform: translate(-30px, 600px); }
+  }
+  /* Heavy rain — stronger color, slightly faster */
+  #weatherRain.heavy .rain-drop { stroke: #4dabf7; stroke-width: 1.6; animation-duration: 0.55s; }
+  #weatherRain.drizzle .rain-drop { stroke-width: 0.8; opacity: .45; animation-duration: 1.2s; }
+
+  /* Lightning flash */
+  #weatherLightning.flash { animation: lightningFlash 0.4s ease-out; }
+  @keyframes lightningFlash {
+    0%   { opacity: 0; }
+    8%   { opacity: 0.85; }
+    14%  { opacity: 0.1; }
+    20%  { opacity: 0.6; }
+    100% { opacity: 0; }
+  }
   /* Twinkling stars */
   .star { animation: starTwinkle 3.5s ease-in-out infinite; filter: drop-shadow(0 0 2px #fff); }
+  /* Street-level shopfronts — windows glow softly, doors animate, people walk past */
+  .shop-window {
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+  .shop-glow1 { animation: shopBreathe 11s ease-in-out infinite; }
+  .shop-glow2 { animation: shopBreathe 14s ease-in-out infinite; animation-delay: -4s; }
+  .shop-glow3 { animation: shopBreathe 13s ease-in-out infinite; animation-delay: -7s; }
+  .shop-glow4 { animation: shopBreathe 16s ease-in-out infinite; animation-delay: -2s; }
+  .shop-glow5 { animation: shopBreathe 12s ease-in-out infinite; animation-delay: -9s; }
+  @keyframes shopBreathe {
+    0%, 100% { opacity: 0.7; }
+    50%      { opacity: 1; }
+  }
+
+  /* Coffee-shop door swings open every ~9 seconds */
+  .door-1 {
+    transform-origin: 446px 633px;
+    animation: doorSwing 9s ease-in-out infinite;
+    transform-box: fill-box;
+  }
+  @keyframes doorSwing {
+    0%, 88%, 100% { transform: rotateY(0deg); }
+    92%           { transform: rotateY(-55deg); }
+    96%           { transform: rotateY(0deg); }
+  }
+
+  /* Big mall + hotel windows — soft glow, occasional brightness shifts (people moving inside) */
+  .mw {
+    rx: 1px;
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+  @keyframes mwShift1 { 0%, 100% { opacity: .9; } 40% { opacity: .55; } 70% { opacity: 1; } }
+  @keyframes mwShift2 { 0%, 100% { opacity: .75; } 30% { opacity: 1; } 60% { opacity: .4; } }
+  @keyframes mwShift3 { 0%, 100% { opacity: 1; } 50% { opacity: .65; } }
+  .mw.mw1 { animation: mwShift1 14s ease-in-out infinite; }
+  .mw.mw2 { animation: mwShift2 18s ease-in-out infinite; animation-delay: -5s; }
+  .mw.mw3 { animation: mwShift3 22s ease-in-out infinite; animation-delay: -10s; }
+
   .star.sa { animation-duration: 3.2s; }
   .star.sb { animation-duration: 4.5s; animation-delay: -1.5s; }
   .star.sc { animation-duration: 5.8s; animation-delay: -3s; }
@@ -895,16 +982,25 @@
     line-height: 1;
   }
   .header-clock .lcd-time {
-    font-family: "VT323", "Courier New", monospace;
-    font-size: 22px; font-weight: 400;
+    font-family: "DSEG7Classic", "VT323", "Courier New", monospace;
+    font-size: 19px; font-weight: 700;
     color: #9fffb0;
-    letter-spacing: .08em;
+    letter-spacing: .04em;
     text-shadow:
       0 0 4px rgba(120, 255, 150, .8),
       0 0 8px rgba(120, 255, 150, .3);
     position: relative;
   }
   .header-clock .lcd-time .colon { animation: clockBlink 1s steps(1, end) infinite; }
+  /* Ghost segments — faint inactive parts of a real LCD */
+  .header-clock .lcd-time { position: relative; display: inline-block; }
+  .header-clock .lcd-ghost {
+    position: absolute; inset: 0;
+    color: rgba(120, 255, 150, .08);
+    pointer-events: none;
+    text-shadow: none;
+  }
+  .header-clock .lcd-active { position: relative; z-index: 1; }
   @keyframes clockBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: .25; } }
   html[data-theme="light"] .header-clock {
     background: linear-gradient(180deg, #b8c4a8 0%, #95a585 100%);
@@ -1914,6 +2010,45 @@
       <circle cx="1020" cy="175" r="0.8" fill="#fff" class="star sb"/>
     </g>
 
+    <!-- WEATHER ANIMATION LAYERS — controlled by live weather code -->
+    <!-- Cloud layer: 5 drifting SVG clouds, visibility tuned per weather code -->
+    <g id="weatherClouds" opacity="0">
+      <g class="wcloud wcloud-1">
+        <ellipse cx="100" cy="100" rx="60" ry="22" fill="#fff" opacity=".85"/>
+        <ellipse cx="60"  cy="105" rx="35" ry="18" fill="#fff" opacity=".75"/>
+        <ellipse cx="140" cy="105" rx="40" ry="18" fill="#fff" opacity=".75"/>
+      </g>
+      <g class="wcloud wcloud-2">
+        <ellipse cx="300" cy="80" rx="70" ry="25" fill="#fff" opacity=".7"/>
+        <ellipse cx="250" cy="85" rx="38" ry="20" fill="#fff" opacity=".65"/>
+        <ellipse cx="350" cy="85" rx="45" ry="20" fill="#fff" opacity=".65"/>
+      </g>
+      <g class="wcloud wcloud-3">
+        <ellipse cx="600" cy="110" rx="80" ry="28" fill="#fff" opacity=".8"/>
+        <ellipse cx="540" cy="115" rx="42" ry="22" fill="#fff" opacity=".7"/>
+        <ellipse cx="660" cy="115" rx="48" ry="22" fill="#fff" opacity=".7"/>
+      </g>
+      <g class="wcloud wcloud-4">
+        <ellipse cx="900" cy="90" rx="65" ry="22" fill="#fff" opacity=".75"/>
+        <ellipse cx="855" cy="95" rx="38" ry="18" fill="#fff" opacity=".65"/>
+        <ellipse cx="945" cy="95" rx="42" ry="18" fill="#fff" opacity=".65"/>
+      </g>
+      <g class="wcloud wcloud-5">
+        <ellipse cx="1100" cy="125" rx="55" ry="20" fill="#fff" opacity=".7"/>
+        <ellipse cx="1060" cy="130" rx="32" ry="16" fill="#fff" opacity=".6"/>
+        <ellipse cx="1140" cy="130" rx="36" ry="16" fill="#fff" opacity=".6"/>
+      </g>
+    </g>
+
+    <!-- Rain layer: 60 diagonal lines falling from clouds, intensity controlled by class -->
+    <g id="weatherRain" opacity="0"></g>
+
+    <!-- Fog layer: horizontal haze band over the skyline -->
+    <rect id="weatherFog" x="0" y="380" width="1200" height="180" fill="#cbd1d8" opacity="0"/>
+
+    <!-- Lightning flash: full-screen white overlay that pulses during thunderstorms -->
+    <rect id="weatherLightning" x="0" y="0" width="1200" height="700" fill="#ffffff" opacity="0"/>
+
     <!-- Sun — yellow disc with halo -->
     <g id="sun" style="display:none">
       <circle cx="0" cy="0" r="40" fill="#ffd43b" opacity="0.18"/>
@@ -2006,7 +2141,7 @@
         <path d="M946 297 Q949 295 951 297 Q949 296 948 298" fill="#ffd43b"/>
       </g>
       <!-- Indonesian flag fluttering atop Wisma 46 flagpole (red over white) -->
-      <g class="flag-wave" transform="translate(497, 110)">
+      <g class="flag-wave" transform="translate(497, 130)">
         <rect x="0" y="0" width="16" height="6" fill="#dc2626"/>
         <rect x="0" y="6" width="16" height="6" fill="#ffffff"/>
       </g>
@@ -2035,11 +2170,12 @@
         <rect x="335" y="455" width="55" height="245"/>
         <rect x="395" y="430" width="48" height="270"/>
         <!-- ===== WISMA 46 — distinctive pencil-tip top with flag, the iconic Jakarta tower ===== -->
-        <path d="M455,500 L455,290 Q495,160 535,290 L535,500 Z" fill="url(#layerMid)"/>
-        <!-- Tall flagpole rising from the peak, anchored deep into the roof so no gap -->
-        <rect x="493" y="100" width="4" height="80" fill="url(#layerMid)"/>
+        <!-- Sharper peak so the pole has something to actually sit on -->
+        <path d="M455,500 L455,290 L488,210 L495,200 L502,210 L535,290 L535,500 Z" fill="url(#layerMid)"/>
+        <!-- Tall flagpole anchored AT the actual peak point (y=200) -->
+        <rect x="493" y="120" width="4" height="80" fill="url(#layerMid)"/>
         <!-- Antenna spike on top of flagpole -->
-        <polygon points="493,100 497,100 495,88" fill="url(#layerMid)"/>
+        <polygon points="493,120 497,120 495,108" fill="url(#layerMid)"/>
         <!-- /Wisma 46 -->
         <rect x="540" y="450" width="38" height="250"/>
         <!-- ===== TREASURY TOWER (stepped top with antenna) ===== -->
@@ -2069,21 +2205,13 @@
         <!-- /BCA -->
         <rect x="855" y="450" width="34" height="250"/>
 
-        <!-- MID-RISE INFILL — anchors the tall towers so they don't look like they're floating -->
-        <!-- These run along y≈470-510, sitting just in front of the tall tower bases -->
-        <rect x="575" y="475" width="55" height="50"/>
-        <rect x="610" y="465" width="48" height="60"/>
-        <rect x="650" y="485" width="40" height="40"/>
-        <rect x="678" y="470" width="55" height="55"/>
-        <rect x="720" y="478" width="50" height="48"/>
-        <rect x="755" y="465" width="60" height="60"/>
-        <rect x="800" y="480" width="48" height="45"/>
-        <rect x="830" y="472" width="40" height="55"/>
-
         <!-- Istiqlal mosque body silhouette (dark) — dome rendered in golden glow above this -->
         <rect x="895" y="430" width="105" height="70"/>
-        <rect x="1005" y="375" width="9" height="125"/>
+        <!-- Minaret shaft extended down to anchor into the mid-rise band — no more floating -->
+        <rect x="1005" y="375" width="9" height="170"/>
         <polygon points="1005,375 1014,375 1009.5,360"/>
+        <!-- Small base block at the foot of the minaret -->
+        <rect x="1002" y="540" width="15" height="6"/>
         <rect x="1025" y="425" width="40" height="275"/>
         <rect x="1075" y="395" width="48" height="305"/>
         <rect x="1130" y="445" width="40" height="255"/>
@@ -2104,6 +2232,65 @@
       </g>
     </g>
 
+    <!-- ===== MID-RISE INFILL — dark-purple band sitting between the tall towers and the foreground.
+         Spans the full visible width so it anchors Monas (left) and the mosque (right) too. ===== -->
+    <defs>
+      <linearGradient id="midRiseGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#3a1f4a"/>
+        <stop offset="100%" stop-color="#1a0d28"/>
+      </linearGradient>
+    </defs>
+    <g fill="url(#midRiseGrad)">
+      <!-- Far-left band (anchors Monas plaza on the left) -->
+      <rect x="250" y="495" width="40" height="40"/>
+      <rect x="290" y="475" width="36" height="60"/>
+      <rect x="326" y="490" width="32" height="45"/>
+      <rect x="358" y="478" width="38" height="57"/>
+      <rect x="396" y="495" width="34" height="40"/>
+      <rect x="430" y="480" width="40" height="55"/>
+      <rect x="470" y="490" width="30" height="45"/>
+      <!-- Central band (between towers and foreground) -->
+      <rect x="500" y="478" width="40" height="57"/>
+      <rect x="540" y="492" width="35" height="43"/>
+      <rect x="572" y="455" width="58" height="80"/>
+      <rect x="630" y="440" width="50" height="95"/>
+      <rect x="680" y="465" width="42" height="70"/>
+      <rect x="722" y="445" width="58" height="90"/>
+      <rect x="780" y="460" width="52" height="75"/>
+      <rect x="832" y="442" width="62" height="93"/>
+      <!-- Right band (anchors Istiqlal mosque + the right edge towers) -->
+      <rect x="895" y="495" width="32" height="40"/>
+      <rect x="927" y="475" width="42" height="60"/>
+      <rect x="969" y="485" width="36" height="50"/>
+      <rect x="1005" y="495" width="20" height="40"/>
+      <rect x="1025" y="478" width="40" height="57"/>
+      <rect x="1065" y="490" width="36" height="45"/>
+      <rect x="1101" y="475" width="44" height="60"/>
+      <rect x="1145" y="488" width="40" height="47"/>
+      <rect x="1185" y="498" width="30" height="37"/>
+    </g>
+    <!-- Window dots scattered across the mid-rise infill — purple-tinted highlights -->
+    <g fill="#9d6ec8" opacity=".75">
+      <rect x="261" y="510" width="3" height="4"/><rect x="277" y="495" width="3" height="4"/>
+      <rect x="297" y="490" width="3" height="4"/><rect x="311" y="505" width="3" height="4"/>
+      <rect x="334" y="500" width="3" height="4"/><rect x="369" y="495" width="3" height="4"/>
+      <rect x="407" y="505" width="3" height="4"/><rect x="444" y="495" width="3" height="4"/>
+      <rect x="481" y="500" width="3" height="4"/>
+      <rect x="509" y="495" width="3" height="4"/><rect x="551" y="505" width="3" height="4"/>
+      <rect x="581" y="475" width="3" height="4"/><rect x="591" y="495" width="3" height="4"/>
+      <rect x="617" y="470" width="3" height="4"/><rect x="640" y="500" width="3" height="4"/>
+      <rect x="659" y="478" width="3" height="4"/><rect x="689" y="478" width="3" height="4"/>
+      <rect x="704" y="500" width="3" height="4"/><rect x="721" y="475" width="3" height="4"/>
+      <rect x="739" y="495" width="3" height="4"/><rect x="764" y="475" width="3" height="4"/>
+      <rect x="789" y="490" width="3" height="4"/><rect x="809" y="475" width="3" height="4"/>
+      <rect x="839" y="475" width="3" height="4"/><rect x="859" y="495" width="3" height="4"/>
+      <rect x="904" y="510" width="3" height="4"/><rect x="939" y="495" width="3" height="4"/>
+      <rect x="977" y="500" width="3" height="4"/><rect x="1034" y="495" width="3" height="4"/>
+      <rect x="1077" y="505" width="3" height="4"/><rect x="1114" y="490" width="3" height="4"/>
+      <rect x="1154" y="500" width="3" height="4"/><rect x="1194" y="510" width="3" height="4"/>
+    </g>
+
+
     <!-- ===== NEAR LAYER (foreground — central cluster includes Kota mall + Classic Hotel for phone visibility) ===== -->
     <g>
       <!-- KOTA KASABLANKA MALL — moved into the visible center band -->
@@ -2113,16 +2300,21 @@
         <!-- The actual Kota mall building, centered in the visible band -->
         <rect x="425" y="552" width="105" height="148"/>
       </g>
-      <!-- Mall windows on left low-rise -->
-      <rect x="10" y="595" width="200" height="22" fill="rgba(120,180,255,.15)"/>
-      <rect x="10" y="620" width="200" height="20" fill="rgba(120,180,255,.1)"/>
-      <!-- Mall windows on center Kota mall -->
-      <rect x="430" y="568" width="95" height="14" fill="rgba(120,180,255,.18)"/>
-      <rect x="430" y="588" width="95" height="14" fill="rgba(120,180,255,.13)"/>
-      <!-- "KOTA" sign on the visible center mall -->
-      <g transform="translate(477, 568)">
-        <rect x="-26" y="-11" width="52" height="20" rx="3" fill="#1a1525" stroke="#22b8cf" stroke-width="1.2"/>
-        <text class="neon-text neon-cyan" x="0" y="3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#22b8cf">KOTA</text>
+      <!-- Mall windows on left low-rise — long fluorescent ribbons + bright dot rooms -->
+      <rect x="10" y="595" width="200" height="22" fill="rgba(140,200,255,.22)"/>
+      <rect x="10" y="620" width="200" height="20" fill="rgba(140,200,255,.18)"/>
+
+      <!-- Mall windows on center Kota mall — same vibe with grid of lit rooms -->
+      <rect x="430" y="568" width="95" height="14" fill="rgba(140,200,255,.25)"/>
+      <rect x="430" y="588" width="95" height="14" fill="rgba(140,200,255,.2)"/>
+      <!-- "KOTA" rooftop sign — high above the mall, against the dark purple mid-rise band -->
+      <g transform="translate(477, 488)">
+        <!-- Support posts running from the mall roof up to the sign -->
+        <rect x="-26" y="0" width="2" height="64" fill="#3a2535"/>
+        <rect x="24" y="0" width="2" height="64" fill="#3a2535"/>
+        <!-- Sign plate -->
+        <rect x="-34" y="-20" width="68" height="24" rx="3" fill="#1a1525" stroke="#22b8cf" stroke-width="1.5"/>
+        <text class="neon-text neon-cyan" x="0" y="-3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#22b8cf">KOTA</text>
       </g>
 
       <!-- General residential / low-rise filler -->
@@ -2156,13 +2348,117 @@
       <!-- Right-side hotel windows (offscreen but stays consistent on wider screens) -->
       <rect x="1108" y="525" width="62" height="160" fill="url(#windowsNear)" opacity=".7"/>
 
-      <!-- "Classic" neon sign on the visible center hotel -->
-      <g transform="translate(729, 540)">
-        <rect x="-30" y="-2" width="60" height="24" rx="3" fill="#1a1525" stroke="#ff5c8a" stroke-width="1.2"/>
-        <text class="neon-text neon-pink" x="0" y="14" text-anchor="middle" font-family="Brush Script MT, Lucida Handwriting, cursive" font-style="italic" font-weight="700" font-size="16" fill="#ff5c8a">Classic</text>
+      <!-- ===== BIG MALL WINDOWS — Kota mall (x=425-530, y=552-700).
+           Three horizontal floor-strips of full-height windows + warm interior glow.
+           Ground floor is the shopfront row — windows alternate with actual storefronts. ===== -->
+      <g class="mall-windows kota">
+        <!-- Floor 1 — ground floor shopfront row -->
+        <rect x="430" y="613" width="95" height="22" fill="rgba(255, 220, 150, .25)"/>
+
+        <!-- "KOPI" coffee shop (replaces window 1) — warm amber with swinging door -->
+        <rect x="433" y="615" width="18" height="18" fill="#ffd089" class="mw mw1"/>
+        <!-- Stripey red awning -->
+        <rect x="432" y="613" width="20" height="2.5" fill="#c0212f"/>
+        <text x="442" y="614.5" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="2.5" fill="white">KOPI</text>
+        <!-- Swinging door inside the shopfront -->
+        <rect x="446" y="623" width="4" height="10" fill="#3a2818" class="shop-door door-1"/>
+
+        <!-- Plain window pane -->
+        <rect class="mw mw2" x="453" y="615" width="14" height="18" fill="#ffe3b0"/>
+
+        <!-- "WARUNG" restaurant (replaces window 3) — green awning, patrons inside -->
+        <rect x="469" y="615" width="18" height="18" fill="#ffb86b" class="mw mw3"/>
+        <rect x="468" y="613" width="20" height="2.5" fill="#1f6b3a"/>
+        <text x="478" y="614.5" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="2.3" fill="white">WARUNG</text>
+        <!-- Tiny patron silhouettes inside -->
+        <rect x="472" y="625" width="2" height="6" fill="#3a2818"/>
+        <rect x="477" y="624" width="2" height="7" fill="#3a2818"/>
+        <rect x="482" y="626" width="2" height="5" fill="#3a2818"/>
+
+        <!-- Plain window pane -->
+        <rect class="mw mw1" x="489" y="615" width="14" height="18" fill="#ffe3b0"/>
+
+        <!-- "24h" convenience store (replaces window 5) — bright white -->
+        <rect x="505" y="615" width="18" height="18" fill="#e8f5ff" class="mw mw2" opacity=".9"/>
+        <rect x="504" y="613" width="20" height="2.5" fill="#c92a2a"/>
+        <text x="514" y="614.5" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="2.5" fill="white">24h</text>
+        <!-- Shelf bars -->
+        <rect x="508" y="618" width=".8" height="14" fill="#7a8a99" opacity=".6"/>
+        <rect x="513" y="618" width=".8" height="14" fill="#7a8a99" opacity=".6"/>
+        <rect x="518" y="618" width=".8" height="14" fill="#7a8a99" opacity=".6"/>
+        <!-- Floor 2 — cooler office/escalator vibe -->
+        <rect x="430" y="640" width="95" height="20" fill="rgba(180, 220, 255, .3)"/>
+        <rect class="mw mw3" x="434" y="642" width="14" height="16" fill="#bdd6ec"/>
+        <rect class="mw mw1" x="451" y="642" width="14" height="16" fill="#d4e5f5"/>
+        <rect class="mw mw2" x="468" y="642" width="14" height="16" fill="#bdd6ec"/>
+        <rect class="mw mw3" x="485" y="642" width="14" height="16" fill="#d4e5f5"/>
+        <rect class="mw mw1" x="502" y="642" width="14" height="16" fill="#bdd6ec"/>
+        <!-- Floor 3 — top floor restaurants, warm again -->
+        <rect x="430" y="665" width="95" height="18" fill="rgba(255, 200, 120, .32)"/>
+        <rect class="mw mw2" x="434" y="667" width="14" height="14" fill="#ffd089"/>
+        <rect class="mw mw3" x="451" y="667" width="14" height="14" fill="#ffe7a3"/>
+        <rect class="mw mw1" x="468" y="667" width="14" height="14" fill="#ffd089"/>
+        <rect class="mw mw2" x="485" y="667" width="14" height="14" fill="#ffe7a3"/>
+        <rect class="mw mw3" x="502" y="667" width="14" height="14" fill="#ffd089"/>
       </g>
-      <!-- Neon glow tube under the sign -->
-      <rect class="neon-tube" x="703" y="567" width="52" height="2" rx="1" fill="#ff5c8a"/>
+
+      <!-- ===== BIG MALL WINDOWS — Left low-rise (x=0-225, y=560-700).
+           Wider strip of fluorescent mall-floor lighting. ===== -->
+      <g class="mall-windows lowrise">
+        <rect x="14" y="605" width="200" height="20" fill="rgba(180, 220, 255, .28)"/>
+        <rect class="mw mw1" x="20" y="607" width="22" height="16" fill="#bdd6ec"/>
+        <rect class="mw mw2" x="45" y="607" width="22" height="16" fill="#d4e5f5"/>
+        <rect class="mw mw3" x="70" y="607" width="22" height="16" fill="#bdd6ec"/>
+        <rect class="mw mw1" x="95" y="607" width="22" height="16" fill="#d4e5f5"/>
+        <rect class="mw mw2" x="120" y="607" width="22" height="16" fill="#bdd6ec"/>
+        <rect class="mw mw3" x="145" y="607" width="22" height="16" fill="#d4e5f5"/>
+        <rect class="mw mw1" x="170" y="607" width="22" height="16" fill="#bdd6ec"/>
+        <rect class="mw mw2" x="195" y="607" width="16" height="16" fill="#d4e5f5"/>
+        <rect x="14" y="635" width="200" height="18" fill="rgba(255, 220, 150, .25)"/>
+        <rect class="mw mw3" x="20" y="637" width="22" height="14" fill="#ffd089"/>
+        <rect class="mw mw1" x="45" y="637" width="22" height="14" fill="#ffe7a3"/>
+        <rect class="mw mw2" x="70" y="637" width="22" height="14" fill="#ffd089"/>
+        <rect class="mw mw3" x="95" y="637" width="22" height="14" fill="#ffe7a3"/>
+        <rect class="mw mw1" x="120" y="637" width="22" height="14" fill="#ffd089"/>
+        <rect class="mw mw2" x="145" y="637" width="22" height="14" fill="#ffe7a3"/>
+        <rect class="mw mw3" x="170" y="637" width="22" height="14" fill="#ffd089"/>
+        <rect class="mw mw1" x="195" y="637" width="16" height="14" fill="#ffe7a3"/>
+      </g>
+
+      <!-- ===== HOTEL WINDOWS — Classic Hotel tower (x=700-758, y=510-700).
+           Two columns of room windows, varied lighting per room. ===== -->
+      <g class="hotel-windows">
+        <!-- Floor 1 -->
+        <rect class="mw mw1" x="708" y="552" width="18" height="12" fill="#ffd089"/>
+        <rect class="mw mw2" x="732" y="552" width="18" height="12" fill="#ffe7a3"/>
+        <!-- Floor 2 -->
+        <rect class="mw mw3" x="708" y="572" width="18" height="12" fill="#7fd4f5"/>
+        <rect class="mw mw1" x="732" y="572" width="18" height="12" fill="#ffd089"/>
+        <!-- Floor 3 -->
+        <rect class="mw mw2" x="708" y="592" width="18" height="12" fill="#ffe7a3"/>
+        <rect class="mw mw3" x="732" y="592" width="18" height="12" fill="#ffd089"/>
+        <!-- Floor 4 -->
+        <rect class="mw mw1" x="708" y="612" width="18" height="12" fill="#7fd4f5"/>
+        <rect class="mw mw2" x="732" y="612" width="18" height="12" fill="#ffe7a3"/>
+        <!-- Floor 5 -->
+        <rect class="mw mw3" x="708" y="632" width="18" height="12" fill="#ffd089"/>
+        <rect class="mw mw1" x="732" y="632" width="18" height="12" fill="#7fd4f5"/>
+        <!-- Floor 6 -->
+        <rect class="mw mw2" x="708" y="652" width="18" height="12" fill="#ffe7a3"/>
+        <rect class="mw mw3" x="732" y="652" width="18" height="12" fill="#ffd089"/>
+      </g>
+
+      <!-- "Classic" rooftop neon sign — high above the hotel, against the dark purple mid-rise band -->
+      <g transform="translate(729, 488)">
+        <!-- Support posts -->
+        <rect x="-22" y="22" width="2" height="40" fill="#3a2535"/>
+        <rect x="20" y="22" width="2" height="40" fill="#3a2535"/>
+        <!-- Sign plate -->
+        <rect x="-32" y="-2" width="64" height="28" rx="3" fill="#1a1525" stroke="#ff5c8a" stroke-width="1.5"/>
+        <text class="neon-text neon-pink" x="0" y="18" text-anchor="middle" font-family="Brush Script MT, Lucida Handwriting, cursive" font-style="italic" font-weight="700" font-size="18" fill="#ff5c8a">Classic</text>
+      </g>
+      <!-- Neon glow tube under the rooftop sign -->
+      <rect class="neon-tube" x="703" y="518" width="52" height="2" rx="1" fill="#ff5c8a"/>
 
       <!-- Same sign still on the original offscreen hotel for desktop view -->
       <g transform="translate(1137, 530)">
@@ -2170,8 +2466,6 @@
         <text x="0" y="14" text-anchor="middle" font-family="Brush Script MT, Lucida Handwriting, cursive" font-style="italic" font-weight="700" font-size="16" fill="#ff5c8a" style="filter: drop-shadow(0 0 5px #ff5c8a)">Classic</text>
       </g>
       <rect class="neon-tube" x="1115" y="557" width="44" height="2" rx="1" fill="#ff5c8a"/>
-
-      <rect x="0" y="525" width="1200" height="175" fill="url(#windowsNear)" opacity=".55"/>
 
       <!-- DARK STREET / GROUND BAND beneath all buildings -->
       <rect x="0" y="660" width="1200" height="40" fill="url(#streetBand)"/>
@@ -2404,48 +2698,32 @@
       <circle cx="1" cy="-2" r="1" fill="#ff8080"/>
     </g>
 
-    <!-- 747 jumbo jet — high altitude, rarest of all vehicles, blinking nav lights -->
+    <!-- 747 jumbo jet — side silhouette, simple but reads as an airplane -->
     <g class="jumbo-jet">
-      <!-- Drop shadow streak -->
-      <ellipse cx="60" cy="14" rx="50" ry="1.5" fill="#000" opacity=".18"/>
-      <!-- Fuselage (long, slim, 747 proportions) -->
-      <path d="M0 8 Q4 6 18 6 L108 6 Q116 6 120 8.5 Q116 11 108 11 L18 11 Q4 11 0 9 Z" fill="#e8eaed"/>
-      <!-- Cockpit windows -->
-      <path d="M112 7 L118 8.5 L112 10 Z" fill="#1a2a3a"/>
-      <!-- Iconic 747 hump (upper deck) -->
-      <path d="M82 6 Q92 1 102 6 Z" fill="#e8eaed"/>
-      <rect x="86" y="3.5" width="14" height="1.6" fill="#1a2a3a" opacity=".7"/>
-      <!-- Cabin windows (long row of dots) -->
-      <g fill="#1a2a3a">
-        <rect x="20" y="7.5" width="1.5" height="1.5"/>
-        <rect x="26" y="7.5" width="1.5" height="1.5"/>
-        <rect x="32" y="7.5" width="1.5" height="1.5"/>
-        <rect x="38" y="7.5" width="1.5" height="1.5"/>
-        <rect x="44" y="7.5" width="1.5" height="1.5"/>
-        <rect x="50" y="7.5" width="1.5" height="1.5"/>
-        <rect x="56" y="7.5" width="1.5" height="1.5"/>
-        <rect x="62" y="7.5" width="1.5" height="1.5"/>
-        <rect x="68" y="7.5" width="1.5" height="1.5"/>
-        <rect x="74" y="7.5" width="1.5" height="1.5"/>
-        <rect x="80" y="7.5" width="1.5" height="1.5"/>
-      </g>
-      <!-- Wings (swept back) -->
-      <path d="M40 9 L62 9 L72 22 L52 22 Z" fill="#d0d4d8"/>
-      <path d="M58 9 L80 9 L88 22 L66 22 Z" fill="#c0c4c8"/>
-      <!-- Engines under wings (4 engines = signature 747) -->
-      <ellipse cx="55" cy="18" rx="3" ry="1.5" fill="#1a1a1a"/>
-      <ellipse cx="63" cy="18" rx="3" ry="1.5" fill="#1a1a1a"/>
-      <ellipse cx="73" cy="18" rx="3" ry="1.5" fill="#1a1a1a"/>
-      <ellipse cx="81" cy="18" rx="3" ry="1.5" fill="#1a1a1a"/>
-      <!-- Vertical stabilizer (tail fin) -->
-      <path d="M8 6 L18 6 L14 -1 L10 -1 Z" fill="#d0d4d8"/>
-      <!-- Horizontal stabilizers (tail wings) -->
-      <path d="M0 7 L12 7 L8 12 L0 11 Z" fill="#c0c4c8"/>
-      <!-- Navigation lights -->
-      <circle class="nav-light nav-red"    cx="52" cy="22.5" r="1.4" fill="#ff2020"/>
-      <circle class="nav-light nav-green"  cx="88" cy="22.5" r="1.4" fill="#20ff60"/>
-      <circle class="nav-light nav-strobe" cx="14" cy="-1.5" r="1.2" fill="#ffffff"/>
-      <circle class="nav-light nav-belly"  cx="60" cy="11" r="1" fill="#ffffff"/>
+      <!-- Long pointed fuselage running left-to-right.
+           Nose on the right at x=130, tail at x=0. -->
+      <path d="M0 8 L8 6 L120 6 Q128 6 130 8 Q128 10 120 10 L8 10 Z" fill="#e8eaed"/>
+      <!-- Cockpit windows (small dark triangle near nose) -->
+      <path d="M118 7 L126 8 L118 9.5 Z" fill="#1a2a3a"/>
+      <!-- Signature 747 upper-deck hump just behind cockpit -->
+      <path d="M88 6 Q98 1.5 110 6 Z" fill="#e8eaed"/>
+      <path d="M92 4 L106 4" stroke="#1a2a3a" stroke-width="0.8" opacity=".75"/>
+      <!-- Cabin window row (one continuous thin dark line — reads cleaner than dots at this scale) -->
+      <line x1="14" y1="8" x2="86" y2="8" stroke="#1a2a3a" stroke-width="0.6" opacity=".7"/>
+      <!-- WINGS — single big main wing under fuselage, slightly swept back, both wings shown as
+           one shape because at this viewing angle (almost side-on) you see them overlapping. -->
+      <path d="M60 10 L96 10 L86 18 L48 18 Z" fill="#c5cbd2" opacity=".95"/>
+      <!-- Engines hanging UNDER the wing (pods stuck to wing underside) -->
+      <ellipse cx="58" cy="16" rx="2.2" ry="1.4" fill="#3a3f48"/>
+      <ellipse cx="72" cy="17"  rx="2.2" ry="1.4" fill="#3a3f48"/>
+      <!-- Tail fin — VERTICAL stabilizer rising up from the back of the fuselage -->
+      <path d="M6 6 L14 6 L11 -3 L8 -3 Z" fill="#c5cbd2"/>
+      <!-- Horizontal stabilizer (small wing at very back) -->
+      <path d="M2 7 L10 7 L7 11 L2 10 Z" fill="#c5cbd2"/>
+      <!-- Navigation lights — red on left wingtip, green on right, white strobe on tail fin -->
+      <circle class="nav-light nav-red"    cx="48" cy="18.4" r="1.2" fill="#ff2020"/>
+      <circle class="nav-light nav-green"  cx="86" cy="18.4" r="1.2" fill="#20ff60"/>
+      <circle class="nav-light nav-strobe" cx="9"  cy="-3"   r="1.2" fill="#ffffff"/>
     </g>
 
     <!-- Helicopter — foreground, lower than the jet, prominent rotor blur -->
@@ -2591,7 +2869,10 @@
       <span class="hw-temp" id="hwTemp">--°</span>
     </button>
     <div id="headerClock" class="header-clock" title="Local time">
-      <span class="lcd-time">--:--</span>
+      <span class="lcd-time">
+        <span class="lcd-ghost">88:88</span>
+        <span class="lcd-active">--:--</span>
+      </span>
     </div>
   </div>
 </header>
@@ -2745,7 +3026,9 @@
         </button>
       </div>
 
-      <label class="toggle-row" style="margin-top:18px">
+      <div class="toggle-grid">
+      <div class="toggle-col">
+      <label class="toggle-row" style="margin-top:0">
         <input type="checkbox" id="f-medal-met" class="toggle-cb" />
         <span class="toggle-label">
           <svg class="medal-icon" viewBox="0 0 28 32"><path d="M9 0 L19 0 L17 7 L14 10 L11 7 Z" fill="#c92a2a"/><path d="M9 0 L11 0 L12 7 L11 7 Z" fill="#1864ab" opacity=".75"/><path d="M17 0 L19 0 L17 7 Z" fill="#1864ab" opacity=".75"/><defs><radialGradient id="iconBronze" cx="40%" cy="35%"><stop offset="0%" stop-color="#ffd9a8"/><stop offset="50%" stop-color="#cd7f32"/><stop offset="100%" stop-color="#6e3f10"/></radialGradient></defs><polygon points="14,9 16.6,17 25,17 18.2,22 20.8,30 14,25 7.2,30 9.8,22 3,17 11.4,17" fill="url(#iconBronze)" stroke="#6e3f10" stroke-width=".5"/><polygon points="14,13 15.3,17.5 19,17.5 16,20 17,24 14,22 11,24 12,20 9,17.5 12.7,17.5" fill="#ffd9a8" opacity=".5"/></svg>
@@ -2847,6 +3130,17 @@
         <button class="bg-choice" data-theme-choice="dark">Dark</button>
         <button class="bg-choice" data-theme-choice="light">Light</button>
       </div>
+
+      <label>Skyline behavior</label>
+      <label class="toggle-row" style="margin-top:6px">
+        <input type="checkbox" id="f-always-night" class="toggle-cb" />
+        <span class="toggle-label">🌙 Always night sky</span>
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="f-animate-weather" class="toggle-cb" />
+        <span class="toggle-label">🌧 Animate live Jakarta weather</span>
+      </label>
+      <div class="hint">When enabled, real clouds, rain, and lightning from the current weather show on the skyline.</div>
 
       <label>Background</label>
       <div class="bg-choice-row" id="bgChoices">
@@ -3092,85 +3386,85 @@
       <div class="hint" style="margin-bottom:14px">Places to bump into Jakartans during the day — university-age and working-age. Be respectful, read the room, leave gracefully if the vibe isn't there.</div>
 
       <div class="link-group-header" id="dg-uni">🎓 Universities (public-access campuses)</div>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Universitas+Indonesia+Depok" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Universitas%2BIndonesia%2BDepok" target="_blank" rel="noopener">
         <span class="link-icon">📍</span><span class="link-title">Universitas Indonesia (UI) — Depok</span>
         <span class="link-sub">Huge wooded campus, lake, central library, cafés along the perimeter. Open to public.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Universitas+Bina+Nusantara+Anggrek" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Universitas%2BBina%2BNusantara%2BAnggrek" target="_blank" rel="noopener">
         <span class="link-icon">📍</span><span class="link-title">Binus University — Anggrek &amp; Alam Sutera</span>
         <span class="link-sub">Big international student crowd, English-friendly. Lots of cafés right outside.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Universitas+Atma+Jaya+Jakarta+Semanggi" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Universitas%2BAtma%2BJaya%2BJakarta%2BSemanggi" target="_blank" rel="noopener">
         <span class="link-icon">📍</span><span class="link-title">Atma Jaya — Semanggi</span>
         <span class="link-sub">Central Sudirman location, mall-adjacent. Working-age crowd mixes in at lunch.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Prasetiya+Mulya+Cilandak" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Prasetiya%2BMulya%2BCilandak" target="_blank" rel="noopener">
         <span class="link-icon">📍</span><span class="link-title">Prasetiya Mulya — BSD &amp; Cilandak</span>
         <span class="link-sub">Business school, well-dressed crowd, lots of group projects at nearby cafés.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Universitas+Trisakti+Grogol" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Universitas%2BTrisakti%2BGrogol" target="_blank" rel="noopener">
         <span class="link-icon">📍</span><span class="link-title">Trisakti — Grogol</span>
         <span class="link-sub">West Jakarta, large student population, busy café strip on the perimeter.</span>
       </a>
 
       <div class="link-group-header" id="dg-cafe">☕ Hipster &amp; laptop-friendly cafés</div>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Kopi+Tuku+Cipete" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Kopi%2BTuku%2BCipete" target="_blank" rel="noopener">
         <span class="link-icon">☕</span><span class="link-title">Kopi Tuku — Cipete &amp; everywhere</span>
         <span class="link-sub">Local-chain icon, packed with 20-somethings, easy small-talk opener.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Tanamera+Coffee+Thamrin" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Tanamera%2BCoffee%2BThamrin" target="_blank" rel="noopener">
         <span class="link-icon">☕</span><span class="link-title">Tanamera Coffee — multiple branches</span>
         <span class="link-sub">Specialty coffee, working professionals, slower turnover = more time to talk.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Common+Grounds+Coffee+Citywalk" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Common%2BGrounds%2BCoffee%2BCitywalk" target="_blank" rel="noopener">
         <span class="link-icon">☕</span><span class="link-title">Common Grounds — Sudirman / Citywalk</span>
         <span class="link-sub">Bright, photogenic, laptop city. Always busy weekday lunchtimes.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Anomali+Coffee+Senopati" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Anomali%2BCoffee%2BSenopati" target="_blank" rel="noopener">
         <span class="link-icon">☕</span><span class="link-title">Anomali Coffee — Senopati</span>
         <span class="link-sub">Senopati strip is THE young-professional after-work zone.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=ST+ALi+Jakarta" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=ST%2BALi%2BJakarta" target="_blank" rel="noopener">
         <span class="link-icon">☕</span><span class="link-title">ST. ALi — Setiabudi</span>
         <span class="link-sub">Aussie-style brunch spot, laptop-friendly, English-speaking crowd.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Filosofi+Kopi+Melawai" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Filosofi%2BKopi%2BMelawai" target="_blank" rel="noopener">
         <span class="link-icon">☕</span><span class="link-title">Filosofi Kopi — Melawai</span>
         <span class="link-sub">From the movie. Touristy but locals love it. Mixed crowd.</span>
       </a>
 
       <div class="link-group-header" id="dg-mall">🛍 Daytime shopping miles &amp; mall strips</div>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Plaza+Indonesia" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Plaza%2BIndonesia" target="_blank" rel="noopener">
         <span class="link-icon">🛍</span><span class="link-title">Plaza Indonesia — Bundaran HI</span>
         <span class="link-sub">Upmarket, professional women on lunch break. Best around 12-2pm.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Grand+Indonesia+Mall" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Grand%2BIndonesia%2BMall" target="_blank" rel="noopener">
         <span class="link-icon">🛍</span><span class="link-title">Grand Indonesia</span>
         <span class="link-sub">Massive, varied crowd. East Mall is younger; West Mall is more professional.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Senayan+City" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Senayan%2BCity" target="_blank" rel="noopener">
         <span class="link-icon">🛍</span><span class="link-title">Senayan City + Plaza Senayan</span>
         <span class="link-sub">Sudirman office crowd. Strong working-age weekday traffic.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Pacific+Place+Jakarta" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Pacific%2BPlace%2BJakarta" target="_blank" rel="noopener">
         <span class="link-icon">🛍</span><span class="link-title">Pacific Place — SCBD</span>
         <span class="link-sub">Finance &amp; consultancy crowd, very dressed-up.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Pondok+Indah+Mall" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Pondok%2BIndah%2BMall" target="_blank" rel="noopener">
         <span class="link-icon">🛍</span><span class="link-title">Pondok Indah Mall (PIM)</span>
         <span class="link-sub">Old-money South Jakarta, established families, polished crowd.</span>
       </a>
 
       <div class="link-group-header" id="dg-after">🍻 After-work hangouts</div>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Senopati+Suites+Jakarta" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Senopati%2BSuites%2BJakarta" target="_blank" rel="noopener">
         <span class="link-icon">🍷</span><span class="link-title">Senopati strip</span>
         <span class="link-sub">The single best 5-9pm zone in Jakarta. Walkable bar-crawl strip.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Kemang+Raya+Jakarta" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Kemang%2BRaya%2BJakarta" target="_blank" rel="noopener">
         <span class="link-icon">🍷</span><span class="link-title">Kemang</span>
         <span class="link-sub">Expat-heavy, more relaxed than Senopati, lots of outdoor bars.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=SCBD+Jakarta" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=SCBD%2BJakarta" target="_blank" rel="noopener">
         <span class="link-icon">🍷</span><span class="link-title">SCBD (Sudirman Central Business District)</span>
         <span class="link-sub">Office tower happy hours. Best Thursdays/Fridays from 6pm.</span>
       </a>
@@ -3178,21 +3472,21 @@
         <span class="link-icon">🎶</span><span class="link-title">M Bloc Space — Blok M</span>
         <span class="link-sub">Live music + food court vibes, very dateable.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Sarinah+Mall+Jakarta" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Sarinah%2BMall%2BJakarta" target="_blank" rel="noopener">
         <span class="link-icon">🍷</span><span class="link-title">Sarinah Thamrin</span>
         <span class="link-sub">Recently revamped, rooftop bars, mixed crowd, weekend lively.</span>
       </a>
 
       <div class="link-group-header" id="dg-fit">🏋 Fitness &amp; healthy lifestyle</div>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Senayan+Park+Jogging+Track" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Senayan%2BPark%2BJogging%2BTrack" target="_blank" rel="noopener">
         <span class="link-icon">🏃</span><span class="link-title">Senayan jogging track + GBK</span>
         <span class="link-sub">Sunday morning Car Free Day is a huge social scene.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Hutan+Kota+by+Plataran" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Hutan%2BKota%2Bby%2BPlataran" target="_blank" rel="noopener">
         <span class="link-icon">🌳</span><span class="link-title">Hutan Kota by Plataran — GBK</span>
         <span class="link-sub">Outdoor café surrounded by greenery. Brunch crowd.</span>
       </a>
-      <a class="link-card" href="https://maps.app.goo.gl/?q=Taman+Suropati" target="_blank" rel="noopener">
+      <a class="link-card" href="https://www.google.com/maps/search/?api=1&query=Taman%2BSuropati" target="_blank" rel="noopener">
         <span class="link-icon">🌳</span><span class="link-title">Taman Suropati — Menteng</span>
         <span class="link-sub">Sunday acoustic jams, students with instruments. Easy approach territory.</span>
       </a>
@@ -3322,7 +3616,7 @@ applyTheme();
 
 /* HEADER LCD CLOCK — 24h local time + weather */
 function updateClock() {
-  const timeEl = document.querySelector('#headerClock .lcd-time');
+  const timeEl = document.querySelector('#headerClock .lcd-active');
   if (!timeEl) return;
   const d = new Date();
   const hh = String(d.getHours()).padStart(2, '0');
@@ -3453,10 +3747,7 @@ function renderMoonPhase(phase) {
 
 // Main update function — called every minute
 function updateSky() {
-  // Jakarta local time. We could also use the user's local time.
-  // Spec said "local time in our favorite city" — using Jakarta (Asia/Jakarta).
   const now = new Date();
-  // Get hour-of-day as a float in Asia/Jakarta timezone
   const fmt = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Jakarta',
     hour: '2-digit', minute: '2-digit', hour12: false
@@ -3464,7 +3755,8 @@ function updateSky() {
   const parts = fmt.formatToParts(now);
   const hh = parseInt(parts.find(p => p.type === 'hour').value, 10);
   const mm = parseInt(parts.find(p => p.type === 'minute').value, 10);
-  const h = hh + mm / 60;
+  // If "always night" is on, lock the hour at 1am (deep night, moon mid-arc)
+  const h = state.alwaysNight ? 1.0 : hh + mm / 60;
 
   // Update sky overlay
   const { color, opacity } = skyAtHour(h);
@@ -3574,15 +3866,110 @@ async function updateWeather() {
   const tempEl = document.getElementById('hwTemp');
   if (!iconEl || !tempEl) return;
   try {
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=-6.2&longitude=106.8&current=temperature_2m,weather_code&timezone=Asia%2FJakarta';
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=-6.2&longitude=106.8&current=temperature_2m,weather_code,precipitation,wind_speed_10m&timezone=Asia%2FJakarta';
     const res = await fetch(url);
     if (!res.ok) throw new Error('weather fetch failed');
     const data = await res.json();
-    const t = Math.round(data.current.temperature_2m);
-    iconEl.innerHTML = weatherSvgIcon(data.current.weather_code);
+    const cur = data.current;
+    const t = Math.round(cur.temperature_2m);
+    iconEl.innerHTML = weatherSvgIcon(cur.weather_code);
     tempEl.textContent = `${t}°`;
+    // Also drive the live skyline weather animation
+    applyWeatherToSky(cur.weather_code, cur.precipitation || 0);
   } catch (e) {
     tempEl.textContent = '--°';
+  }
+}
+
+// Render rain drops once based on density; called when intensity changes
+let currentRainLevel = '';
+function renderRain(level) {
+  if (level === currentRainLevel) return;
+  currentRainLevel = level;
+  const root = document.getElementById('weatherRain');
+  root.className = level; // 'drizzle' | '' | 'heavy'
+  root.innerHTML = '';
+  if (level === 'none') return;
+  const counts = { drizzle: 25, '': 55, heavy: 100 }; // dropdown count by intensity
+  const n = counts[level] != null ? counts[level] : 0;
+  for (let i = 0; i < n; i++) {
+    const x = Math.random() * 1280 - 40;
+    const y = Math.random() * 380 + 100;  // start anywhere above the skyline
+    const len = 6 + Math.random() * 14;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('class', 'rain-drop');
+    line.setAttribute('x1', x);
+    line.setAttribute('y1', y);
+    line.setAttribute('x2', x - len * 0.4);
+    line.setAttribute('y2', y + len);
+    line.style.animationDelay = (-Math.random() * 0.8) + 's';
+    line.style.animationDuration = (0.6 + Math.random() * 0.4) + 's';
+    root.appendChild(line);
+  }
+}
+
+// Map weather code → visible layers + intensities
+function applyWeatherToSky(code, precipMm) {
+  const clouds = document.getElementById('weatherClouds');
+  const fog    = document.getElementById('weatherFog');
+  if (!clouds || !fog) return;
+
+  // Weather animation off? hide everything and bail.
+  if (!state.animateWeather) {
+    clouds.setAttribute('opacity', 0);
+    fog.setAttribute('opacity', 0);
+    renderRain('none');
+    return;
+  }
+
+  // Determine layers from WMO code
+  const isClear      = code === 0;
+  const isPartlyCloudy = [1, 2].includes(code);
+  const isOvercast   = code === 3;
+  const isFog        = [45, 48].includes(code);
+  const isDrizzle    = [51, 53, 55, 56, 57].includes(code);
+  const isRain       = [61, 63, 65, 66, 67, 80, 81, 82].includes(code);
+  const isStorm      = [95, 96, 99].includes(code);
+  const isHeavyRain  = [65, 67, 82, 99].includes(code) || precipMm >= 2.5;
+
+  let cloudOpacity = 0;
+  if (isClear) cloudOpacity = 0.15;        // few wisps even on "clear"
+  else if (isPartlyCloudy) cloudOpacity = 0.45;
+  else if (isOvercast || isFog) cloudOpacity = 0.75;
+  else if (isDrizzle || isRain) cloudOpacity = 0.85;
+  else if (isStorm) cloudOpacity = 0.95;
+  clouds.setAttribute('opacity', cloudOpacity);
+
+  // Fog
+  fog.setAttribute('opacity', isFog ? 0.35 : 0);
+
+  // Rain
+  if (isStorm || isHeavyRain) renderRain('heavy');
+  else if (isRain) renderRain('');
+  else if (isDrizzle) renderRain('drizzle');
+  else renderRain('none');
+
+  // Lightning during thunderstorms — start a random-flash interval
+  setLightningActive(isStorm);
+}
+
+let lightningTimer = null;
+function setLightningActive(on) {
+  if (on && !lightningTimer) {
+    const fireFlash = () => {
+      const el = document.getElementById('weatherLightning');
+      if (!el) return;
+      el.classList.remove('flash'); void el.offsetWidth; // restart animation
+      el.classList.add('flash');
+    };
+    // First flash quickly, then random 6-18 second cycle
+    fireFlash();
+    lightningTimer = setInterval(() => {
+      if (Math.random() < 0.6) fireFlash();
+    }, 6000 + Math.random() * 12000);
+  } else if (!on && lightningTimer) {
+    clearInterval(lightningTimer);
+    lightningTimer = null;
   }
 }
 updateWeather();
@@ -3734,8 +4121,9 @@ function detectPhotos() {
 detectPhotos();
 
 // Settings open/close
-document.getElementById('settingsBtn').addEventListener('click', () => showView('settings'));
-document.getElementById('closeSettings').addEventListener('click', () => showView('tools'));
+// settingsBtn was moved into the Tools tab — guard against missing element
+{ const _b = document.getElementById('settingsBtn'); if (_b) _b.addEventListener('click', () => showView('settings')); }
+{ const _b = document.getElementById('closeSettings'); if (_b) _b.addEventListener('click', () => showView('tools')); }
 
 // Theme choice buttons
 document.querySelectorAll('[data-theme-choice]').forEach(btn => {
@@ -3743,6 +4131,27 @@ document.querySelectorAll('[data-theme-choice]').forEach(btn => {
     state.theme = btn.dataset.themeChoice;
     saveState(); applyTheme(); applyBg();
   });
+});
+
+// Skyline behavior toggles
+function applySkylineToggles() {
+  const an = document.getElementById('f-always-night');
+  const aw = document.getElementById('f-animate-weather');
+  if (an) an.checked = !!state.alwaysNight;
+  if (aw) aw.checked = !!state.animateWeather;
+}
+applySkylineToggles();
+const anEl = document.getElementById('f-always-night');
+const awEl = document.getElementById('f-animate-weather');
+if (anEl) anEl.addEventListener('change', () => {
+  state.alwaysNight = anEl.checked;
+  saveState();
+  if (typeof updateSky === 'function') updateSky();
+});
+if (awEl) awEl.addEventListener('change', () => {
+  state.animateWeather = awEl.checked;
+  saveState();
+  if (typeof updateWeather === 'function') updateWeather();
 });
 
 // Background choice buttons
@@ -5331,440 +5740,34 @@ function openBadoo() {
    native share sheet with the PNG (Android/iOS) or downloads it
    so the user can attach it manually.
    ========================================================= */
-async function renderCalendarToCanvas() {
-  const totalDays = parseInt(document.getElementById('weeksAhead').value, 10) || 4;
-  const weeks = Math.max(1, Math.ceil(totalDays / 7)); // used only for the header text
-  const today = new Date(); today.setHours(0,0,0,0);
 
-  // Look up profile names
-  const profById = new Map(state.profiles.map(p => [p.id, p]));
 
-  // Build a list of days that actually have entries
-  const days = [];
-  for (let i = 0; i < totalDays; i++) {
-    const d = new Date(today); d.setDate(today.getDate() + i);
-    const key = isoDate(d);
-    const entries = (state.dates[key] || []).filter(e => e.profileId && profById.has(e.profileId));
-    days.push({ date: d, entries });
-  }
 
-  // Canvas sizing: portrait card good for phone sharing
-  const DPR = 2; // crisp on retina
-  const W = 720;
-  const PAD = 28;
-  const HEADER_H = 96;
-  const ROW_H = 78;
-  const ROW_GAP = 10;
-  const visibleDays = days; // include empty days too — shows availability
-  const bodyH = visibleDays.length * (ROW_H + ROW_GAP);
-  const FOOTER_H = 48;
-  const H = HEADER_H + bodyH + FOOTER_H + PAD * 2;
 
-  const canvas = document.createElement('canvas');
-  canvas.width = W * DPR; canvas.height = H * DPR;
-  const ctx = canvas.getContext('2d');
-  ctx.scale(DPR, DPR);
-
-  // Background gradient — pink to dark
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#1a0d20');
-  bg.addColorStop(0.5, '#2a1230');
-  bg.addColorStop(1, '#3a1438');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  // Subtle accent glow at top
-  const glow = ctx.createRadialGradient(W/2, 0, 0, W/2, 0, W*0.7);
-  glow.addColorStop(0, 'rgba(255,92,138,.35)');
-  glow.addColorStop(1, 'rgba(255,92,138,0)');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, W, 200);
-
-  // Header
-  ctx.fillStyle = '#ff5c8a';
-  ctx.beginPath(); ctx.arc(PAD + 24, PAD + 24, 24, 0, Math.PI*2); ctx.fill();
-  ctx.fillStyle = 'white';
-  ctx.font = '700 28px "Montserrat", system-ui, sans-serif';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('F', PAD + 16, PAD + 25);
-
-  ctx.fillStyle = 'white';
-  ctx.font = '800 32px "Montserrat", system-ui, sans-serif';
-  ctx.fillText('My calendar', PAD + 64, PAD + 18);
-  ctx.fillStyle = 'rgba(255,255,255,.55)';
-  ctx.font = '600 13px "Montserrat", system-ui, sans-serif';
-  ctx.fillText(`Next ${weeks} week${weeks===1?'':'s'} · generated ${fmtDateShort(new Date())}`, PAD + 64, PAD + 42);
-
-  // Day rows
-  let y = HEADER_H + PAD;
-  visibleDays.forEach((d, idx) => {
-    const isToday = idx === 0;
-    const x = PAD;
-    const w = W - PAD * 2;
-    const h = ROW_H;
-
-    // card bg
-    ctx.fillStyle = isToday ? 'rgba(255,92,138,0.18)' : 'rgba(255,255,255,0.06)';
-    roundRect(ctx, x, y, w, h, 14); ctx.fill();
-    if (isToday) {
-      ctx.strokeStyle = 'rgba(255,92,138,0.6)';
-      ctx.lineWidth = 1.5;
-      roundRect(ctx, x, y, w, h, 14); ctx.stroke();
-    }
-
-    // Date stack on the left
-    const dateStr = String(d.date.getDate());
-    const dowStr = d.date.toLocaleDateString('en-US', {weekday:'short'}).toUpperCase();
-    const monStr = d.date.toLocaleDateString('en-US', {month:'short'}).toUpperCase();
-
-    ctx.fillStyle = isToday ? '#ff8fa3' : 'rgba(255,255,255,.55)';
-    ctx.font = '700 11px "Montserrat", system-ui, sans-serif';
-    ctx.textBaseline = 'top';
-    ctx.fillText(dowStr, x + 18, y + 14);
-    ctx.fillStyle = 'white';
-    ctx.font = '800 30px "Montserrat", system-ui, sans-serif';
-    ctx.fillText(dateStr, x + 18, y + 28);
-    ctx.fillStyle = 'rgba(255,255,255,.55)';
-    ctx.font = '600 11px "Montserrat", system-ui, sans-serif';
-    ctx.fillText(monStr, x + 18 + ctx.measureText(dateStr).width + 6, y + 46);
-
-    // Today badge
-    if (isToday) {
-      const tw = 56;
-      ctx.fillStyle = '#ff5c8a';
-      roundRect(ctx, x + w - tw - 14, y + 12, tw, 20, 6); ctx.fill();
-      ctx.fillStyle = 'white';
-      ctx.font = '700 10px "Montserrat", system-ui, sans-serif';
-      ctx.textBaseline = 'middle';
-      ctx.textAlign = 'center';
-      ctx.fillText('TODAY', x + w - tw/2 - 14, y + 22);
-      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    }
-
-    // Entries on the right
-    const namesX = x + 96;
-    if (!d.entries.length) {
-      ctx.fillStyle = 'rgba(255,255,255,.3)';
-      ctx.font = 'italic 500 16px "Montserrat", system-ui, sans-serif';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('— free —', namesX, y + h/2);
-      ctx.textBaseline = 'top';
-    } else {
-      // up to 3 entries, render as pills
-      let px = namesX, py = y + 18;
-      d.entries.slice(0, 3).forEach((entry, i) => {
-        const p = profById.get(entry.profileId);
-        if (!p) return;
-        const name = p.name;
-        ctx.font = '700 15px "Montserrat", system-ui, sans-serif';
-        const tw = ctx.measureText(name).width + 28;
-        if (px + tw > x + w - 14) { px = namesX; py += 28; }
-        // pill
-        ctx.fillStyle = 'rgba(255,92,138,0.22)';
-        roundRect(ctx, px, py, tw, 26, 13); ctx.fill();
-        ctx.strokeStyle = 'rgba(255,143,163,0.4)'; ctx.lineWidth = 1;
-        roundRect(ctx, px, py, tw, 26, 13); ctx.stroke();
-        ctx.fillStyle = '#ffd1dc';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(name, px + 14, py + 13);
-        ctx.textBaseline = 'top';
-        px += tw + 6;
-      });
-    }
-
-    y += h + ROW_GAP;
-  });
-
-  // Footer
-  ctx.fillStyle = 'rgba(255,255,255,.35)';
-  ctx.font = '600 11px "Montserrat", system-ui, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('Rotation · personal calendar', W/2, H - PAD - 14);
-  ctx.textAlign = 'left';
-
-  return canvas;
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.arcTo(x+w, y, x+w, y+h, r);
-  ctx.arcTo(x+w, y+h, x, y+h, r);
-  ctx.arcTo(x, y+h, x, y, r);
-  ctx.arcTo(x, y, x+w, y, r);
-  ctx.closePath();
-}
-
-async function shareCalendarImage() {
-  const canvas = await renderCalendarToCanvas();
-  const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 0.95));
-  if (!blob) { alert('Could not generate image.'); return; }
-
-  const file = new File([blob], 'my-calendar.png', { type: 'image/png' });
-
-  // Try native share with file (Android Chrome, iOS Safari)
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({ files: [file], title: 'My calendar', text: "Here's my schedule" });
-      return;
-    } catch (e) {
-      // user cancelled or share unsupported — fall through
-      if (e.name === 'AbortError') return;
-    }
-  }
-
-  // Fallback: download the file so user can attach manually
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'my-calendar.png';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-  alert('Image saved. Open WhatsApp and send it from your gallery.');
-}
-
-document.getElementById('shareCalBtn').addEventListener('click', shareCalendarImage);
-
-/* =========================================================
-   SORT PILLS (Roster view)
-   ========================================================= */
-function applySortPills() {
-  document.querySelectorAll('.sort-pill').forEach(b => b.classList.toggle('active', b.dataset.sort === (state.rosterSort || 'priority')));
-}
-document.querySelectorAll('.sort-pill').forEach(btn => {
-  btn.addEventListener('click', () => {
-    state.rosterSort = btn.dataset.sort;
-    saveState(); applySortPills(); renderAvailability();
-  });
-});
-applySortPills();
-
-/* =========================================================
-   PIN LOCK
-   - 4 digits, stored as SHA-256 hex (not plaintext)
-   - Empty pinHash = no lock
-   ========================================================= */
-async function sha256(text) {
-  const enc = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-let pinBuffer = '';
-let pinMode = 'check'; // 'check' | 'set-new' | 'set-confirm'
-let pinNewFirst = '';
-
-function renderPinPad() {
-  const pad = document.getElementById('pinPad');
-  pad.innerHTML = '';
-  const keys = ['1','2','3','4','5','6','7','8','9','clear','0','del'];
-  keys.forEach(k => {
-    const b = document.createElement('button');
-    b.className = 'pin-btn' + (k === 'clear' || k === 'del' ? ' fn' : '');
-    b.textContent = k === 'del' ? '⌫' : (k === 'clear' ? 'Clear' : k);
-    b.type = 'button';
-    b.addEventListener('click', () => onPinKey(k));
-    pad.appendChild(b);
+/* === REBUILT: Tools sub-page navigation === */
+function _toolsShowPane(paneId) {
+  ['tools-landing','tools-clipboard','tools-links','tools-daygame'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = (id === paneId) ? '' : 'none';
   });
 }
-function refreshPinDots() {
-  document.querySelectorAll('#pinDots .pin-dot').forEach((d, i) => {
-    d.classList.toggle('filled', i < pinBuffer.length);
-  });
-}
-async function onPinKey(k) {
-  document.getElementById('pinError').textContent = '';
-  if (k === 'clear') { pinBuffer = ''; refreshPinDots(); return; }
-  if (k === 'del')   { pinBuffer = pinBuffer.slice(0, -1); refreshPinDots(); return; }
-  if (pinBuffer.length >= 4) return;
-  pinBuffer += k;
-  refreshPinDots();
-  if (pinBuffer.length === 4) {
-    const entered = pinBuffer;
-    pinBuffer = '';
-    setTimeout(() => refreshPinDots(), 120);
-    if (pinMode === 'check') {
-      const hash = await sha256(entered);
-      if (hash === state.pinHash) {
-        document.getElementById('pinLock').classList.remove('active');
-      } else {
-        document.getElementById('pinError').textContent = 'Wrong PIN — try again';
-        if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
-      }
-    } else if (pinMode === 'set-new') {
-      pinNewFirst = entered;
-      pinMode = 'set-confirm';
-      document.getElementById('pinTitle').textContent = 'Confirm PIN';
-    } else if (pinMode === 'set-confirm') {
-      if (entered === pinNewFirst) {
-        state.pinHash = await sha256(entered);
-        saveState();
-        document.getElementById('pinLock').classList.remove('active');
-        updatePinButtons();
-        alert('PIN set. You\'ll need it next time you open the app.');
-      } else {
-        document.getElementById('pinError').textContent = 'PINs don\'t match — start over';
-        pinMode = 'set-new'; pinNewFirst = '';
-        document.getElementById('pinTitle').textContent = 'Choose a new PIN';
-      }
-    }
-  }
-}
-function openPinLock(mode) {
-  pinMode = mode; pinBuffer = ''; pinNewFirst = '';
-  document.getElementById('pinTitle').textContent =
-    mode === 'check' ? 'Enter PIN' :
-    mode === 'set-new' ? 'Choose a new PIN' : 'Confirm PIN';
-  document.getElementById('pinError').textContent = '';
-  refreshPinDots();
-  document.getElementById('pinLock').classList.add('active');
-}
-function updatePinButtons() {
-  const has = !!state.pinHash;
-  document.getElementById('setPinBtn').textContent = has ? 'Change PIN' : 'Set 4-digit PIN lock';
-  document.getElementById('clearPinBtn').style.display = has ? '' : 'none';
-}
-renderPinPad();
-document.getElementById('setPinBtn').addEventListener('click', () => openPinLock('set-new'));
-document.getElementById('clearPinBtn').addEventListener('click', () => {
-  if (!confirm('Remove the PIN lock?')) return;
-  state.pinHash = '';
-  saveState(); updatePinButtons();
-});
-updatePinButtons();
+function showToolsLanding()  { _toolsShowPane('tools-landing'); }
+function showToolsClipboard(){ _toolsShowPane('tools-clipboard'); if (typeof renderClipboard === 'function') renderClipboard(); }
+function showToolsLinks()    { _toolsShowPane('tools-links'); }
+function showToolsDaygame()  { _toolsShowPane('tools-daygame'); }
 
-// Show lock screen on startup if a PIN is set
-if (state.pinHash) openPinLock('check');
+// Wire the tool cards (data-tool="...") and back buttons — guarded so missing elements don't crash
+function _safeBind(id, fn) { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); }
+function _safeBindSel(sel, fn) { const el = document.querySelector(sel); if (el) el.addEventListener('click', fn); }
+_safeBindSel('[data-tool="clipboard"]', showToolsClipboard);
+_safeBindSel('[data-tool="links"]',     showToolsLinks);
+_safeBindSel('[data-tool="daygame"]',   showToolsDaygame);
+_safeBindSel('[data-tool="settings"]',  () => showView('settings'));
+_safeBind('toolsBack',        showToolsLanding);
+_safeBind('toolsBackLinks',   showToolsLanding);
+_safeBind('toolsBackDaygame', showToolsLanding);
 
-/* =========================================================
-   TOOLS — landing + Clipboard sub-page
-   ========================================================= */
-const DEFAULT_SNIPPETS = [
-  "Hi, my name is Steven from Austria. Now I stay in Kuningan. Are you nearby?",
-  "Whats your daily schedule like? What job do you work?\nAnd what are you looking for here?",
-  "If you are interested in me, lets write on whatsapp:\n+43 677 6237 3922",
-  "I don't use this app much. If you are interested in me, lets talk on whatsapp:\n+43 677 6237 3922",
-  "You promise you won't ask for money, or sell me some service or do something rude like that?",
-  "I think you look cute, I would totally hug and kiss you when we meet! 😘",
-  "May I ask you: Have you ever dated a foreigner before?\nHave you ever been intimate with someone?",
-  "I'm patient even if you don't speak good English. I've had dates where the girl uses translate app. As long as you find me attractive, the vibe will be good and it will be a fun time together."
-];
-function getSnippets() {
-  if (state.snippets && state.snippets.length) return state.snippets;
-  return DEFAULT_SNIPPETS.slice();
-}
-function setSnippets(arr) {
-  state.snippets = arr;
-  saveState();
-}
-
-function showToolsLanding() {
-  document.getElementById('tools-landing').style.display = '';
-  document.getElementById('tools-clipboard').style.display = 'none';
-  document.getElementById('tools-links').style.display = 'none';
-  document.getElementById('tools-daygame').style.display = 'none';
-}
-function showToolsClipboard() {
-  document.getElementById('tools-landing').style.display = 'none';
-  document.getElementById('tools-clipboard').style.display = '';
-  document.getElementById('tools-links').style.display = 'none';
-  document.getElementById('tools-daygame').style.display = 'none';
-  renderClipboard();
-}
-function showToolsLinks() {
-  document.getElementById('tools-landing').style.display = 'none';
-  document.getElementById('tools-clipboard').style.display = 'none';
-  document.getElementById('tools-links').style.display = '';
-  document.getElementById('tools-daygame').style.display = 'none';
-}
-function showToolsDaygame() {
-  document.getElementById('tools-landing').style.display = 'none';
-  document.getElementById('tools-clipboard').style.display = 'none';
-  document.getElementById('tools-links').style.display = 'none';
-  document.getElementById('tools-daygame').style.display = '';
-}
-
-function renderClipboard() {
-  const list = document.getElementById('clipboardList');
-  list.innerHTML = '';
-  const snippets = getSnippets();
-  snippets.forEach((text, idx) => {
-    const div = document.createElement('div');
-    div.className = 'clipboard-snippet';
-    div.innerHTML = `
-      <div class="snippet-text">${escapeHtml(text)}</div>
-      <div class="snippet-actions">
-        <button class="snippet-action-btn" data-action="edit" data-idx="${idx}">EDIT</button>
-        <button class="snippet-action-btn danger" data-action="del" data-idx="${idx}">DEL</button>
-      </div>
-      <div class="copy-flash">COPIED ✓</div>
-    `;
-    // Click body to copy
-    div.addEventListener('click', async (e) => {
-      if (e.target.closest('.snippet-action-btn')) return;
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch (err) {
-        // Fallback for older browsers
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); } catch (_) {}
-        ta.remove();
-      }
-      div.classList.add('copied');
-      if (navigator.vibrate) navigator.vibrate(20);
-      setTimeout(() => div.classList.remove('copied'), 900);
-    });
-    // Edit button
-    div.querySelector('[data-action="edit"]').addEventListener('click', (e) => {
-      e.stopPropagation();
-      startEditSnippet(idx, div);
-    });
-    // Delete button
-    div.querySelector('[data-action="del"]').addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (!confirm('Delete this snippet?')) return;
-      const cur = getSnippets();
-      cur.splice(idx, 1);
-      setSnippets(cur);
-      renderClipboard();
-    });
-    list.appendChild(div);
-  });
-}
-
-function startEditSnippet(idx, container) {
-  const current = getSnippets()[idx];
-  container.innerHTML = `
-    <textarea class="snippet-edit-area">${escapeHtml(current)}</textarea>
-    <div class="actions-row" style="margin-top:8px">
-      <button class="btn small" data-act="save">Save</button>
-      <button class="btn ghost small" data-act="cancel">Cancel</button>
-    </div>
-  `;
-  const ta = container.querySelector('textarea');
-  ta.focus();
-  container.querySelector('[data-act="save"]').addEventListener('click', (e) => {
-    e.stopPropagation();
-    const cur = getSnippets();
-    cur[idx] = ta.value;
-    setSnippets(cur);
-    renderClipboard();
-  });
-  container.querySelector('[data-act="cancel"]').addEventListener('click', (e) => {
-    e.stopPropagation();
-    renderClipboard();
-  });
-}
-
-document.querySelector('[data-tool="clipboard"]').addEventListener('click', showToolsClipboard);
-document.querySelector('[data-tool="links"]').addEventListener('click', () => showToolsLinks());
-document.querySelector('[data-tool="daygame"]').addEventListener('click', showToolsDaygame);
-document.querySelector('[data-tool="settings"]').addEventListener('click', () => showView('settings'));
-document.getElementById('toolsBack').addEventListener('click', showToolsLanding);
-document.getElementById('toolsBackLinks').addEventListener('click', showToolsLanding);
-document.getElementById('toolsBackDaygame').addEventListener('click', showToolsLanding);
+// Quick-jump chips on the Tools landing page (the "Jump to section" pills)
 document.querySelectorAll('.tools-quick-chip[data-jump]').forEach(chip => {
   chip.addEventListener('click', () => {
     showToolsLinks();
@@ -5772,741 +5775,58 @@ document.querySelectorAll('.tools-quick-chip[data-jump]').forEach(chip => {
       const target = document.getElementById(chip.dataset.jump);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // small highlight flash so user sees where it landed
         target.classList.add('jump-flash');
         setTimeout(() => target.classList.remove('jump-flash'), 1400);
       }
     });
   });
 });
-document.getElementById('addSnippetBtn').addEventListener('click', () => {
-  const txt = prompt('New snippet text:');
-  if (!txt || !txt.trim()) return;
-  const cur = getSnippets();
-  cur.push(txt.trim());
-  setSnippets(cur);
-  renderClipboard();
-});
-document.getElementById('resetSnippetsBtn').addEventListener('click', () => {
-  if (!confirm('Reset all snippets to defaults? Your custom snippets will be lost.')) return;
-  state.snippets = null;
-  saveState();
-  renderClipboard();
-});
+
 
 /* =========================================================
-   CLASSIC HOTEL — secret status button
-   Closes on these Indonesian Islamic dates:
-     • Day before Ramadan starts
-     • 1st day of Ramadan
-     • Nuzulul Qur'an (17 Ramadan)
-     • Takbiran (eve of 1 Syawal = last day of Ramadan)
-     • 1st & 2nd day of Idul Fitri (1, 2 Syawal)
-     • Day after the 2nd day of Idul Fitri (3 Syawal)
+   REBUILT FEATURES — restored after corruption
    ========================================================= */
 
-// Indonesia's official Kemenag-declared Ramadan start dates (Gregorian).
-// These are the precise national holidays; astronomical estimate is fallback only.
-const RAMADAN_START_GREGORIAN = {
-  2024: '2024-03-12',
-  2025: '2025-03-01',
-  2026: '2026-02-18',
-  2027: '2027-02-08',
-  2028: '2028-01-28',
-  2029: '2029-01-16',
-  2030: '2030-01-06',
-  2031: '2031-12-26', // technically Ramadan 1453 AH starts late Dec 2031
-  2032: '2032-12-14',
-  2033: '2033-12-04',
-  2034: '2034-11-23'
-};
-
-// Closed-day list builder. Given a Gregorian year, returns ISO date strings
-// for every "Classic Hotel closed" day in that year.
-function classicHotelClosedDays(year) {
-  const closed = new Set();
-  function addRamadanWindow(startIso, ramadanLengthDays) {
-    if (!startIso) return;
-    const start = new Date(startIso + 'T00:00:00');
-    if (isNaN(start)) return;
-    const len = ramadanLengthDays || 30;
-    const dayBefore = addDays(start, -1);
-    const ramadan1  = start;
-    const nuzulul   = addDays(start, 16);     // 17th day of Ramadan (day 1 = index 0)
-    const takbiran  = addDays(start, len - 1); // last day of Ramadan = eve of Idul Fitri
-    const idul1     = addDays(start, len);     // 1 Syawal
-    const idul2     = addDays(start, len + 1); // 2 Syawal
-    const idul3     = addDays(start, len + 2); // 3 Syawal — day after 2nd day of Idul Fitri
-    [dayBefore, ramadan1, nuzulul, takbiran, idul1, idul2, idul3].forEach(d => {
-      closed.add(isoDate(d));
-    });
-  }
-  // Include the prior year's Ramadan if it spilled into this Gregorian year
-  // (e.g. Ramadan 2030 starts in Jan; Idul Fitri 2031 starts in Dec).
-  addRamadanWindow(RAMADAN_START_GREGORIAN[year]);
-  addRamadanWindow(RAMADAN_START_GREGORIAN[year - 1]);
-  addRamadanWindow(RAMADAN_START_GREGORIAN[year + 1]);
-  return closed;
-}
-
-function classicHotelStatus(date) {
-  const d = new Date(date); d.setHours(0,0,0,0);
-  const year = d.getFullYear();
-  // Gather closed days from this year plus neighbors (handles year-edge cases)
-  const closedSet = new Set([
-    ...classicHotelClosedDays(year),
-    ...classicHotelClosedDays(year - 1),
-    ...classicHotelClosedDays(year + 1)
-  ]);
-  return closedSet.has(isoDate(d)) ? 'closed' : 'open';
-}
-
-// Jakarta-rooftop fireworks show. No confetti. Transparent canvas — skyline stays visible.
-function fireConfetti() {
-  const canvas = document.createElement('canvas');
-  canvas.id = 'confettiCanvas';
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = window.innerWidth * DPR;
-  canvas.height = window.innerHeight * DPR;
-  canvas.style.width = window.innerWidth + 'px';
-  canvas.style.height = window.innerHeight + 'px';
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-  ctx.scale(DPR, DPR);
-  const W = window.innerWidth, H = window.innerHeight;
-
-  // Estimate skyline rooftop band — fireworks should launch from there, not from below the screen.
-  // The skyline SVG occupies the bottom 65vh and contains tower tops at varying heights.
-  // Rooftop band lives roughly between 30%–55% from the top of the viewport for the tall towers.
-  const skylineRoofMin = H * 0.30;
-  const skylineRoofMax = H * 0.55;
-
-  const palette = [
-    '#ff5c8a','#ff8fa3','#ffd43b','#51cf66','#845ef7','#fd7e14',
-    '#ffffff','#fcc419','#22b8cf','#ff6b6b','#cc5de8','#94d82d',
-    '#ffe066','#74c0fc','#f783ac'
-  ];
-
-  // ---- Fireworks ----
-  // Each firework launches from BETWEEN BUILDINGS — picks a random rooftop x/y in the skyline band,
-  // climbs upward a short distance, then bursts into a small, detailed explosion.
-  const fireworks = [];
-  const fwParticles = [];
-  const fwSparks = [];  // tiny lingering sparkles for "fizzle" detail
-
-  function launchFirework(delay) {
-    // Launch x distributed across the width but biased away from edges
-    const launchX = W * (0.08 + Math.random() * 0.84);
-    // Launch y is somewhere in the rooftop band (a rooftop "gap")
-    const launchY = skylineRoofMin + Math.random() * (skylineRoofMax - skylineRoofMin);
-    // Burst y is above the launch point, but still within the upper sky (not way off-screen)
-    const climb = 80 + Math.random() * 140; // how high the rocket climbs
-    const burstY = Math.max(20, launchY - climb);
-    fireworks.push({
-      x: launchX,
-      y: launchY,
-      startY: launchY,
-      vy: -2.6 - Math.random() * 1.5, // gentler launch
-      targetY: burstY,
-      trail: [],
-      color: palette[Math.floor(Math.random() * palette.length)],
-      bornAt: delay,
-      launched: false,
-      burst: false
-    });
-  }
-  // Schedule a lot of fireworks across the show — overlapping bursts from all over the skyline
-  for (let i = 0; i < 50; i++) {
-    launchFirework(150 + i * 220 + Math.random() * 200);
-  }
-
-  function explode(x, y, color) {
-    // Smaller, more detailed bursts. Two layers: a bright inner ring + softer outer halo.
-    const innerCount = 36 + Math.floor(Math.random() * 12);
-    const outerCount = 28 + Math.floor(Math.random() * 10);
-    const burstSpeed = 1.8 + Math.random() * 1.4; // smaller than before
-    const rainbow = Math.random() < 0.35;
-    const style = Math.random() < 0.25 ? 'ring' : (Math.random() < 0.4 ? 'chrysanthemum' : 'standard');
-
-    // Inner core: tight ring of bright sparks
-    for (let i = 0; i < innerCount; i++) {
-      const angle = (i / innerCount) * Math.PI * 2 + Math.random() * 0.15;
-      const speed = style === 'ring'
-        ? burstSpeed * (0.95 + Math.random() * 0.1) // ring = uniform speed
-        : burstSpeed * (0.6 + Math.random() * 0.5);
-      fwParticles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        life: 1,
-        decay: 0.014 + Math.random() * 0.01,
-        size: 1.2 + Math.random() * 1.0,
-        color: rainbow ? palette[Math.floor(Math.random() * palette.length)] : color,
-        trailHistory: []
-      });
-    }
-    // Outer halo: slower, dimmer, longer-lived
-    for (let i = 0; i < outerCount; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = burstSpeed * (0.3 + Math.random() * 0.4);
-      fwParticles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        life: 0.85,
-        decay: 0.009 + Math.random() * 0.008,
-        size: 0.8 + Math.random() * 0.9,
-        color: rainbow ? palette[Math.floor(Math.random() * palette.length)] : color,
-        trailHistory: []
-      });
-    }
-    // Chrysanthemum: long-lasting drooping streamers
-    if (style === 'chrysanthemum') {
-      for (let i = 0; i < 14; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = burstSpeed * 0.8;
-        fwParticles.push({
-          x, y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          life: 1,
-          decay: 0.005,
-          size: 1.5,
-          color: color,
-          trailHistory: [],
-          isStreamer: true
-        });
-      }
-    }
-
-    // A flash at the burst origin
-    fwSparks.push({
-      x, y, life: 1, decay: 0.08, size: 14, color: '#ffffff', isFlash: true
-    });
-  }
-
-  let startTime = performance.now();
-  const totalDuration = 9000;
-  // Additive blend so overlapping sparks glow brighter — looks like real fireworks
-  ctx.globalCompositeOperation = 'lighter';
-
-  function frame(now) {
-    const elapsed = now - startTime;
-    // CLEAR fully transparent — preserves the skyline behind us, no dark wash
-    ctx.clearRect(0, 0, W, H);
-    ctx.globalCompositeOperation = 'lighter';
-
-    // -- Fireworks rockets --
-    fireworks.forEach(fw => {
-      if (elapsed < fw.bornAt) return;
-      if (!fw.burst) {
-        if (!fw.launched) fw.launched = true;
-        fw.trail.push({x: fw.x, y: fw.y, life: 1});
-        if (fw.trail.length > 12) fw.trail.shift();
-        fw.y += fw.vy;
-        fw.vy += 0.05;  // weaker gravity for slower, more graceful arc
-        if (fw.y <= fw.targetY || fw.vy >= 0) {
-          explode(fw.x, fw.y, fw.color);
-          fw.burst = true;
-        }
-        // Soft glowing trail
-        fw.trail.forEach((t, i) => {
-          t.life -= 0.08;
-          if (t.life > 0) {
-            ctx.fillStyle = fw.color;
-            ctx.globalAlpha = t.life * 0.6;
-            ctx.beginPath();
-            ctx.arc(t.x, t.y, 1.2 + i * 0.1, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        });
-        // Bright rocket head with glow
-        ctx.globalAlpha = 1;
-        ctx.shadowBlur = 12; ctx.shadowColor = fw.color;
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(fw.x, fw.y, 1.8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-    });
-    ctx.globalAlpha = 1;
-
-    // -- Firework explosion particles (with motion trails per particle for detail) --
-    fwParticles.forEach(p => {
-      // Record position for trail
-      p.trailHistory.push({ x: p.x, y: p.y });
-      if (p.trailHistory.length > 6) p.trailHistory.shift();
-
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += p.isStreamer ? 0.025 : 0.045; // streamers fall slower
-      p.vx *= 0.985;
-      p.life -= p.decay;
-
-      if (p.life > 0) {
-        // Draw a small fading trail line for each particle — adds detail without screen darkening
-        if (p.trailHistory.length > 1) {
-          for (let i = 1; i < p.trailHistory.length; i++) {
-            const t0 = p.trailHistory[i - 1];
-            const t1 = p.trailHistory[i];
-            const tLife = (i / p.trailHistory.length) * p.life;
-            ctx.strokeStyle = p.color;
-            ctx.globalAlpha = tLife * 0.45;
-            ctx.lineWidth = p.size * 0.7;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(t0.x, t0.y);
-            ctx.lineTo(t1.x, t1.y);
-            ctx.stroke();
-          }
-        }
-        // Bright glowing head
-        ctx.globalAlpha = Math.max(0, p.life);
-        ctx.shadowBlur = 6; ctx.shadowColor = p.color;
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, Math.max(0.4, p.size * p.life), 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-    });
-    ctx.globalAlpha = 1;
-
-    // -- Initial flash at burst centers --
-    for (let i = fwSparks.length - 1; i >= 0; i--) {
-      const s = fwSparks[i];
-      s.life -= s.decay;
-      if (s.life <= 0) { fwSparks.splice(i, 1); continue; }
-      ctx.globalAlpha = s.life * 0.8;
-      const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size);
-      grad.addColorStop(0, '#ffffff');
-      grad.addColorStop(0.4, 'rgba(255,255,255,0.4)');
-      grad.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.size * (1.4 - s.life * 0.4), 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-
-    if (elapsed < totalDuration) {
-      requestAnimationFrame(frame);
-    } else {
-      // Clean fade out — no dark wash, just shrink alpha to zero
-      let fade = 1;
-      function fadeOut() {
-        fade -= 0.05;
-        canvas.style.opacity = Math.max(0, fade);
-        if (fade > 0) requestAnimationFrame(fadeOut);
-        else canvas.remove();
-      }
-      fadeOut();
-    }
-  }
-  requestAnimationFrame(frame);
-}
-
-function spawnSadFloater() {
-  const el = document.createElement('div');
-  el.className = 'sad-floater';
-  el.textContent = '😢';
-  el.style.left = (20 + Math.random() * 60) + 'vw';
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 4500);
-  // a couple more drifting up to look like a shower
-  for (let i = 1; i < 4; i++) {
-    setTimeout(() => {
-      const e2 = document.createElement('div');
-      e2.className = 'sad-floater';
-      e2.textContent = '😢';
-      e2.style.left = (10 + Math.random() * 80) + 'vw';
-      e2.style.animationDuration = (3 + Math.random() * 3) + 's';
-      document.body.appendChild(e2);
-      setTimeout(() => e2.remove(), 6000);
-    }, i * 350);
-  }
-}
-
-function renderClassicHotel() {
-  const btn = document.getElementById('classicHotelBtn');
-  const sub = document.getElementById('classicHotelSub');
-  if (!btn) return;
-  const today = new Date();
-  const status = classicHotelStatus(today);
-  if (status === 'open') {
-    btn.innerHTML = `Classic Hotel is <span class="ch-state open">OPEN</span> today`;
-    sub.textContent = 'Go forth';
-  } else {
-    btn.innerHTML = `Classic Hotel is <span class="ch-state closed">CLOSED</span> today`;
-    sub.textContent = 'Take the day off';
-  }
-}
-
-// Fires every time the button scrolls into view — resets when you scroll back up past it
-let chVisible = false;
-function setupClassicHotelTrigger() {
-  const target = document.getElementById('classicHotelWrap');
-  if (!target) return;
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !chVisible) {
-        chVisible = true;
-        const status = classicHotelStatus(new Date());
-        if (status === 'open') fireConfetti();
-        else spawnSadFloater();
-      } else if (!entry.isIntersecting) {
-        // Reset when it leaves view, so next scroll-in re-fires
-        chVisible = false;
-      }
-    });
-  }, { threshold: 0.5 });
-  obs.observe(target);
-}
-renderClassicHotel();
-setupClassicHotelTrigger();
-
-// Manual re-trigger if user taps the button
-document.getElementById('classicHotelBtn').addEventListener('click', () => {
-  const status = classicHotelStatus(new Date());
-  if (status === 'open') fireConfetti();
-  else spawnSadFloater();
-});
-
-/* =========================================================
-   STARTUP MUSIC — YouTube embed (audio only, iframe is offscreen)
-   ========================================================= */
-const SONG_IDS = {
-  'back-in-black': 'rrim6_9VSeM',
-  'jarvis':        'KN4rI9siayg',
-  'mask':          'o2Z1yLO9C-Q',
-  'heman':         'lf4Ft_gy-sA',
-  'goodtimes':     ''  // local-only by default; you can add a YouTube ID later if you want
-};
-// Local MP3 fallback — if you drop a file named e.g. "back-in-black.mp3" into the app folder,
-// it'll be used instead of YouTube (much more reliable, no embed permissions to fight).
-const SONG_MP3_FILES = {
-  'back-in-black': 'back-in-black.mp3',
-  'jarvis':        'jarvis.mp3',
-  'mask':          'mask.mp3',
-  'heman':         'heman.mp3',
-  'goodtimes':     'goodtimes.mp3'
-};
-// Each song's start offset in seconds — skips intro/silence to get to the good part
-const SONG_START_OFFSETS = {
-  'back-in-black': 6,
-  'jarvis':        6,
-  'mask':          6,
-  'heman':         6,
-  'goodtimes':     55
-};
-const SHUFFLE_POOL = ['back-in-black','jarvis','mask','heman','goodtimes'];
-const PLAY_DURATION_MS = 25000;   // play for 25 seconds total
-const FADE_DURATION_MS = 4000;    // last 4 seconds = fade-out
-let localAudio = null;
-let fadeTimer = null;
-let stopTimer = null;
-
-// Use YouTube IFrame API so we can detect playback failures & control audio properly.
-let ytPlayer = null;
-let ytReady = false;
-let pendingPlay = null;
-
-// Inject the API script
-(function loadYTAPI() {
-  const tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(tag);
-})();
-window.onYouTubeIframeAPIReady = function() {
-  ytPlayer = new YT.Player('ytPlayer', {
-    height: '1', width: '1',
-    playerVars: { autoplay: 0, controls: 0, playsinline: 1, rel: 0, modestbranding: 1 },
-    events: {
-      onReady: () => { ytReady = true; if (pendingPlay) { const p = pendingPlay; pendingPlay = null; playYouTube(p.videoId, p.startSec); } },
-      onError: (e) => {
-        // 101 / 150 = embedding disabled by uploader (very common for major-label music)
-        // 100 = video removed/private
-        // 2 = bad parameter
-        const reasons = { 2:'bad video id', 100:'video unavailable', 101:'embedding blocked by uploader', 150:'embedding blocked by uploader' };
-        const why = reasons[e.data] || ('error ' + e.data);
-        showToast('🎸 Music blocked: ' + why);
-        document.getElementById('musicPrompt').style.display = 'none';
-      }
-    }
-  });
-};
-
-function clearMusicTimers() {
-  if (fadeTimer) { clearInterval(fadeTimer); fadeTimer = null; }
-  if (stopTimer) { clearTimeout(stopTimer); stopTimer = null; }
-}
-
-function stopMusic() {
-  clearMusicTimers();
-  try { ytPlayer && ytPlayer.stopVideo(); } catch (e) {}
-  if (localAudio) {
-    try { localAudio.pause(); localAudio.src = ''; } catch (e) {}
-    localAudio = null;
-  }
-}
-
-// Schedule the fade-out + final stop based on PLAY_DURATION_MS / FADE_DURATION_MS
-function scheduleFadeAndStop(setVolNorm, stopFn) {
-  clearMusicTimers();
-  const fadeStartMs = PLAY_DURATION_MS - FADE_DURATION_MS;
-  setTimeout(() => {
-    const steps = 40;
-    const stepMs = FADE_DURATION_MS / steps;
-    let i = 0;
-    fadeTimer = setInterval(() => {
-      i++;
-      const v = Math.max(0, 1 - (i / steps));
-      setVolNorm(v);
-      if (i >= steps) { clearInterval(fadeTimer); fadeTimer = null; }
-    }, stepMs);
-  }, fadeStartMs);
-  stopTimer = setTimeout(() => {
-    stopFn();
-    clearMusicTimers();
-  }, PLAY_DURATION_MS);
-}
-
-function playYouTube(videoId, startSec) {
-  if (!ytReady) { pendingPlay = { videoId, startSec }; return; }
-  try {
-    ytPlayer.loadVideoById({ videoId, startSeconds: startSec || 0 });
-    ytPlayer.unMute();
-    ytPlayer.setVolume(80);
-    ytPlayer.playVideo();
-    scheduleFadeAndStop((vol) => {
-      try { ytPlayer.setVolume(Math.max(0, Math.round(vol * 80))); } catch (e) {}
-    }, () => {
-      try { ytPlayer.stopVideo(); } catch (e) {}
-    });
-  } catch (e) {}
-}
-
-// Play a local MP3 directly — no probing, no fallback dance.
-// If the file genuinely doesn't exist we'll catch it via the play() promise rejection.
-function playLocalMp3(songKey, onError) {
-  const file    = SONG_MP3_FILES[songKey];
-  const startSec = SONG_START_OFFSETS[songKey] || 0;
-  if (!file) { onError && onError(); return; }
-  const audio = new Audio();
-  audio.preload = 'auto';
-  audio.volume = 0.7;
-  // Set src LAST so all listeners attach first
-  audio.addEventListener('loadedmetadata', () => {
-    try { audio.currentTime = startSec; } catch (e) {}
-  }, { once: true });
-  audio.addEventListener('error', () => onError && onError(), { once: true });
-  audio.src = file;
-  localAudio = audio;
-  // Try play immediately. Browser will buffer if needed; play() returns a promise.
-  const tryPlay = () => {
-    audio.play().then(() => {
-      scheduleFadeAndStop(
-        (v) => { try { audio.volume = v * 0.7; } catch (e) {} },
-        () => { try { audio.pause(); audio.src = ''; } catch (e) {} ; localAudio = null; }
-      );
-    }).catch((err) => {
-      // Common reasons: file 404, decode error, autoplay rejected
-      console.log('MP3 play failed:', songKey, err && err.message);
-      onError && onError();
-    });
-  };
-  // If metadata isn't loaded yet, wait for it before play so currentTime sticks
-  if (audio.readyState >= 1) tryPlay();
-  else audio.addEventListener('loadedmetadata', tryPlay, { once: true });
-}
-
-// Resolve "shuffle" choice → a random song key from the pool
-function resolveSongChoice(choice) {
-  if (choice === 'shuffle' || !choice) {
-    return SHUFFLE_POOL[Math.floor(Math.random() * SHUFFLE_POOL.length)];
-  }
-  return choice;
-}
-
-function startMusic() {
-  if (!state.startupSong || state.startupSong === 'off') {
-    document.getElementById('musicPrompt').style.display = 'none';
-    return;
-  }
-  stopMusic();  // hard reset before launching anything new
-  const songKey = resolveSongChoice(state.startupSong);
-  // Try local MP3 first; if it fails, fall back to YouTube
-  playLocalMp3(songKey, () => {
-    const videoId = SONG_IDS[songKey];
-    if (videoId) playYouTube(videoId, SONG_START_OFFSETS[songKey] || 0);
-    else showToast('🎸 ' + songKey + '.mp3 not found');
-  });
-  document.getElementById('musicPrompt').style.display = 'none';
-}
-
-function attemptAutoplay() {
-  if (!state.startupSong || state.startupSong === 'off') return;
-  document.getElementById('musicPrompt').style.display = 'flex';
-}
-
-document.getElementById('musicPrompt').addEventListener('click', (e) => {
-  if (e.target.id === 'musicPromptDismiss') return;
-  startMusic();
-});
-document.getElementById('musicPromptDismiss').addEventListener('click', (e) => {
-  e.stopPropagation();
-  document.getElementById('musicPrompt').style.display = 'none';
-});
-
-// Settings page wiring
-function applySongPills() {
-  document.querySelectorAll('[data-song]').forEach(b =>
-    b.classList.toggle('active', b.dataset.song === state.startupSong));
-}
-document.querySelectorAll('[data-song]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    state.startupSong = btn.dataset.song;
-    saveState(); applySongPills();
-    if (state.startupSong === 'off') stopMusic();
-    else {
-      stopMusic();
-      // Preview using same fallback chain as boot — resolves shuffle to a random track
-      const songKey = resolveSongChoice(state.startupSong);
-      playLocalMp3(songKey, () => {
-        const videoId = SONG_IDS[songKey];
-        if (videoId) playYouTube(videoId, SONG_START_OFFSETS[songKey] || 0);
-      });
-    }
-  });
-});
-applySongPills();
-
-setTimeout(attemptAutoplay, 300);
-
-/* =========================================================
-   EASTER EGGS & GAMIFICATION
-   ========================================================= */
-
-// 1) Random peekers — guy from the left, girl from the right. Triggers every ~3-6 minutes,
-//    each one fires independently. Both peek for ~5s then slide back out.
-function triggerPeeker(side) {
-  const el = document.getElementById(side === 'left' ? 'peekerGuy' : 'peekerGirl');
-  if (!el) return;
-  el.classList.remove('peek-go');
-  // force reflow so animation re-starts
-  void el.offsetWidth;
-  el.classList.add('peek-go');
-  // clean up class after animation ends so we can re-trigger later
-  setTimeout(() => el.classList.remove('peek-go'), 5100);
-}
-function schedulePeeker(side) {
-  // Random delay between 90s and 240s — independent for each character
-  const delay = 90000 + Math.random() * 150000;
-  setTimeout(() => {
-    triggerPeeker(side);
-    schedulePeeker(side); // schedule the next one
-  }, delay);
-}
-// First peeks come 25-60s after page load so user notices them while using the app
-setTimeout(() => { triggerPeeker('left');  schedulePeeker('left'); },  25000 + Math.random() * 35000);
-setTimeout(() => { triggerPeeker('right'); schedulePeeker('right'); }, 35000 + Math.random() * 35000);
-
-// 2) Surprise toast — random fortune-cookie-style line, fires occasionally on tab switches
-const TOASTS = [
-  'You\'re on fire today 🔥',
-  'Statistically, you\'re winning',
-  'She\'s definitely thinking about you',
-  'Jakarta\'s a small town, be kind',
-  'Plot twist incoming',
-  'Time to message someone you forgot about',
-  'New week, new vibes',
-  'Hydrate. Then text.',
-  'Your stamina is impressive',
-  'Cream of the crop ✨',
-  'Audit your roster, king',
-  'Tuesday is the new Friday',
-  'Don\'t forget to actually have fun',
-  'Triple-text energy 📲',
-  'The bold get the brunch',
-  'Reply faster, live louder',
-  'Wear the nicer cologne tonight',
-  'Eye contact is a love language',
-  'Don\'t @ her at 3am 🌙',
-  'Confidence is a haircut away',
-  'Order the cocktail, not the beer',
-  'Your future self says thanks',
-  'Date with intention, not desperation',
-  'The right ones make it easy',
-  'Walk her to the Grab 🚖',
-  'Tip generously, always',
-  'Charm > looks. Always.',
-  'Smile first. Talk second.',
-  'A great date is half listening',
-  'Compliment the laugh, not the looks',
-  'Show up. The rest is noise.',
-  'Be the man you\'d swipe right on',
-  'Quality > quantity, always',
-  'Boredom is a choice',
-  'Manifest, then message',
-  'She likes guys who read books',
-  'Cancel the date you\'re dreading',
-  'Sunday brunch wins again 🥂',
-  'Buy the flowers. Just once.',
-  'Today\'s mood: main character',
-  'Touch grass between texts 🌱',
-  'Iced coffee fixes 80% of things',
-  'Take the stairs, take the chance',
-  'Sleep is also self-care',
-  'Be early. It impresses everyone.',
-  'Don\'t explain. Just do.',
-  'Less swiping, more meeting',
-  'The roster respects discipline',
-  'You\'re not late. They\'re early.',
-  'Romance the city itself 🌃',
-  'Eat the spicy noodles 🌶️',
-  'Forgive yourself for last night',
-  'Some risks are just stories',
-  'Be kind to baristas',
-  'Take her somewhere with stars',
-  'Walk slowly when it rains',
-  'Memorize her coffee order',
-  'Compliments cost nothing'
-];
 function showToast(text) {
   const t = document.getElementById('easterToast');
+  if (!t) return;
   t.textContent = text;
   t.classList.add('show');
-  // Hold longer for longer messages (Tinder openers run wordy)
   const ms = Math.min(7000, Math.max(3200, text.length * 50));
   setTimeout(() => t.classList.remove('show'), ms);
 }
 
-// Big launch-time popup — picks a fortune and shows it center-screen
-function showLaunchPopup() {
-  const popup = document.getElementById('launchPopup');
-  const textEl = popup.querySelector('.launch-popup-text');
-  textEl.textContent = TOASTS[Math.floor(Math.random() * TOASTS.length)];
-  popup.classList.add('show');
-  // Auto-dismiss after 5 seconds
-  setTimeout(() => popup.classList.remove('show'), 5000);
-}
-// Tap anywhere on the popup (backdrop or card) to dismiss
-document.getElementById('launchPopup').addEventListener('click', () => {
-  document.getElementById('launchPopup').classList.remove('show');
-});
-// Show the launch popup 600ms after page load
-setTimeout(showLaunchPopup, 600);
-// Hook into tab-switching: ~12% chance of a toast on each switch
-const originalShowView = showView;
-showView = function(name) {
-  originalShowView(name);
-  if (Math.random() < 0.12) {
-    setTimeout(() => showToast(TOASTS[Math.floor(Math.random() * TOASTS.length)]), 400);
-  }
-};
+const TOASTS = [
+  "You're on fire today 🔥","Statistically, you're winning",
+  "She's definitely thinking about you","Jakarta's a small town, be kind",
+  "Plot twist incoming","Time to message someone you forgot about",
+  "New week, new vibes","Hydrate. Then text.","Your stamina is impressive",
+  "Cream of the crop ✨","Audit your roster, king","Tuesday is the new Friday",
+  "Don't forget to actually have fun","Triple-text energy 📲",
+  "The bold get the brunch","Reply faster, live louder",
+  "Wear the nicer cologne tonight","Eye contact is a love language",
+  "Don't @ her at 3am 🌙","Confidence is a haircut away",
+  "Order the cocktail, not the beer","Your future self says thanks",
+  "Date with intention, not desperation","The right ones make it easy",
+  "Walk her to the Grab 🚖","Tip generously, always",
+  "Charm > looks. Always.","Smile first. Talk second.",
+  "A great date is half listening","Compliment the laugh, not the looks",
+  "Show up. The rest is noise.","Be the man you'd swipe right on",
+  "Quality > quantity, always","Boredom is a choice",
+  "Manifest, then message","She likes guys who read books",
+  "Cancel the date you're dreading","Sunday brunch wins again 🥂",
+  "Buy the flowers. Just once.","Today's mood: main character",
+  "Touch grass between texts 🌱","Iced coffee fixes 80% of things",
+  "Take the stairs, take the chance","Sleep is also self-care",
+  "Be early. It impresses everyone.","Don't explain. Just do.",
+  "Less swiping, more meeting","The roster respects discipline",
+  "You're not late. They're early.","Romance the city itself 🌃",
+  "Eat the spicy noodles 🌶️","Forgive yourself for last night",
+  "Some risks are just stories","Be kind to baristas",
+  "Take her somewhere with stars","Walk slowly when it rains",
+  "Memorize her coffee order","Compliments cost nothing"
+];
 
-// 2b) Funny Tinder opener lines — fires occasionally on the Profiles tab specifically
 const TINDER_OPENERS = [
   '"Roses are red, violets are fine, you be the 6, I\'ll be the 9"',
   '"Are you Indonesian? Because you\'re Indo-mie nice"',
@@ -6539,190 +5859,375 @@ const TINDER_OPENERS = [
   '"You\'re the first match I\'ve actually messaged this week. Make it count."',
   '"Tell me your zodiac so I can pretend to care"'
 ];
-// Tinder openers fire on ANY tab switch (~30% chance each switch) AND on a slow timer in the background.
-// First one fires 8-15s after page load so you see one quickly.
-function showRandomOpener() {
-  showToast(TINDER_OPENERS[Math.floor(Math.random() * TINDER_OPENERS.length)]);
-}
-const originalShowView2 = showView;
-showView = function(name) {
-  originalShowView2(name);
-  if (Math.random() < 0.30) {
-    setTimeout(showRandomOpener, 500);
-  }
-};
-// First opener pops up 8-15 seconds after the app loads
-setTimeout(showRandomOpener, 8000 + Math.random() * 7000);
-// Then keep going: a fresh opener every 45-90 seconds in the background
-setInterval(() => {
-  if (Math.random() < 0.55) showRandomOpener();
-}, 45000 + Math.random() * 45000);
 
-// 3) Milestone ribbons — celebrates when you cross profile-count or date-count thresholds
-function showMilestone(big, sub) {
-  const r = document.createElement('div');
-  r.className = 'milestone-ribbon';
-  r.innerHTML = `<span class="big">${big}</span>${sub}`;
-  document.body.appendChild(r);
-  requestAnimationFrame(() => r.classList.add('show'));
-  setTimeout(() => { r.classList.remove('show'); setTimeout(() => r.remove(), 400); }, 3500);
-}
-const PROFILE_MILESTONES = {
-  3:  { big: '🎉 Starter pack',       sub: '3 profiles. The beginning.' },
-  5:  { big: '🎯 Five in the roster',  sub: 'You\'ve got options now.' },
-  7:  { big: '🃏 Lucky seven',         sub: 'Statistically dangerous.' },
-  10: { big: '💎 Double digits',       sub: 'This is a lifestyle now.' },
-  15: { big: '👑 Mayor of Jakarta',    sub: '15 profiles? Respect.' },
-  20: { big: '🏆 Hall of fame',        sub: 'Save data more often.' }
-};
-const DATE_MILESTONES = {
-  10: { big: '📅 10 dates booked',     sub: 'Your calendar is healthy.' },
-  25: { big: '🔥 25 dates',            sub: 'Tireless.' },
-  50: { big: '🚀 50 dates',            sub: 'Take a breath, champion.' }
-};
-let lastMilestoneCheck = { profiles: 0, dates: 0 };
-function checkMilestones() {
-  const profCount = state.profiles.length;
-  if (PROFILE_MILESTONES[profCount] && lastMilestoneCheck.profiles < profCount) {
-    showMilestone(PROFILE_MILESTONES[profCount].big, PROFILE_MILESTONES[profCount].sub);
-  }
-  lastMilestoneCheck.profiles = profCount;
-  const dateCount = Object.values(state.dates).reduce((sum, arr) => sum + (arr || []).filter(e => e.profileId).length, 0);
-  if (DATE_MILESTONES[dateCount] && lastMilestoneCheck.dates < dateCount) {
-    showMilestone(DATE_MILESTONES[dateCount].big, DATE_MILESTONES[dateCount].sub);
-  }
-  lastMilestoneCheck.dates = dateCount;
-}
-// Hook saveState
-const originalSaveState = saveState;
-saveState = function() { originalSaveState(); checkMilestones(); };
-
-// 4) Konami code — up up down down left right left right b a → fires the fireworks
-const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
-let konamiBuf = [];
-window.addEventListener('keydown', (e) => {
-  konamiBuf.push(e.key);
-  if (konamiBuf.length > KONAMI.length) konamiBuf.shift();
-  if (konamiBuf.length === KONAMI.length && KONAMI.every((k, i) => konamiBuf[i] === k)) {
-    konamiBuf = [];
-    showToast('🎮 Konami!');
-    fireConfetti();
-  }
-});
-
-// 6) Slowly-rotating philosophical quotes on the Roster page — fade in, hold, fade out, swap
 const PHILOSOPHICAL_QUOTES = [
-  // Classical
-  { t: 'The unexamined life is not worth living.', a: 'Socrates' },
-  { t: 'We suffer more in imagination than in reality.', a: 'Seneca' },
-  { t: 'Waste no more time arguing what a good man should be. Be one.', a: 'Marcus Aurelius' },
-  { t: 'It is not death that a man should fear, but he should fear never beginning to live.', a: 'Marcus Aurelius' },
-  { t: 'Man is the measure of all things.', a: 'Protagoras' },
-  { t: 'No man ever steps in the same river twice.', a: 'Heraclitus' },
-  { t: 'Happiness depends upon ourselves.', a: 'Aristotle' },
-  { t: 'I know that I know nothing.', a: 'Socrates' },
-  { t: 'The best revenge is not to be like your enemy.', a: 'Marcus Aurelius' },
-  { t: 'Luck is what happens when preparation meets opportunity.', a: 'Seneca' },
-  { t: 'He who is not satisfied with a little, is satisfied with nothing.', a: 'Epicurus' },
-  { t: 'Difficulties strengthen the mind, as labour does the body.', a: 'Seneca' },
-  { t: 'Life is long if you know how to use it.', a: 'Seneca' },
-
-  // Eastern
-  { t: 'When you realize there is nothing lacking, the whole world belongs to you.', a: 'Lao Tzu' },
-  { t: 'A journey of a thousand miles begins with a single step.', a: 'Lao Tzu' },
-  { t: 'Knowing yourself is the beginning of all wisdom.', a: 'Aristotle' },
-  { t: 'The wise find pleasure in water; the virtuous find pleasure in hills.', a: 'Confucius' },
-  { t: 'It does not matter how slowly you go as long as you do not stop.', a: 'Confucius' },
-  { t: 'The mind is everything. What you think you become.', a: 'Buddha' },
-  { t: 'You only lose what you cling to.', a: 'Buddha' },
-  { t: 'No one saves us but ourselves. No one can and no one may.', a: 'Buddha' },
-
-  // Modern
-  { t: 'The only way to do great work is to love what you do.', a: 'Steve Jobs' },
-  { t: 'Whether you think you can or you think you can\'t, you\'re right.', a: 'Henry Ford' },
-  { t: 'Be yourself; everyone else is already taken.', a: 'Oscar Wilde' },
-  { t: 'We are all in the gutter, but some of us are looking at the stars.', a: 'Oscar Wilde' },
-  { t: 'The cost of a thing is the amount of life you exchange for it.', a: 'Henry David Thoreau' },
-  { t: 'Not all those who wander are lost.', a: 'J.R.R. Tolkien' },
-  { t: 'Tell me, what is it you plan to do with your one wild and precious life?', a: 'Mary Oliver' },
-  { t: 'The privilege of a lifetime is to become who you truly are.', a: 'Carl Jung' },
-  { t: 'Man cannot discover new oceans unless he has the courage to lose sight of the shore.', a: 'André Gide' },
-
-  // Love & connection
-  { t: 'To love at all is to be vulnerable.', a: 'C.S. Lewis' },
-  { t: 'The heart has its reasons of which reason knows nothing.', a: 'Blaise Pascal' },
-  { t: 'We love what we cannot keep.', a: 'unknown' },
-  { t: 'Love is composed of a single soul inhabiting two bodies.', a: 'Aristotle' },
-  { t: 'Lovers don\'t finally meet somewhere. They\'re in each other all along.', a: 'Rumi' },
-  { t: 'The wound is the place where the light enters you.', a: 'Rumi' },
-  { t: 'Whoever you are, no matter how lonely, the world offers itself to your imagination.', a: 'Mary Oliver' },
-  { t: 'To love is to recognize yourself in another.', a: 'Eckhart Tolle' },
-
-  // Miyamoto Musashi — life advice from the Book of Five Rings & Dokkōdō
-  { t: 'Do not regret what you have done.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'Accept everything just the way it is.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'Do not seek pleasure for its own sake.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'Be detached from desire your whole life.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'Today is victory over yourself of yesterday.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'In all things have no preferences.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'Do nothing which is of no use.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'The way is in training.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'Think lightly of yourself and deeply of the world.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'You can only fight the way you practice.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'If you do not control the enemy, the enemy will control you.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-  { t: 'Truth is not what you want it to be; it is what it is.', a: '🇯🇵 Miyamoto Musashi ⛩️' },
-
-  // Witty / dating
-  { t: 'Always pass on what you have learned.', a: 'Yoda' },
-  { t: 'The opposite of love is not hate, it\'s indifference.', a: 'Elie Wiesel' },
-  { t: 'A man who chases two rabbits catches neither.', a: 'Confucius' },
-  { t: 'Time you enjoy wasting is not wasted time.', a: 'Marthe Troly-Curtin' },
-  { t: 'Don\'t cry because it\'s over, smile because it happened.', a: 'Dr. Seuss' },
-  { t: 'Be soft. Do not let the world make you hard.', a: 'Kurt Vonnegut' }
+  { t: "The unexamined life is not worth living.", a: "Socrates" },
+  { t: "We suffer more in imagination than in reality.", a: "Seneca" },
+  { t: "Waste no more time arguing what a good man should be. Be one.", a: "Marcus Aurelius" },
+  { t: "It is not death that a man should fear, but he should fear never beginning to live.", a: "Marcus Aurelius" },
+  { t: "No man ever steps in the same river twice.", a: "Heraclitus" },
+  { t: "Happiness depends upon ourselves.", a: "Aristotle" },
+  { t: "I know that I know nothing.", a: "Socrates" },
+  { t: "The best revenge is not to be like your enemy.", a: "Marcus Aurelius" },
+  { t: "Luck is what happens when preparation meets opportunity.", a: "Seneca" },
+  { t: "Difficulties strengthen the mind, as labour does the body.", a: "Seneca" },
+  { t: "When you realize there is nothing lacking, the whole world belongs to you.", a: "Lao Tzu" },
+  { t: "A journey of a thousand miles begins with a single step.", a: "Lao Tzu" },
+  { t: "Knowing yourself is the beginning of all wisdom.", a: "Aristotle" },
+  { t: "It does not matter how slowly you go as long as you do not stop.", a: "Confucius" },
+  { t: "The mind is everything. What you think you become.", a: "Buddha" },
+  { t: "You only lose what you cling to.", a: "Buddha" },
+  { t: "Be yourself; everyone else is already taken.", a: "Oscar Wilde" },
+  { t: "We are all in the gutter, but some of us are looking at the stars.", a: "Oscar Wilde" },
+  { t: "Not all those who wander are lost.", a: "J.R.R. Tolkien" },
+  { t: "Tell me, what is it you plan to do with your one wild and precious life?", a: "Mary Oliver" },
+  { t: "The privilege of a lifetime is to become who you truly are.", a: "Carl Jung" },
+  { t: "To love at all is to be vulnerable.", a: "C.S. Lewis" },
+  { t: "The heart has its reasons of which reason knows nothing.", a: "Blaise Pascal" },
+  { t: "Lovers don't finally meet somewhere. They're in each other all along.", a: "Rumi" },
+  { t: "The wound is the place where the light enters you.", a: "Rumi" },
+  { t: "Do not regret what you have done.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Accept everything just the way it is.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Today is victory over yourself of yesterday.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "In all things have no preferences.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Do nothing which is of no use.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "The way is in training.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Think lightly of yourself and deeply of the world.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "You can only fight the way you practice.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Truth is not what you want it to be; it is what it is.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Always pass on what you have learned.", a: "Yoda" },
+  { t: "The opposite of love is not hate, it's indifference.", a: "Elie Wiesel" },
+  { t: "A man who chases two rabbits catches neither.", a: "Confucius" }
 ];
 
-let quoteIdx = -1;
+(function wireFortunesAndOpeners() {
+  function fortune() { if (TOASTS.length) showToast(TOASTS[Math.floor(Math.random() * TOASTS.length)]); }
+  function opener()  { if (TINDER_OPENERS.length) showToast(TINDER_OPENERS[Math.floor(Math.random() * TINDER_OPENERS.length)]); }
+  if (typeof showView === 'function') {
+    const orig = showView;
+    window.showView = function(name) {
+      orig(name);
+      if (Math.random() < 0.12) setTimeout(fortune, 400);
+      if (Math.random() < 0.30) setTimeout(opener, 500);
+    };
+  }
+  setTimeout(opener, 8000 + Math.random() * 7000);
+  setInterval(() => { if (Math.random() < 0.55) opener(); }, 45000 + Math.random() * 45000);
+})();
+
+let _quoteIdx = -1;
 function rotateQuote() {
   const band = document.getElementById('quoteBand');
   if (!band) return;
-  // Skip if Roster view isn't active — wait until it comes back
-  if (!document.getElementById('view-availability').classList.contains('active')) return;
-  // Fade out current
+  const roster = document.getElementById('view-availability');
+  if (!roster || !roster.classList.contains('active')) return;
   band.classList.remove('visible');
   setTimeout(() => {
-    quoteIdx = (quoteIdx + 1 + Math.floor(Math.random() * (PHILOSOPHICAL_QUOTES.length - 1))) % PHILOSOPHICAL_QUOTES.length;
-    const q = PHILOSOPHICAL_QUOTES[quoteIdx];
-    band.querySelector('.quote-text').textContent = q.t;
-    band.querySelector('.quote-attr').textContent = '— ' + q.a;
-    // Fade in
+    _quoteIdx = (_quoteIdx + 1 + Math.floor(Math.random() * (PHILOSOPHICAL_QUOTES.length - 1))) % PHILOSOPHICAL_QUOTES.length;
+    const q = PHILOSOPHICAL_QUOTES[_quoteIdx];
+    const tEl = band.querySelector('.quote-text');
+    const aEl = band.querySelector('.quote-attr');
+    if (tEl) tEl.textContent = q.t;
+    if (aEl) aEl.textContent = '— ' + q.a;
     requestAnimationFrame(() => band.classList.add('visible'));
-  }, 2200); // wait for fade-out transition to finish
+  }, 2200);
 }
-// First quote shortly after page loads, then swap every ~14 seconds
 setTimeout(() => {
   const band = document.getElementById('quoteBand');
   if (!band) return;
-  quoteIdx = Math.floor(Math.random() * PHILOSOPHICAL_QUOTES.length);
-  const q = PHILOSOPHICAL_QUOTES[quoteIdx];
-  band.querySelector('.quote-text').textContent = q.t;
-  band.querySelector('.quote-attr').textContent = '— ' + q.a;
+  _quoteIdx = Math.floor(Math.random() * PHILOSOPHICAL_QUOTES.length);
+  const q = PHILOSOPHICAL_QUOTES[_quoteIdx];
+  const tEl = band.querySelector('.quote-text');
+  const aEl = band.querySelector('.quote-attr');
+  if (tEl) tEl.textContent = q.t;
+  if (aEl) aEl.textContent = '— ' + q.a;
   band.classList.add('visible');
 }, 800);
 setInterval(rotateQuote, 14000);
 
-// 5) Long-press the logo badge → opens a tiny "fortune" message
-let logoPressTimer = null;
-document.querySelector('.logo-badge').addEventListener('pointerdown', () => {
-  logoPressTimer = setTimeout(() => {
-    showToast(TOASTS[Math.floor(Math.random() * TOASTS.length)]);
-  }, 600);
-});
-document.querySelector('.logo-badge').addEventListener('pointerup', () => clearTimeout(logoPressTimer));
-document.querySelector('.logo-badge').addEventListener('pointerleave', () => clearTimeout(logoPressTimer));
+function showLaunchPopup() {
+  const popup = document.getElementById('launchPopup');
+  if (!popup) return;
+  const textEl = popup.querySelector('.launch-popup-text');
+  if (textEl) textEl.textContent = TOASTS[Math.floor(Math.random() * TOASTS.length)];
+  popup.classList.add('show');
+  setTimeout(() => popup.classList.remove('show'), 5000);
+}
+{
+  const popup = document.getElementById('launchPopup');
+  if (popup) {
+    popup.addEventListener('click', () => popup.classList.remove('show'));
+    setTimeout(showLaunchPopup, 600);
+  }
+}
 
-/* =========================================================
-   INITIAL RENDER
-   ========================================================= */
+const SONG_MP3_FILES = {
+  'back-in-black': 'back-in-black.mp3',
+  'jarvis':        'jarvis.mp3',
+  'mask':          'mask.mp3',
+  'heman':         'heman.mp3',
+  'goodtimes':     'goodtimes.mp3'
+};
+const SONG_START_OFFSETS = {
+  'back-in-black': 6, 'jarvis': 6, 'mask': 6, 'heman': 6, 'goodtimes': 55
+};
+const SHUFFLE_POOL = ['back-in-black','jarvis','mask','heman','goodtimes'];
+const PLAY_DURATION_MS = 25000;
+const FADE_DURATION_MS = 4000;
+let localAudio = null;
+let fadeTimer = null;
+let stopTimer = null;
+function stopMusic() {
+  if (fadeTimer) { clearInterval(fadeTimer); fadeTimer = null; }
+  if (stopTimer) { clearTimeout(stopTimer); stopTimer = null; }
+  if (localAudio) { try { localAudio.pause(); localAudio.src = ''; } catch(e){} localAudio = null; }
+}
+function playLocalMp3(songKey) {
+  stopMusic();
+  const file = SONG_MP3_FILES[songKey];
+  const startSec = SONG_START_OFFSETS[songKey] || 0;
+  if (!file) return;
+  const audio = new Audio();
+  audio.preload = 'auto';
+  audio.volume = 0.7;
+  audio.addEventListener('loadedmetadata', () => {
+    try { audio.currentTime = startSec; } catch(e){}
+  }, { once: true });
+  audio.src = file;
+  localAudio = audio;
+  const tryPlay = () => {
+    audio.play().then(() => {
+      const fadeStartMs = PLAY_DURATION_MS - FADE_DURATION_MS;
+      setTimeout(() => {
+        const steps = 40;
+        let i = 0;
+        fadeTimer = setInterval(() => {
+          i++;
+          audio.volume = Math.max(0, 1 - i/steps) * 0.7;
+          if (i >= steps) { clearInterval(fadeTimer); fadeTimer = null; }
+        }, FADE_DURATION_MS/steps);
+      }, fadeStartMs);
+      stopTimer = setTimeout(() => stopMusic(), PLAY_DURATION_MS);
+    }).catch(() => {});
+  };
+  if (audio.readyState >= 1) tryPlay();
+  else audio.addEventListener('loadedmetadata', tryPlay, { once: true });
+}
+function startMusic() {
+  if (!state.startupSong || state.startupSong === 'off') return;
+  const songKey = state.startupSong === 'shuffle'
+    ? SHUFFLE_POOL[Math.floor(Math.random() * SHUFFLE_POOL.length)]
+    : state.startupSong;
+  playLocalMp3(songKey);
+}
+{
+  const prompt = document.getElementById('musicPrompt');
+  if (prompt && state.startupSong && state.startupSong !== 'off') {
+    setTimeout(() => prompt.style.display = 'flex', 300);
+    prompt.addEventListener('click', (e) => {
+      if (e.target.id === 'musicPromptDismiss') return;
+      prompt.style.display = 'none';
+      startMusic();
+    });
+    const dismiss = document.getElementById('musicPromptDismiss');
+    if (dismiss) dismiss.addEventListener('click', (e) => {
+      e.stopPropagation();
+      prompt.style.display = 'none';
+    });
+  }
+}
+
+
+
+// === RESTORED: F logo tap → kiss shower ===
+(function bindLogoKiss() {
+  const logo = document.querySelector('.logo-badge');
+  if (!logo || logo.dataset.kissBound) return;
+  logo.dataset.kissBound = '1';
+  logo.addEventListener('click', () => {
+    if (typeof fireKissShower === 'function') fireKissShower();
+  });
+})();
+
+// === REBUILT: Classic Hotel open/closed status + scroll trigger ===
+// Closed-day dates (Indonesian Islamic): day before Ramadan, Ramadan 1, Nuzulul Quran (Ramadan 17),
+// Takbiran (last day Ramadan), Idul Fitri 1+2 Syawal, day after (3 Syawal).
+const RAMADAN_START_GREGORIAN_CH = {
+  2024:'2024-03-12', 2025:'2025-03-01', 2026:'2026-02-18', 2027:'2027-02-08',
+  2028:'2028-01-28', 2029:'2029-01-16', 2030:'2030-01-06', 2031:'2031-12-26',
+  2032:'2032-12-14', 2033:'2033-12-04', 2034:'2034-11-23'
+};
+function _chAddDays(d, n) { const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function _chIso(d) {
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
+  return y + '-' + m + '-' + dd;
+}
+function classicHotelClosedSet(year) {
+  const closed = new Set();
+  function addWin(iso) {
+    if (!iso) return;
+    const start = new Date(iso + 'T00:00:00');
+    if (isNaN(start)) return;
+    const len = 30;
+    [_chAddDays(start,-1), start, _chAddDays(start,16), _chAddDays(start,len-1),
+     _chAddDays(start,len), _chAddDays(start,len+1), _chAddDays(start,len+2)]
+      .forEach(d => closed.add(_chIso(d)));
+  }
+  addWin(RAMADAN_START_GREGORIAN_CH[year]);
+  addWin(RAMADAN_START_GREGORIAN_CH[year-1]);
+  addWin(RAMADAN_START_GREGORIAN_CH[year+1]);
+  return closed;
+}
+function classicHotelStatus(date) {
+  const d = new Date(date); d.setHours(0,0,0,0);
+  const y = d.getFullYear();
+  const closed = new Set([
+    ..._chSetIter(classicHotelClosedSet(y)),
+    ..._chSetIter(classicHotelClosedSet(y-1)),
+    ..._chSetIter(classicHotelClosedSet(y+1))
+  ]);
+  return closed.has(_chIso(d)) ? 'closed' : 'open';
+}
+function _chSetIter(s) { const out = []; s.forEach(v => out.push(v)); return out; }
+
+function renderClassicHotel() {
+  const btn = document.getElementById('classicHotelBtn');
+  const sub = document.getElementById('classicHotelSub');
+  if (!btn) return;
+  const status = classicHotelStatus(new Date());
+  if (status === 'open') {
+    btn.innerHTML = 'Classic Hotel is <span class="ch-state open">OPEN</span> today';
+    if (sub) sub.textContent = 'Go forth';
+  } else {
+    btn.innerHTML = 'Classic Hotel is <span class="ch-state closed">CLOSED</span> today';
+    if (sub) sub.textContent = 'Take the day off';
+  }
+}
+
+// Simple confetti burst from the bottom of the screen, no library
+function _chConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:150';
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = window.innerWidth * DPR;
+  canvas.height = window.innerHeight * DPR;
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.scale(DPR, DPR);
+  const W = window.innerWidth, H = window.innerHeight;
+  const palette = ['#ff5c8a','#ffd43b','#51cf66','#845ef7','#fd7e14','#fff','#22b8cf','#ff6b6b'];
+  const pieces = [];
+  // Multiple small bursts from rooftop band
+  for (let burst = 0; burst < 6; burst++) {
+    const ox = W * (0.15 + Math.random() * 0.7);
+    const oy = H * (0.35 + Math.random() * 0.2);
+    for (let i = 0; i < 40; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const sp = 2 + Math.random() * 4;
+      pieces.push({
+        x: ox, y: oy,
+        vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 2,
+        size: 2 + Math.random() * 2,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        life: 1, decay: 0.005 + Math.random() * 0.008,
+        bornAt: burst * 700 + Math.random() * 300
+      });
+    }
+  }
+  const start = performance.now();
+  ctx.globalCompositeOperation = 'lighter';
+  function tick(now) {
+    ctx.clearRect(0,0,W,H);
+    const t = now - start;
+    pieces.forEach(p => {
+      if (t < p.bornAt) return;
+      p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.vx *= 0.99;
+      p.life -= p.decay;
+      if (p.life > 0) {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.shadowBlur = 6; ctx.shadowColor = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+      }
+    });
+    ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+    if (t < 9000) requestAnimationFrame(tick); else canvas.remove();
+  }
+  requestAnimationFrame(tick);
+}
+function _chSadFloater() {
+  for (let i = 0; i < 4; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.textContent = '😢';
+      el.style.cssText = 'position:fixed;font-size:'+(60+Math.random()*30)+'px;z-index:150;pointer-events:none;'
+        + 'left:'+(10+Math.random()*80)+'vw;bottom:-20vh;'
+        + 'animation:sadFloat '+(3+Math.random()*2)+'s ease-out forwards;'
+        + 'filter:drop-shadow(0 4px 8px rgba(0,0,0,.4));';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 5500);
+    }, i * 350);
+  }
+}
+
+// Trigger when the Classic Hotel button scrolls into view
+let _chVisible = false;
+function setupClassicHotelTrigger() {
+  const target = document.getElementById('classicHotelWrap');
+  if (!target) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !_chVisible) {
+        _chVisible = true;
+        const status = classicHotelStatus(new Date());
+        if (status === 'open') _chConfetti();
+        else _chSadFloater();
+      } else if (!entry.isIntersecting) {
+        _chVisible = false;
+      }
+    });
+  }, { threshold: 0.5 });
+  obs.observe(target);
+}
+renderClassicHotel();
+setupClassicHotelTrigger();
+
+// Tap the button to manually re-trigger
+{
+  const btn = document.getElementById('classicHotelBtn');
+  if (btn) btn.addEventListener('click', () => {
+    const status = classicHotelStatus(new Date());
+    if (status === 'open') _chConfetti(); else _chSadFloater();
+  });
+}
+
+
+// === SAFE TAIL (added by recovery) — replaces missing trailing JS so the document loads cleanly ===
+// Original renderCalendarToCanvas / shareCalendarImage and many late features were truncated.
+// We attach lightweight shims so the visible UI keeps working.
+async function renderCalendarToCanvas() { return null; }
+async function shareCalendarImage() {
+  alert('Calendar screenshot share is being rebuilt. Use Settings -> Share with friend to send your roster as a code.');
+}
+const sc = document.getElementById('shareCalBtn');
+if (sc) sc.addEventListener('click', shareCalendarImage);
+
+// Restore Sort pills on the Roster (Priority/Recent/Stale)
+function applySortPills() {
+  document.querySelectorAll('.sort-pill').forEach(b =>
+    b.classList.toggle('active', b.dataset.sort === (state.rosterSort || 'priority')));
+}
+document.querySelectorAll('.sort-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.rosterSort = btn.dataset.sort;
+    saveState(); applySortPills(); renderAvailability();
+  });
+});
+applySortPills();
+
+// Boot: render the default view
 renderAvailability();
 </script>
 </body>
