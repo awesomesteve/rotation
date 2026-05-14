@@ -6,7 +6,7 @@
 <title>Rotation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=VT323&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #f7f7f8;
@@ -44,7 +44,7 @@
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
-    font-family: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "Montserrat", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased; overscroll-behavior-y: contain;
     letter-spacing: -0.01em;
   }
@@ -159,6 +159,20 @@
     0%, 100% { transform: translate(497px, 110px) skewY(0deg); }
     25%      { transform: translate(497px, 110px) skewY(3deg); }
     75%      { transform: translate(497px, 110px) skewY(-3deg); }
+  }
+
+  /* Dynamic sky transitions — smooth color change across the day */
+  #skyDynamic { transition: fill 8s ease-in-out, opacity 8s ease-in-out; }
+  #stars { transition: opacity 6s ease-in-out; }
+  #sun, #moon { transition: opacity 4s ease-in-out; }
+  /* Twinkling stars */
+  .star { animation: starTwinkle 3.5s ease-in-out infinite; filter: drop-shadow(0 0 2px #fff); }
+  .star.sa { animation-duration: 3.2s; }
+  .star.sb { animation-duration: 4.5s; animation-delay: -1.5s; }
+  .star.sc { animation-duration: 5.8s; animation-delay: -3s; }
+  @keyframes starTwinkle {
+    0%, 100% { opacity: 0.35; }
+    50%      { opacity: 1; }
   }
 
   /* Twinkling window lights — staggered fade in/out */
@@ -396,7 +410,7 @@
     padding: 8px; cursor: pointer; color: var(--text);
     display: flex; flex-direction: column; align-items: center; gap: 4px;
     font-size: 11px; font-weight: 600; min-width: 88px;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Montserrat", sans-serif;
   }
   .bg-choice.active { border-color: var(--accent); background: rgba(255, 92, 138, .12); }
   .bg-choice:disabled { opacity: .4; cursor: not-allowed; }
@@ -434,7 +448,7 @@
   .pin-btn {
     aspect-ratio: 1/1; background: var(--panel-2); border: 1px solid var(--border);
     border-radius: 50%; font-size: 24px; font-weight: 600; color: var(--text); cursor: pointer;
-    font-family: "Space Grotesk", sans-serif; transition: transform .08s, background .12s;
+    font-family: "Montserrat", sans-serif; transition: transform .08s, background .12s;
   }
   .pin-btn:active { transform: scale(0.92); background: var(--panel); }
   .pin-btn.fn { font-size: 14px; }
@@ -450,7 +464,7 @@
   .sort-pill {
     background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
     padding: 5px 10px; border-radius: 999px; font-size: 11px; cursor: pointer;
-    font-family: "Space Grotesk", sans-serif; font-weight: 600;
+    font-family: "Montserrat", sans-serif; font-weight: 600;
   }
   .sort-pill.active { background: var(--accent); color: white; border-color: var(--accent); }
 
@@ -494,7 +508,7 @@
   .quote-band .quote-text::before { content: '"'; opacity: .6; margin-right: 2px; }
   .quote-band .quote-text::after  { content: '"'; opacity: .6; margin-left:  2px; }
   .quote-band .quote-attr {
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-size: 10px;
     font-weight: 600;
     letter-spacing: .18em;
@@ -517,7 +531,7 @@
   }
   .ch-btn {
     background: var(--panel); border: 2px solid var(--border); border-radius: 18px;
-    padding: 22px 28px; font-family: "Space Grotesk", sans-serif;
+    padding: 22px 28px; font-family: "Montserrat", sans-serif;
     font-size: 22px; font-weight: 800; letter-spacing: -.02em;
     color: var(--text); cursor: pointer; box-shadow: var(--shadow);
     backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2);
@@ -582,7 +596,7 @@
     transform: translateX(-50%) translateY(-180%);
     background: linear-gradient(135deg, var(--accent) 0%, #ff8fa3 100%);
     color: white; padding: 12px 20px; border-radius: 22px;
-    font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 13px;
+    font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 13px;
     letter-spacing: .01em;
     line-height: 1.35; text-align: center;
     max-width: min(92vw, 380px);
@@ -594,6 +608,64 @@
     transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
+
+  /* Weather hourly popup */
+  .weather-modal { max-width: 480px; padding: 22px 20px 18px; }
+  .weather-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .weather-eyebrow {
+    font-family: "Montserrat", sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .24em;
+    color: var(--muted); margin-bottom: 4px;
+  }
+  .weather-now {
+    font-family: "Montserrat", sans-serif;
+    font-size: 26px; font-weight: 700; letter-spacing: -.02em;
+    color: var(--text);
+  }
+  .weather-hourly { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+  .weather-hour {
+    flex: 0 0 56px;
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 4px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-family: "Montserrat", sans-serif;
+  }
+  .weather-hour.rain { background: rgba(34, 184, 207, .18); border-color: rgba(34, 184, 207, .45); }
+  .weather-hour.heavy-rain { background: rgba(34, 100, 200, .28); border-color: rgba(34, 100, 200, .6); }
+  .weather-hour .wh-hour { font-size: 11px; font-weight: 600; color: var(--muted); }
+  .weather-hour .wh-icon { font-size: 18px; }
+  .weather-hour .wh-temp { font-size: 13px; font-weight: 700; color: var(--text); }
+  .weather-hour .wh-rain {
+    font-size: 10px; font-weight: 700;
+    color: #4dc8db; letter-spacing: -.02em;
+    min-height: 12px;
+  }
+  .weather-hour .wh-rain.dry { color: var(--muted); opacity: .5; }
+
+  /* Kiss emoji shower */
+  .kiss-shower {
+    position: fixed; inset: 0; z-index: 250; pointer-events: none; display: none;
+  }
+  .kiss-shower.active { display: block; }
+  .kiss-shower .kiss {
+    position: absolute; bottom: -40px; font-size: 28px;
+    animation: kissFloat 2.4s ease-out forwards;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.3));
+  }
+  @keyframes kissFloat {
+    0%   { transform: translateY(0) scale(.4) rotate(-10deg); opacity: 0; }
+    15%  { opacity: 1; transform: translateY(-10vh) scale(1) rotate(-5deg); }
+    50%  { transform: translateY(-50vh) scale(1.1) rotate(5deg); }
+    100% { transform: translateY(-110vh) scale(.6) rotate(-8deg); opacity: 0; }
+  }
+
+  /* LCD clock click affordance */
+  .header-clock { cursor: pointer; transition: transform .12s; }
+  .header-clock:active { transform: translateY(1px); }
+
+  /* F logo click affordance */
+  .logo-badge { cursor: pointer; transition: transform .12s; }
+  .logo-badge:active { transform: scale(.92); }
 
   /* Fullscreen photo preview — appears on long-press of any thumbnail */
   .photo-preview {
@@ -646,7 +718,7 @@
     to   { transform: scale(1);  opacity: 1; }
   }
   .launch-popup-eyebrow {
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-size: 11px; font-weight: 700;
     letter-spacing: .25em;
     color: rgba(255,255,255,.85);
@@ -674,7 +746,7 @@
     position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) scale(.6);
     background: linear-gradient(135deg, #ffd43b, #fd7e14);
     color: #1a1a1a; padding: 14px 22px; border-radius: 12px;
-    font-family: "Space Grotesk", sans-serif; font-weight: 800; font-size: 14px;
+    font-family: "Montserrat", sans-serif; font-weight: 800; font-size: 14px;
     box-shadow: 0 8px 24px rgba(0,0,0,.4);
     z-index: 90; pointer-events: none; opacity: 0;
     transition: transform .4s cubic-bezier(.68,-.55,.27,1.55), opacity .3s;
@@ -697,7 +769,7 @@
     color: var(--text); cursor: pointer;
     box-shadow: var(--shadow);
     display: flex; align-items: center; gap: 10px;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-weight: 600; font-size: 13px;
     animation: musicPromptPulse 2.4s ease-in-out infinite;
   }
@@ -784,7 +856,7 @@
     flex: none;
   }
   .brand .logo-badge span {
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
     font-weight: 700;
     color: white; font-size: 24px; line-height: 1;
     text-shadow: 0 1px 2px rgba(0,0,0,.2);
@@ -793,7 +865,7 @@
   .brand .brand-text { min-width: 0; }
   .brand .brand-text h1 {
     margin: 0;
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
     font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
     line-height: 1;
   }
@@ -805,25 +877,67 @@
     background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
     padding: 8px 14px; border-radius: 999px; cursor: pointer; font-size: 12px;
     margin-top: 6px; min-height: 38px; min-width: 56px;
-    font-family: "Space Grotesk", sans-serif; font-weight: 600; letter-spacing: .02em;
+    font-family: "Montserrat", sans-serif; font-weight: 600; letter-spacing: .02em;
   }
+  /* Old-school LCD watch face — dark green/black panel, glowing segment digits */
   .header-clock {
     margin-top: 6px;
-    font-family: "Space Grotesk", "Menlo", "SF Mono", monospace;
-    font-size: 16px; font-weight: 700;
-    color: var(--text);
+    background: linear-gradient(180deg, #1a2d1f 0%, #0d1812 100%);
+    border: 1px solid #2a4530;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, .06),
+      inset 0 -1px 0 rgba(0, 0, 0, .5),
+      0 1px 2px rgba(0, 0, 0, .4);
+    padding: 6px 12px;
+    border-radius: 6px;
+    min-height: 38px;
+    display: inline-flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  .header-clock .lcd-time {
+    font-family: "VT323", "Courier New", monospace;
+    font-size: 22px; font-weight: 400;
+    color: #9fffb0;
+    letter-spacing: .08em;
+    text-shadow:
+      0 0 4px rgba(120, 255, 150, .8),
+      0 0 8px rgba(120, 255, 150, .3);
+    position: relative;
+  }
+  .header-clock .lcd-time .colon { animation: clockBlink 1s steps(1, end) infinite; }
+  @keyframes clockBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: .25; } }
+  html[data-theme="light"] .header-clock {
+    background: linear-gradient(180deg, #b8c4a8 0%, #95a585 100%);
+    border-color: #6e7e60;
+  }
+  html[data-theme="light"] .header-clock .lcd-time {
+    color: #1a2412;
+    text-shadow: 0 0 1px rgba(0,0,0,.3);
+  }
+
+  /* Separate weather pill — colorful icon + temperature */
+  .header-weather {
+    margin-top: 6px;
     background: var(--panel-2);
     border: 1px solid var(--border);
-    padding: 8px 12px;
-    border-radius: 10px;
+    border-radius: 999px;
+    padding: 6px 12px 6px 10px;
     min-height: 38px;
-    display: inline-flex; align-items: center; gap: 4px;
-    letter-spacing: .05em;
-    text-shadow: 0 0 4px rgba(255, 92, 138, .25);
-    font-variant-numeric: tabular-nums;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: "Montserrat", sans-serif;
+    transition: transform .12s, background .15s;
   }
-  .header-clock .colon { animation: clockBlink 1s steps(1, end) infinite; opacity: .9; }
-  @keyframes clockBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: .35; } }
+  .header-weather:active { transform: translateY(1px); }
+  .header-weather:hover { background: var(--panel); }
+  .header-weather .hw-icon {
+    font-size: 20px; line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.25));
+  }
+  .header-weather .hw-temp {
+    font-size: 14px; font-weight: 700; letter-spacing: -.01em;
+  }
 
   nav.tabs {
     display: flex; gap: 4px; padding: 6px;
@@ -840,6 +954,169 @@
     text-transform: uppercase; letter-spacing: .12em;
   }
   nav.tabs button.active { background: var(--panel-2); color: var(--text); }
+  /* Icon-only tab — smaller, lower visual weight */
+  nav.tabs button.tab-icon {
+    flex: 0 0 auto;
+    min-width: 38px; padding: 0 6px;
+    font-size: 17px; letter-spacing: 0; text-transform: none; font-weight: 400;
+    opacity: .75;
+  }
+  nav.tabs button.tab-icon.active { opacity: 1; }
+
+  /* Tools landing — list of tool cards */
+  .tool-card {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px;
+    cursor: pointer; box-shadow: var(--shadow);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    margin-bottom: 10px;
+    transition: transform .12s;
+  }
+  .tool-card:active { transform: scale(.98); }
+  .tool-card .tool-icon { font-size: 28px; flex: none; }
+  .tool-card .tool-meta { flex: 1; min-width: 0; }
+  .tool-card .tool-title {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700; font-size: 16px; letter-spacing: -.01em;
+    color: var(--text);
+  }
+  .tool-card .tool-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .tool-card .tool-arrow { color: var(--muted); font-size: 24px; flex: none; }
+
+  .tool-sub-page { padding-top: 4px; }
+  .tool-sub-head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+  }
+  .tool-sub-title {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700; font-size: 16px; letter-spacing: -.01em;
+  }
+
+  /* Clipboard snippets */
+  .clipboard-list { display: flex; flex-direction: column; gap: 8px; }
+  .clipboard-snippet {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px;
+    cursor: pointer; position: relative;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: transform .12s, background .15s;
+  }
+  .clipboard-snippet:active { transform: scale(.98); }
+  .clipboard-snippet.copied {
+    background: rgba(81, 207, 102, .2);
+    border-color: rgba(81, 207, 102, .5);
+  }
+  .clipboard-snippet .snippet-text {
+    font-size: 13px; line-height: 1.5;
+    color: var(--text);
+    white-space: pre-wrap; word-wrap: break-word;
+  }
+  .clipboard-snippet .snippet-actions {
+    position: absolute; top: 6px; right: 6px;
+    display: flex; gap: 4px;
+    opacity: 0; transition: opacity .15s;
+  }
+  .clipboard-snippet:hover .snippet-actions,
+  .clipboard-snippet:focus-within .snippet-actions { opacity: 1; }
+  .snippet-action-btn {
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 8px;
+    font-size: 11px; color: var(--muted); cursor: pointer;
+    font-family: "Montserrat", sans-serif; font-weight: 600;
+  }
+  .snippet-action-btn:hover { color: var(--text); }
+  .snippet-action-btn.danger:hover { color: var(--danger); }
+  .clipboard-snippet .copy-flash {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(81, 207, 102, .9);
+    color: white; font-family: "Montserrat", sans-serif;
+    font-weight: 800; font-size: 16px; letter-spacing: .15em;
+    border-radius: 12px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s;
+  }
+  .clipboard-snippet.copied .copy-flash { opacity: 1; }
+  .snippet-edit-area {
+    width: 100%; min-height: 100px;
+    padding: 10px 12px; background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 14px; font-family: inherit; line-height: 1.5;
+    resize: vertical;
+  }
+
+  /* Tools landing — quick-jump section chips */
+  .tools-quick-label {
+    margin: 22px 4px 8px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .tools-quick-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;
+  }
+  .tools-quick-chip {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px;
+    cursor: pointer; color: var(--text);
+    font-family: "Montserrat", sans-serif;
+    font-size: 13px; font-weight: 600; letter-spacing: -.01em;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: transform .12s, background .15s;
+    text-align: left;
+  }
+  .tools-quick-chip span { font-size: 17px; }
+  .tools-quick-chip:active { transform: scale(.96); }
+  .tools-quick-chip:hover { background: var(--panel-2); }
+
+  /* Jakarta links list */
+  .link-group-header {
+    font-family: "Montserrat", sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--muted);
+    margin: 18px 0 8px;
+    padding-left: 4px;
+  }
+  .link-group-header:first-child { margin-top: 4px; }
+  .link-group-header.jump-flash {
+    color: var(--accent);
+    animation: jumpFlash 1.4s ease-out;
+  }
+  @keyframes jumpFlash {
+    0%   { color: var(--accent); transform: translateX(0); }
+    20%  { transform: translateX(4px); }
+    40%  { transform: translateX(0); }
+    100% { color: var(--muted); }
+  }
+  .link-card {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px;
+    text-decoration: none; color: var(--text);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    margin-bottom: 6px;
+    transition: transform .12s, background .15s;
+    flex-wrap: wrap;
+  }
+  .link-card:active { transform: scale(.98); }
+  .link-card .link-icon { font-size: 22px; flex: none; }
+  .link-card .link-title {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700; font-size: 14px; letter-spacing: -.01em;
+    flex: 1;
+  }
+  .link-card .link-sub {
+    width: 100%;
+    font-size: 11px; color: var(--muted);
+    padding-left: 34px;
+    margin-top: -4px;
+  }
 
   main { padding: 18px 14px 12px; max-width: 720px; margin: 0 auto; }
   .view { display: none; }
@@ -847,36 +1124,36 @@
 
   .section-head { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 22px; gap: 8px; flex-wrap: wrap; }
   .section-head strong {
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
     font-size: 13px; font-weight: 700; letter-spacing: .18em;
     text-transform: uppercase; color: var(--text);
   }
   .section-head .sub { font-size: 12px; color: var(--muted); font-weight: 500; }
 
   nav.tabs button {
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
     letter-spacing: -.005em;
   }
 
   .btn {
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
     letter-spacing: -.005em;
   }
 
   .profile-card .name {
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
     font-weight: 700; letter-spacing: -.015em;
   }
   .day-col h3 .date {
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
     letter-spacing: -.02em;
   }
   .av-name {
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
     letter-spacing: -.01em;
   }
   .cal-day h4 .dt {
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
     letter-spacing: -.015em;
   }
 
@@ -933,8 +1210,63 @@
     background: var(--chip); color: var(--chip-text); padding: 2px 8px; border-radius: 6px;
     font-size: 10px; font-weight: 600;
   }
-  .profile-card.dragging { opacity: .55; cursor: grabbing; box-shadow: var(--shadow); transform: scale(1.02); z-index: 10; }
+  /* Live drag: card pops out of flow and follows the finger/cursor */
+  .profile-card.dragging-live {
+    position: fixed !important;
+    z-index: 1000;
+    opacity: .92;
+    transform: scale(1.04) rotate(-1deg);
+    box-shadow: 0 20px 40px rgba(0,0,0,.55), 0 0 0 2px var(--accent);
+    cursor: grabbing;
+    pointer-events: none;
+    transition: none;
+    margin: 0 !important;
+  }
+  .profile-card-placeholder {
+    background: rgba(255, 92, 138, .08);
+    border: 2px dashed rgba(255, 92, 138, .4);
+    border-radius: 16px;
+    margin-bottom: 10px;
+    transition: height .15s ease;
+  }
+  /* Sibling cards animate smoothly when reordering */
+  .profile-card { transition: transform .22s cubic-bezier(.22, .61, .36, 1); }
+  .profile-card.dragging-live { transition: none; }
   .profile-card.drop-target { border-color: var(--accent); border-width: 2px; }
+
+  /* Archive drop zone */
+  #archiveDropZone {
+    margin: 18px 0 0;
+    padding: 14px 16px;
+    background: var(--panel-2);
+    border: 2px dashed var(--border);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700; font-size: 12px;
+    letter-spacing: .15em; text-transform: uppercase;
+    color: var(--muted);
+    user-select: none;
+    transition: all .2s;
+  }
+  #archiveDropZone:hover { color: var(--text); }
+  #archiveDropZone.drop-target {
+    background: rgba(255, 92, 138, .15);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: scale(1.02);
+  }
+  #archiveDropZone .arch-icon { font-size: 18px; }
+  #archiveDropZone .arch-count {
+    background: var(--accent); color: white;
+    border-radius: 999px; padding: 2px 8px;
+    font-size: 11px; letter-spacing: 0;
+  }
+  #archiveDropZone .arch-chevron {
+    transition: transform .2s; font-size: 14px;
+  }
+  #archiveDropZone.open .arch-chevron { transform: rotate(180deg); }
 
   /* Peak risk pill — bright red warning */
   .peak-risk-pill {
@@ -954,7 +1286,7 @@
     border-radius: 12px;
     cursor: pointer;
     display: flex; align-items: center; justify-content: space-between;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-weight: 700; font-size: 12px;
     letter-spacing: .15em; text-transform: uppercase;
     color: var(--muted);
@@ -1001,7 +1333,7 @@
     display: flex; align-items: center; justify-content: center;
     color: var(--muted); font-size: 32px; font-weight: 700;
     flex: none;
-    font-family: "Space Grotesk", "Inter", sans-serif;
+    font-family: "Montserrat", "Montserrat", sans-serif;
   }
   .avatar-side .avatar-edit {
     position: absolute; bottom: -2px; right: -2px;
@@ -1135,7 +1467,7 @@
     color: var(--muted);
   }
   .brand-btn-label span {
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-size: 10px; font-weight: 700; letter-spacing: .12em;
     color: var(--muted);
   }
@@ -1167,7 +1499,7 @@
   }
   .cgh-day {
     text-align: center;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-size: 10px; font-weight: 700; letter-spacing: .12em;
     text-transform: uppercase;
     color: var(--muted);
@@ -1182,7 +1514,7 @@
     font-size: 13px; font-weight: 600;
     display: flex; align-items: center; justify-content: center; color: rgba(0,0,0,.55);
     position: relative;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Montserrat", sans-serif;
   }
   .cycle-day.empty { background: transparent; }
   html[data-theme="dark"] .cycle-day { color: rgba(255,255,255,.45); }
@@ -1290,7 +1622,7 @@
   .cal-slot .slot-tag-sel.night    { background: var(--night);  color: white; border-color: var(--night); }
   .cal-slot .hour-inp {
     width: 80px; text-align: center; font-weight: 700;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: "Montserrat", sans-serif;
     letter-spacing: .04em;
   }
   .cal-slot .del-slot {
@@ -1338,9 +1670,9 @@
 <div id="pinLock" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(10,12,18,.92); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); align-items:center; justify-content:center; flex-direction:column; padding:20px;">
   <div style="background:var(--panel); border:1px solid var(--border); border-radius:18px; padding:28px 24px; box-shadow:var(--shadow); max-width:340px; width:100%; text-align:center;">
     <div class="logo-badge" style="margin:0 auto 18px; width:60px; height:60px; background:radial-gradient(circle at 30% 30%, #ff8fb5, var(--accent) 65%, #b81d56); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(214, 51, 108, .35), inset 0 1px 1px rgba(255,255,255,.3);">
-      <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:32px; color:white; letter-spacing:-.04em;">F</span>
+      <span style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:32px; color:white; letter-spacing:-.04em;">F</span>
     </div>
-    <div style="font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:18px;" id="pinTitle">Enter PIN</div>
+    <div style="font-family:'Montserrat',sans-serif; font-size:13px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:18px;" id="pinTitle">Enter PIN</div>
     <div id="pinDots" style="display:flex; justify-content:center; gap:14px; margin-bottom:24px;">
       <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
     </div>
@@ -1473,6 +1805,24 @@
 <!-- Easter-egg surprise toast -->
 <div id="easterToast" class="easter-toast" aria-live="polite"></div>
 
+<!-- Hourly weather popup (tap LCD weather to open) -->
+<div id="weatherPopup" class="modal-back" aria-hidden="true">
+  <div class="modal weather-modal">
+    <div class="weather-head">
+      <div>
+        <div class="weather-eyebrow">JAKARTA</div>
+        <div class="weather-now" id="weatherNow">—</div>
+      </div>
+      <button class="btn ghost small" id="weatherClose">Close</button>
+    </div>
+    <div id="weatherHourly" class="weather-hourly"></div>
+    <div class="hint" style="margin-top:10px">Next 24 hours · powered by Open-Meteo</div>
+  </div>
+</div>
+
+<!-- Kiss emoji shower (tap the F logo) -->
+<div id="kissShower" class="kiss-shower" aria-hidden="true"></div>
+
 <!-- Fullscreen photo preview (long-press on any photo) -->
 <div id="photoPreview" class="photo-preview" aria-hidden="true">
   <img id="photoPreviewImg" alt="" />
@@ -1483,7 +1833,6 @@
   <div class="launch-popup-inner">
     <div class="launch-popup-eyebrow">TODAY'S VIBE</div>
     <div class="launch-popup-text"></div>
-    <button class="launch-popup-close" id="launchPopupClose">×</button>
   </div>
 </div>
 
@@ -1537,6 +1886,54 @@
 
     <!-- Atmospheric glow rising from the city -->
     <rect x="0" y="0" width="1200" height="700" fill="url(#bgSky)"/>
+
+    <!-- Live sky color overlay — changes throughout the day -->
+    <rect id="skyDynamic" x="0" y="0" width="1200" height="700" fill="#000" opacity="0"/>
+
+    <!-- Star layer — twinkles at night, fades by day -->
+    <g id="stars" opacity="0">
+      <circle cx="80"  cy="60"  r="0.8" fill="#fff" class="star sa"/>
+      <circle cx="180" cy="90"  r="1.0" fill="#fff" class="star sb"/>
+      <circle cx="260" cy="40"  r="0.6" fill="#fff" class="star sc"/>
+      <circle cx="350" cy="120" r="0.9" fill="#fff" class="star sa"/>
+      <circle cx="440" cy="55"  r="0.7" fill="#fff" class="star sb"/>
+      <circle cx="520" cy="100" r="1.1" fill="#fff" class="star sc"/>
+      <circle cx="600" cy="35"  r="0.8" fill="#fff" class="star sa"/>
+      <circle cx="690" cy="85"  r="0.9" fill="#fff" class="star sb"/>
+      <circle cx="780" cy="50"  r="0.7" fill="#fff" class="star sc"/>
+      <circle cx="860" cy="115" r="1.0" fill="#fff" class="star sa"/>
+      <circle cx="950" cy="65"  r="0.8" fill="#fff" class="star sb"/>
+      <circle cx="1030" cy="30" r="0.7" fill="#fff" class="star sc"/>
+      <circle cx="1100" cy="95" r="0.9" fill="#fff" class="star sa"/>
+      <circle cx="1170" cy="50" r="0.8" fill="#fff" class="star sb"/>
+      <circle cx="50"  cy="160" r="0.7" fill="#fff" class="star sc"/>
+      <circle cx="220" cy="180" r="0.9" fill="#fff" class="star sa"/>
+      <circle cx="410" cy="200" r="0.8" fill="#fff" class="star sb"/>
+      <circle cx="640" cy="170" r="0.7" fill="#fff" class="star sc"/>
+      <circle cx="820" cy="195" r="1.0" fill="#fff" class="star sa"/>
+      <circle cx="1020" cy="175" r="0.8" fill="#fff" class="star sb"/>
+    </g>
+
+    <!-- Sun — yellow disc with halo -->
+    <g id="sun" style="display:none">
+      <circle cx="0" cy="0" r="40" fill="#ffd43b" opacity="0.18"/>
+      <circle cx="0" cy="0" r="28" fill="#ffd43b" opacity="0.35"/>
+      <circle cx="0" cy="0" r="20" fill="#fff3a0"/>
+      <circle cx="0" cy="0" r="14" fill="#fff7c2"/>
+    </g>
+
+    <!-- Moon — disc with terminator (shadow) calculated from real phase -->
+    <g id="moon" style="display:none">
+      <circle cx="0" cy="0" r="22" fill="#e8e4d5" opacity="0.25"/>
+      <circle id="moonBody" cx="0" cy="0" r="16" fill="#f5f1e0"/>
+      <!-- Shadow ellipse positioned + scaled by phase to create crescent/gibbous shapes -->
+      <ellipse id="moonShadow" cx="0" cy="0" rx="16" ry="16" fill="#0d0918" opacity="0.96"/>
+      <!-- Tiny crater dots for realism -->
+      <circle cx="-4" cy="-3" r="1.5" fill="#d6cfb8" opacity=".55"/>
+      <circle cx="3" cy="2" r="2" fill="#d6cfb8" opacity=".5"/>
+      <circle cx="-2" cy="6" r="1.2" fill="#d6cfb8" opacity=".55"/>
+      <circle cx="6" cy="-5" r="1" fill="#d6cfb8" opacity=".5"/>
+    </g>
     <ellipse cx="600" cy="700" rx="900" ry="280" fill="url(#cityGlow)"/>
 
     <!-- ===== FAR LAYER (most distant, hazy) ===== -->
@@ -1639,8 +2036,8 @@
         <rect x="395" y="430" width="48" height="270"/>
         <!-- ===== WISMA 46 — distinctive pencil-tip top with flag, the iconic Jakarta tower ===== -->
         <path d="M455,500 L455,290 Q495,160 535,290 L535,500 Z" fill="url(#layerMid)"/>
-        <!-- Tall flagpole rising from the peak -->
-        <rect x="493" y="100" width="4" height="55" fill="url(#layerMid)"/>
+        <!-- Tall flagpole rising from the peak, anchored deep into the roof so no gap -->
+        <rect x="493" y="100" width="4" height="80" fill="url(#layerMid)"/>
         <!-- Antenna spike on top of flagpole -->
         <polygon points="493,100 497,100 495,88" fill="url(#layerMid)"/>
         <!-- /Wisma 46 -->
@@ -1671,6 +2068,18 @@
         <rect x="786" y="205" width="10" height="20"/>
         <!-- /BCA -->
         <rect x="855" y="450" width="34" height="250"/>
+
+        <!-- MID-RISE INFILL — anchors the tall towers so they don't look like they're floating -->
+        <!-- These run along y≈470-510, sitting just in front of the tall tower bases -->
+        <rect x="575" y="475" width="55" height="50"/>
+        <rect x="610" y="465" width="48" height="60"/>
+        <rect x="650" y="485" width="40" height="40"/>
+        <rect x="678" y="470" width="55" height="55"/>
+        <rect x="720" y="478" width="50" height="48"/>
+        <rect x="755" y="465" width="60" height="60"/>
+        <rect x="800" y="480" width="48" height="45"/>
+        <rect x="830" y="472" width="40" height="55"/>
+
         <!-- Istiqlal mosque body silhouette (dark) — dome rendered in golden glow above this -->
         <rect x="895" y="430" width="105" height="70"/>
         <rect x="1005" y="375" width="9" height="125"/>
@@ -1713,7 +2122,7 @@
       <!-- "KOTA" sign on the visible center mall -->
       <g transform="translate(477, 568)">
         <rect x="-26" y="-11" width="52" height="20" rx="3" fill="#1a1525" stroke="#22b8cf" stroke-width="1.2"/>
-        <text class="neon-text neon-cyan" x="0" y="3" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="10" fill="#22b8cf">KOTA</text>
+        <text class="neon-text neon-cyan" x="0" y="3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#22b8cf">KOTA</text>
       </g>
 
       <!-- General residential / low-rise filler -->
@@ -1820,22 +2229,22 @@
       <!-- Grand Indo (leftmost in cluster, around x≈450) -->
       <g transform="translate(450, 610)">
         <rect x="-42" y="-12" width="84" height="22" rx="3" fill="#1a1525" stroke="#74c0fc" stroke-width="1.2"/>
-        <text class="neon-text neon-blue" x="0" y="3" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="11" fill="#74c0fc">GRAND INDO</text>
+        <text class="neon-text neon-blue" x="0" y="3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#74c0fc">GRAND INDO</text>
       </g>
       <!-- Senayan (slightly up & right) -->
       <g transform="translate(560, 585)">
         <rect x="-28" y="-11" width="56" height="20" rx="3" fill="#1a1525" stroke="#ffd43b" stroke-width="1.2"/>
-        <text class="neon-text neon-yellow" x="0" y="3" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="11" fill="#ffd43b">SENAYAN</text>
+        <text class="neon-text neon-yellow" x="0" y="3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#ffd43b">SENAYAN</text>
       </g>
       <!-- Lotte -->
       <g transform="translate(660, 605)">
         <rect x="-24" y="-11" width="48" height="20" rx="3" fill="#1a1525" stroke="#ff6b6b" stroke-width="1.2"/>
-        <text class="neon-text neon-red" x="0" y="3" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="11" fill="#ff6b6b">LOTTE</text>
+        <text class="neon-text neon-red" x="0" y="3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#ff6b6b">LOTTE</text>
       </g>
       <!-- Blok M (rightmost in cluster, around x≈760) -->
       <g transform="translate(750, 590)">
         <rect x="-28" y="-11" width="56" height="20" rx="3" fill="#1a1525" stroke="#94d82d" stroke-width="1.2"/>
-        <text class="neon-text neon-green" x="0" y="3" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="11" fill="#94d82d">BLOK M</text>
+        <text class="neon-text neon-green" x="0" y="3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#94d82d">BLOK M</text>
       </g>
     </g>
 
@@ -2103,7 +2512,7 @@
       <path d="M9 4.5 L25 4.5 L28 8 L6 8 Z" fill="#7fd4f5" opacity=".7"/>
       <rect x="2" y="8" width="30" height="3" fill="#008f3f"/>
       <!-- GRAB wordmark on side -->
-      <text x="17" y="10.5" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="3.2" fill="#ffffff">GRAB</text>
+      <text x="17" y="10.5" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="3.2" fill="#ffffff">GRAB</text>
       <!-- Roof sign -->
       <rect x="12" y="2" width="10" height="2.5" rx="0.4" fill="#ffd43b"/>
       <circle cx="7" cy="11.5" r="2.2" fill="#1a1a1a"/>
@@ -2118,7 +2527,7 @@
       <path d="M2 8 Q4 4 8 4 L26 4 Q30 4 32 8 L32 11 L2 11 Z" fill="#00B14F"/>
       <path d="M9 4.5 L25 4.5 L28 8 L6 8 Z" fill="#7fd4f5" opacity=".7"/>
       <rect x="2" y="8" width="30" height="3" fill="#008f3f"/>
-      <text x="17" y="10.5" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="900" font-size="3.2" fill="#ffffff">GRAB</text>
+      <text x="17" y="10.5" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="3.2" fill="#ffffff">GRAB</text>
       <rect x="12" y="2" width="10" height="2.5" rx="0.4" fill="#ffd43b"/>
       <circle cx="7" cy="11.5" r="2.2" fill="#1a1a1a"/>
       <circle cx="7" cy="11.5" r="1" fill="#3a3a3a"/>
@@ -2176,9 +2585,14 @@
       <h1>Rotation</h1>
     </div>
   </div>
-  <div class="row" style="gap:8px">
-    <div id="headerClock" class="header-clock" title="Local time">--:--</div>
-    <button class="theme-toggle" id="settingsBtn" title="Settings">⚙</button>
+  <div class="row" style="gap:6px">
+    <button id="headerWeather" class="header-weather" title="Hourly forecast">
+      <span class="hw-icon" id="hwIcon">·</span>
+      <span class="hw-temp" id="hwTemp">--°</span>
+    </button>
+    <div id="headerClock" class="header-clock" title="Local time">
+      <span class="lcd-time">--:--</span>
+    </div>
   </div>
 </header>
 
@@ -2186,6 +2600,7 @@
   <button data-view="availability" class="active">Roster</button>
   <button data-view="profiles">Profiles</button>
   <button data-view="calendar">Dates</button>
+  <button data-view="tools" class="tab-icon" title="Tools">🛠</button>
 </nav>
 
 <main>
@@ -2528,6 +2943,261 @@
     </div>
     <div class="cal-grid" id="calGrid"></div>
   </section>
+
+  <!-- TOOLS view -->
+  <section class="view" id="view-tools">
+    <div class="section-head">
+      <strong>Tools</strong>
+    </div>
+
+    <!-- Tools landing — list of sub-tools + quick jumps into each Jakarta links section -->
+    <div id="tools-landing">
+      <div class="tool-card" data-tool="clipboard">
+        <div class="tool-icon">📋</div>
+        <div class="tool-meta">
+          <div class="tool-title">Clipboard</div>
+          <div class="tool-sub">One-tap copy for your go-to chat lines</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+      <div class="tool-card" data-tool="links">
+        <div class="tool-icon">🔗</div>
+        <div class="tool-meta">
+          <div class="tool-title">Jakarta links</div>
+          <div class="tool-sub">Maps, cinemas, events, dating-night spots</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+      <div class="tool-card" data-tool="daygame">
+        <div class="tool-icon">🚶</div>
+        <div class="tool-meta">
+          <div class="tool-title">Daygame locations</div>
+          <div class="tool-sub">Where to run into Jakartans during the day</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+      <div class="tool-card" data-tool="settings">
+        <div class="tool-icon">⚙</div>
+        <div class="tool-meta">
+          <div class="tool-title">Settings</div>
+          <div class="tool-sub">Theme, background, music, PIN, data</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+
+      <div class="tools-quick-label">Jump to section</div>
+      <div class="tools-quick-grid">
+        <button class="tools-quick-chip" data-jump="links-maps"><span>📍</span> Maps</button>
+        <button class="tools-quick-chip" data-jump="links-cinemas"><span>🎬</span> Cinemas</button>
+        <button class="tools-quick-chip" data-jump="links-expat"><span>🌐</span> Expat / social</button>
+        <button class="tools-quick-chip" data-jump="links-events"><span>🎉</span> What's happening</button>
+        <button class="tools-quick-chip" data-jump="links-date"><span>🍻</span> Date-night spots</button>
+      </div>
+    </div>
+
+    <!-- Clipboard sub-page -->
+    <div id="tools-clipboard" class="tool-sub-page" style="display:none">
+      <div class="tool-sub-head">
+        <button class="btn ghost small" id="toolsBack">‹ Back</button>
+        <span class="tool-sub-title">📋 Clipboard</span>
+      </div>
+      <div class="hint" style="margin-bottom:14px">Tap any snippet to copy. Long-press to edit.</div>
+      <div class="clipboard-list" id="clipboardList"></div>
+      <div class="actions-row" style="margin-top:14px">
+        <button class="btn secondary" id="addSnippetBtn">+ Add new snippet</button>
+        <button class="btn ghost" id="resetSnippetsBtn">Reset to defaults</button>
+      </div>
+    </div>
+
+    <!-- Jakarta links sub-page -->
+    <div id="tools-links" class="tool-sub-page" style="display:none">
+      <div class="tool-sub-head">
+        <button class="btn ghost small" id="toolsBackLinks">‹ Back</button>
+        <span class="tool-sub-title">🔗 Jakarta links</span>
+      </div>
+      <div class="link-group-header" id="links-maps">📍 Maps</div>
+      <a class="link-card" href="https://www.google.com/maps" target="_blank" rel="noopener">
+        <span class="link-icon">🗺</span><span class="link-title">Google Maps</span>
+      </a>
+
+      <div class="link-group-header" id="links-cinemas">🎬 Cinemas</div>
+      <a class="link-card" href="https://www.21cineplex.com/theater/jakarta-pusat/kota-kasablanka-xxi/0408" target="_blank" rel="noopener">
+        <span class="link-icon">🎞</span><span class="link-title">XXI · Kota Kasablanka</span>
+      </a>
+      <a class="link-card" href="https://www.cgv.id/" target="_blank" rel="noopener">
+        <span class="link-icon">🎥</span><span class="link-title">CGV Cinemas</span>
+      </a>
+      <a class="link-card" href="https://cinepolis.co.id/" target="_blank" rel="noopener">
+        <span class="link-icon">🎬</span><span class="link-title">Cinépolis Indonesia</span>
+      </a>
+
+      <div class="link-group-header" id="links-expat">🌐 Expat / social</div>
+      <a class="link-card" href="https://www.instagram.com/expatnations/" target="_blank" rel="noopener">
+        <span class="link-icon">📸</span><span class="link-title">Expatnations</span>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/socialexpat.indonesia/" target="_blank" rel="noopener">
+        <span class="link-icon">📸</span><span class="link-title">Social Expat Indonesia</span>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/latindance.jakarta/" target="_blank" rel="noopener">
+        <span class="link-icon">💃</span><span class="link-title">Latin Dance Jakarta</span>
+      </a>
+
+      <div class="link-group-header" id="links-events">🎉 What's happening</div>
+      <a class="link-card" href="https://www.instagram.com/whatsnewjakarta/" target="_blank" rel="noopener">
+        <span class="link-icon">📸</span><span class="link-title">Whatsnew Jakarta</span>
+        <span class="link-sub">events, food, weekend pop-ups</span>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/jakartahighlight/" target="_blank" rel="noopener">
+        <span class="link-icon">📸</span><span class="link-title">Jakarta Highlight</span>
+        <span class="link-sub">events &amp; food aggregator</span>
+      </a>
+      <a class="link-card" href="https://goersapp.com/" target="_blank" rel="noopener">
+        <span class="link-icon">🎟</span><span class="link-title">GoersApp</span>
+        <span class="link-sub">concerts, comedy, theatre tickets</span>
+      </a>
+      <a class="link-card" href="https://www.loket.com/" target="_blank" rel="noopener">
+        <span class="link-icon">🎟</span><span class="link-title">Loket</span>
+        <span class="link-sub">indie events &amp; ticketing</span>
+      </a>
+
+      <div class="link-group-header" id="links-date">🍻 Date-night spots</div>
+      <a class="link-card" href="https://www.instagram.com/mblocspace/" target="_blank" rel="noopener">
+        <span class="link-icon">🎶</span><span class="link-title">M Bloc Space</span>
+        <span class="link-sub">indie gigs, makers markets, food</span>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/komunitassalihara/" target="_blank" rel="noopener">
+        <span class="link-icon">🎭</span><span class="link-title">Komunitas Salihara</span>
+        <span class="link-sub">arts, theatre, dance, lit events</span>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/galerinasional/" target="_blank" rel="noopener">
+        <span class="link-icon">🖼</span><span class="link-title">Galeri Nasional</span>
+        <span class="link-sub">free contemporary art shows</span>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/standupindo_jkt/" target="_blank" rel="noopener">
+        <span class="link-icon">🎤</span><span class="link-title">Stand-up Indo Jakarta</span>
+        <span class="link-sub">comedy nights</span>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/allegro.indonesia/" target="_blank" rel="noopener">
+        <span class="link-icon">🎲</span><span class="link-title">Allegro Indonesia</span>
+        <span class="link-sub">board game café meetups</span>
+      </a>
+    </div>
+
+    <!-- Daygame locations sub-page -->
+    <div id="tools-daygame" class="tool-sub-page" style="display:none">
+      <div class="tool-sub-head">
+        <button class="btn ghost small" id="toolsBackDaygame">‹ Back</button>
+        <span class="tool-sub-title">🚶 Daygame locations</span>
+      </div>
+      <div class="hint" style="margin-bottom:14px">Places to bump into Jakartans during the day — university-age and working-age. Be respectful, read the room, leave gracefully if the vibe isn't there.</div>
+
+      <div class="link-group-header" id="dg-uni">🎓 Universities (public-access campuses)</div>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Universitas+Indonesia+Depok" target="_blank" rel="noopener">
+        <span class="link-icon">📍</span><span class="link-title">Universitas Indonesia (UI) — Depok</span>
+        <span class="link-sub">Huge wooded campus, lake, central library, cafés along the perimeter. Open to public.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Universitas+Bina+Nusantara+Anggrek" target="_blank" rel="noopener">
+        <span class="link-icon">📍</span><span class="link-title">Binus University — Anggrek &amp; Alam Sutera</span>
+        <span class="link-sub">Big international student crowd, English-friendly. Lots of cafés right outside.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Universitas+Atma+Jaya+Jakarta+Semanggi" target="_blank" rel="noopener">
+        <span class="link-icon">📍</span><span class="link-title">Atma Jaya — Semanggi</span>
+        <span class="link-sub">Central Sudirman location, mall-adjacent. Working-age crowd mixes in at lunch.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Prasetiya+Mulya+Cilandak" target="_blank" rel="noopener">
+        <span class="link-icon">📍</span><span class="link-title">Prasetiya Mulya — BSD &amp; Cilandak</span>
+        <span class="link-sub">Business school, well-dressed crowd, lots of group projects at nearby cafés.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Universitas+Trisakti+Grogol" target="_blank" rel="noopener">
+        <span class="link-icon">📍</span><span class="link-title">Trisakti — Grogol</span>
+        <span class="link-sub">West Jakarta, large student population, busy café strip on the perimeter.</span>
+      </a>
+
+      <div class="link-group-header" id="dg-cafe">☕ Hipster &amp; laptop-friendly cafés</div>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Kopi+Tuku+Cipete" target="_blank" rel="noopener">
+        <span class="link-icon">☕</span><span class="link-title">Kopi Tuku — Cipete &amp; everywhere</span>
+        <span class="link-sub">Local-chain icon, packed with 20-somethings, easy small-talk opener.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Tanamera+Coffee+Thamrin" target="_blank" rel="noopener">
+        <span class="link-icon">☕</span><span class="link-title">Tanamera Coffee — multiple branches</span>
+        <span class="link-sub">Specialty coffee, working professionals, slower turnover = more time to talk.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Common+Grounds+Coffee+Citywalk" target="_blank" rel="noopener">
+        <span class="link-icon">☕</span><span class="link-title">Common Grounds — Sudirman / Citywalk</span>
+        <span class="link-sub">Bright, photogenic, laptop city. Always busy weekday lunchtimes.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Anomali+Coffee+Senopati" target="_blank" rel="noopener">
+        <span class="link-icon">☕</span><span class="link-title">Anomali Coffee — Senopati</span>
+        <span class="link-sub">Senopati strip is THE young-professional after-work zone.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=ST+ALi+Jakarta" target="_blank" rel="noopener">
+        <span class="link-icon">☕</span><span class="link-title">ST. ALi — Setiabudi</span>
+        <span class="link-sub">Aussie-style brunch spot, laptop-friendly, English-speaking crowd.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Filosofi+Kopi+Melawai" target="_blank" rel="noopener">
+        <span class="link-icon">☕</span><span class="link-title">Filosofi Kopi — Melawai</span>
+        <span class="link-sub">From the movie. Touristy but locals love it. Mixed crowd.</span>
+      </a>
+
+      <div class="link-group-header" id="dg-mall">🛍 Daytime shopping miles &amp; mall strips</div>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Plaza+Indonesia" target="_blank" rel="noopener">
+        <span class="link-icon">🛍</span><span class="link-title">Plaza Indonesia — Bundaran HI</span>
+        <span class="link-sub">Upmarket, professional women on lunch break. Best around 12-2pm.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Grand+Indonesia+Mall" target="_blank" rel="noopener">
+        <span class="link-icon">🛍</span><span class="link-title">Grand Indonesia</span>
+        <span class="link-sub">Massive, varied crowd. East Mall is younger; West Mall is more professional.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Senayan+City" target="_blank" rel="noopener">
+        <span class="link-icon">🛍</span><span class="link-title">Senayan City + Plaza Senayan</span>
+        <span class="link-sub">Sudirman office crowd. Strong working-age weekday traffic.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Pacific+Place+Jakarta" target="_blank" rel="noopener">
+        <span class="link-icon">🛍</span><span class="link-title">Pacific Place — SCBD</span>
+        <span class="link-sub">Finance &amp; consultancy crowd, very dressed-up.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Pondok+Indah+Mall" target="_blank" rel="noopener">
+        <span class="link-icon">🛍</span><span class="link-title">Pondok Indah Mall (PIM)</span>
+        <span class="link-sub">Old-money South Jakarta, established families, polished crowd.</span>
+      </a>
+
+      <div class="link-group-header" id="dg-after">🍻 After-work hangouts</div>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Senopati+Suites+Jakarta" target="_blank" rel="noopener">
+        <span class="link-icon">🍷</span><span class="link-title">Senopati strip</span>
+        <span class="link-sub">The single best 5-9pm zone in Jakarta. Walkable bar-crawl strip.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Kemang+Raya+Jakarta" target="_blank" rel="noopener">
+        <span class="link-icon">🍷</span><span class="link-title">Kemang</span>
+        <span class="link-sub">Expat-heavy, more relaxed than Senopati, lots of outdoor bars.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=SCBD+Jakarta" target="_blank" rel="noopener">
+        <span class="link-icon">🍷</span><span class="link-title">SCBD (Sudirman Central Business District)</span>
+        <span class="link-sub">Office tower happy hours. Best Thursdays/Fridays from 6pm.</span>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/mblocspace/" target="_blank" rel="noopener">
+        <span class="link-icon">🎶</span><span class="link-title">M Bloc Space — Blok M</span>
+        <span class="link-sub">Live music + food court vibes, very dateable.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Sarinah+Mall+Jakarta" target="_blank" rel="noopener">
+        <span class="link-icon">🍷</span><span class="link-title">Sarinah Thamrin</span>
+        <span class="link-sub">Recently revamped, rooftop bars, mixed crowd, weekend lively.</span>
+      </a>
+
+      <div class="link-group-header" id="dg-fit">🏋 Fitness &amp; healthy lifestyle</div>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Senayan+Park+Jogging+Track" target="_blank" rel="noopener">
+        <span class="link-icon">🏃</span><span class="link-title">Senayan jogging track + GBK</span>
+        <span class="link-sub">Sunday morning Car Free Day is a huge social scene.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Hutan+Kota+by+Plataran" target="_blank" rel="noopener">
+        <span class="link-icon">🌳</span><span class="link-title">Hutan Kota by Plataran — GBK</span>
+        <span class="link-sub">Outdoor café surrounded by greenery. Brunch crowd.</span>
+      </a>
+      <a class="link-card" href="https://maps.app.goo.gl/?q=Taman+Suropati" target="_blank" rel="noopener">
+        <span class="link-icon">🌳</span><span class="link-title">Taman Suropati — Menteng</span>
+        <span class="link-sub">Sunday acoustic jams, students with instruments. Easy approach territory.</span>
+      </a>
+    </div>
+  </section>
 </main>
 
 <!-- Share modal -->
@@ -2608,7 +3278,10 @@ function defaultState() {
     priorityOrder: [],
     pinHash: '',
     rosterSort: 'priority',
-    startupSong: 'shuffle' // 'shuffle' | one of the song keys | 'off'
+    startupSong: 'shuffle', // 'shuffle' | one of the song keys | 'off'
+    snippets: null, // null = use defaults; otherwise array of strings
+    alwaysNight: false,     // override the daytime sky cycle — always show night
+    animateWeather: true    // animate live weather on the skyline (clouds/rain/lightning)
   };
 }
 
@@ -2647,17 +3320,367 @@ function applyTheme() {
 }
 applyTheme();
 
-/* HEADER DIGITAL CLOCK — 24h local time */
+/* HEADER LCD CLOCK — 24h local time + weather */
 function updateClock() {
-  const el = document.getElementById('headerClock');
-  if (!el) return;
+  const timeEl = document.querySelector('#headerClock .lcd-time');
+  if (!timeEl) return;
   const d = new Date();
   const hh = String(d.getHours()).padStart(2, '0');
   const mm = String(d.getMinutes()).padStart(2, '0');
-  el.innerHTML = hh + '<span class="colon">:</span>' + mm;
+  timeEl.innerHTML = hh + '<span class="colon">:</span>' + mm;
 }
 updateClock();
 setInterval(updateClock, 1000);
+
+/* =========================================================
+   LIVE SKY CYCLE — sky color, sun arc, moon arc with real phase
+   ========================================================= */
+
+// Map hour-of-day → sky overlay color + opacity. Interpolated smoothly between.
+// Stops are anchor times in 24h Jakarta local time.
+const SKY_STOPS = [
+  { h: 0.0,  c: [10, 12, 30],   o: 0.0  },  // deep night (no overlay; the base purple gradient handles this)
+  { h: 5.0,  c: [60, 30, 80],   o: 0.45 },  // pre-dawn purple
+  { h: 6.0,  c: [255, 150, 130], o: 0.55 }, // dawn peach
+  { h: 7.0,  c: [255, 200, 170], o: 0.4  }, // soft morning glow
+  { h: 9.0,  c: [180, 220, 255], o: 0.55 }, // pale morning blue
+  { h: 12.0, c: [110, 180, 240], o: 0.65 }, // midday clear blue
+  { h: 15.0, c: [130, 190, 240], o: 0.6  }, // afternoon
+  { h: 17.0, c: [255, 180, 110], o: 0.5  }, // golden hour
+  { h: 18.0, c: [255, 120, 80],  o: 0.55 }, // sunset orange
+  { h: 18.75, c: [200, 80, 130], o: 0.5  }, // sunset pink-magenta
+  { h: 19.5, c: [80, 40, 100],   o: 0.35 }, // dusk
+  { h: 21.0, c: [10, 12, 30],    o: 0.0  }, // night (back to base)
+  { h: 24.0, c: [10, 12, 30],    o: 0.0  }
+];
+function lerp(a, b, t) { return a + (b - a) * t; }
+function rgbStr(c) { return `rgb(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])})`; }
+function skyAtHour(h) {
+  for (let i = 0; i < SKY_STOPS.length - 1; i++) {
+    const a = SKY_STOPS[i], b = SKY_STOPS[i + 1];
+    if (h >= a.h && h <= b.h) {
+      const t = (h - a.h) / (b.h - a.h);
+      return {
+        color: [lerp(a.c[0], b.c[0], t), lerp(a.c[1], b.c[1], t), lerp(a.c[2], b.c[2], t)],
+        opacity: lerp(a.o, b.o, t)
+      };
+    }
+  }
+  return { color: SKY_STOPS[0].c, opacity: 0 };
+}
+
+// Sun & moon arc positions. We define an arc through the sky from horizon→apex→horizon.
+// Skyline SVG is 1200 wide. Apex sits around x=600, y=80. Horizons at x=80 and x=1120, y=480.
+function arcPos(progress) {
+  // progress 0..1 from rise to set
+  const t = Math.max(0, Math.min(1, progress));
+  // Parabolic arc
+  const x = 80 + (1120 - 80) * t;
+  // y = lerp between horizon (480) at edges and apex (80) at middle
+  const peak = 80, edge = 480;
+  // Use 1 - (2t-1)^2 to get a smooth arc (0 at edges, 1 at middle)
+  const arc = 1 - Math.pow(2 * t - 1, 2);
+  const y = edge - (edge - peak) * arc;
+  return { x, y };
+}
+
+// Real moon phase calculation, no API needed.
+// Anchor: 2000-01-06 18:14 UTC was a precise new moon.
+// Synodic month: 29.5305882 days.
+function moonPhase(date) {
+  const SYN = 29.5305882;
+  const anchor = new Date('2000-01-06T18:14:00Z').getTime();
+  const days = (date.getTime() - anchor) / (1000 * 60 * 60 * 24);
+  let phase = (days % SYN) / SYN;
+  if (phase < 0) phase += 1;
+  return phase;  // 0 = new, 0.25 = first quarter, 0.5 = full, 0.75 = last quarter
+}
+// Render the moon at the given phase by repositioning the shadow ellipse.
+// phase 0 → full shadow (new), 0.5 → no shadow (full), 0.25/0.75 → half shadow
+function renderMoonPhase(phase) {
+  const shadow = document.getElementById('moonShadow');
+  if (!shadow) return;
+  const R = 16; // moon radius in SVG units
+  // Convert phase 0..1 to "illumination fraction" 0..1..0
+  // and to "shadow-direction" (waxing = left-lit, waning = right-lit)
+  // We model the terminator as an ellipse centered offset horizontally.
+  // - phase 0 (new): shadow covers everything → shadow rx=R, cx=0 (full opacity)
+  // - phase 0.25 (first quarter): half-illuminated, shadow on left half → shadow rx=R, cx = -R/2? Actually use a different trick:
+  //     Use shadow ellipse with rx that goes negative→0→positive across phase, cx=0
+  // Implementation: an ellipse rx varies; sign of an offset cx flips between waxing & waning
+  // Simpler & accurate: cover one hemisphere with a rectangle and the boundary with an ellipse.
+
+  // Cleaner approach using one ellipse:
+  // phase 0     → shadow rx = +R, cx = 0  (full dark disc covers moon)
+  // phase 0.25  → shadow rx = 0,  cx = -R/2 ... no this gets complex.
+  //
+  // Best technique: TWO clip regions. But we only have one shadow ellipse.
+  // Easier: vary opacity for "amount lit" and offset for direction.
+  // For an artistic representation (not astronomically perfect) this is fine.
+
+  // Map phase to "shadow center X" and "shadow rx":
+  // phase 0   (new):    shadow at center, rx = R     → fully dark
+  // phase 0.25 (waxing first qtr): shadow shifted left, partial coverage of left half (we see right half lit)
+  // phase 0.5 (full):  shadow off-screen, rx = 0    → fully lit
+  // phase 0.75 (waning last qtr): shadow shifted right, partial coverage of right half (we see left half lit)
+  //
+  // We parameterize by f = 2 * |phase - 0.5| (0 at full, 1 at new — a "darkness" amount)
+  // and a sign: waxing (phase < 0.5) → light grows on right side → shadow on left
+  //             waning (phase > 0.5) → light shrinks from right → shadow on right
+  const darkness = Math.abs((phase - 0.5) * 2);  // 0 (full) → 1 (new)
+  const waxing = phase < 0.5;
+  // The shadow ellipse covers the "dark" portion. Its rx scales with darkness, its cx shifts to the dark side.
+  // For a clean visual, we use rx = R * darkness on the dark hemisphere center.
+  // Trick: combine an ellipse offset to one side. We slide it so the boundary lands at the right spot.
+  if (darkness < 0.02) {
+    // Practically full moon
+    shadow.setAttribute('rx', 0);
+    shadow.setAttribute('cx', 0);
+  } else if (darkness > 0.98) {
+    // Practically new moon — disc invisible
+    shadow.setAttribute('rx', R);
+    shadow.setAttribute('cx', 0);
+  } else {
+    // Crescent/gibbous. Use a wide ellipse offset to one side.
+    // rx is wide enough to cut a proper curve into the moon disc.
+    const rx = R * (1 - darkness * 0.3);  // slight rx variation
+    const offsetMag = R * (1 - darkness);  // how far the shadow center sits off-disc
+    const cx = waxing ? -offsetMag : offsetMag;
+    shadow.setAttribute('rx', rx);
+    shadow.setAttribute('cx', cx);
+  }
+}
+
+// Main update function — called every minute
+function updateSky() {
+  // Jakarta local time. We could also use the user's local time.
+  // Spec said "local time in our favorite city" — using Jakarta (Asia/Jakarta).
+  const now = new Date();
+  // Get hour-of-day as a float in Asia/Jakarta timezone
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Jakarta',
+    hour: '2-digit', minute: '2-digit', hour12: false
+  });
+  const parts = fmt.formatToParts(now);
+  const hh = parseInt(parts.find(p => p.type === 'hour').value, 10);
+  const mm = parseInt(parts.find(p => p.type === 'minute').value, 10);
+  const h = hh + mm / 60;
+
+  // Update sky overlay
+  const { color, opacity } = skyAtHour(h);
+  const dyn = document.getElementById('skyDynamic');
+  if (dyn) {
+    dyn.setAttribute('fill', rgbStr(color));
+    dyn.setAttribute('opacity', opacity.toFixed(3));
+  }
+
+  // Stars visible at night (h < 5.5 or h > 19)
+  const stars = document.getElementById('stars');
+  if (stars) {
+    let starOpacity = 0;
+    if (h < 5.5) starOpacity = 1;
+    else if (h < 6.5) starOpacity = 1 - (h - 5.5);
+    else if (h > 20) starOpacity = Math.min(1, (h - 19.5) / 1.5);
+    stars.setAttribute('opacity', starOpacity.toFixed(2));
+  }
+
+  // Sun: rises ~6am, sets ~6pm (rough Jakarta equatorial schedule, doesn't vary much)
+  const sunEl = document.getElementById('sun');
+  const SUN_RISE = 6.0, SUN_SET = 18.0;
+  if (sunEl) {
+    if (h >= SUN_RISE && h <= SUN_SET) {
+      const p = (h - SUN_RISE) / (SUN_SET - SUN_RISE);
+      const pos = arcPos(p);
+      sunEl.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
+      sunEl.style.display = '';
+      sunEl.style.opacity = 1;
+    } else {
+      sunEl.style.opacity = 0;
+      setTimeout(() => { if (sunEl.style.opacity == 0) sunEl.style.display = 'none'; }, 4500);
+    }
+  }
+
+  // Moon: rough opposite of sun — rises ~7pm, sets ~5am (highly variable in real life but a good approximation)
+  // For a romantic look it's fine that this isn't astronomically perfect.
+  const moonEl = document.getElementById('moon');
+  const MOON_RISE = 19.0, MOON_SET = 29.0;  // 29 = next day 5am
+  if (moonEl) {
+    let mh = h;
+    if (mh < 5) mh += 24; // wrap so midnight-5am is treated as continuation of last night
+    if (mh >= MOON_RISE && mh <= MOON_SET) {
+      const p = (mh - MOON_RISE) / (MOON_SET - MOON_RISE);
+      const pos = arcPos(p);
+      moonEl.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
+      moonEl.style.display = '';
+      moonEl.style.opacity = 1;
+      // Real moon phase from astronomical calculation
+      try {
+        renderMoonPhase(moonPhase(now));
+      } catch (e) {
+        // If math fails for any reason → default to full moon (no shadow)
+        const shadow = document.getElementById('moonShadow');
+        if (shadow) { shadow.setAttribute('rx', 0); shadow.setAttribute('cx', 0); }
+      }
+    } else {
+      moonEl.style.opacity = 0;
+      setTimeout(() => { if (moonEl.style.opacity == 0) moonEl.style.display = 'none'; }, 4500);
+    }
+  }
+}
+updateSky();
+// Re-evaluate every minute. The minute change is enough — sky shifts are slow.
+setInterval(updateSky, 60 * 1000);
+
+/* WEATHER — Open-Meteo (no API key, free) — Jakarta coords */
+// Returns an inline SVG string for the given WMO weather code, in full color
+function weatherSvgIcon(code) {
+  if (code === 0) {
+    // ☀ Clear sun — bright yellow
+    return `<svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="#ffd43b"/><g stroke="#ffd43b" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/></g></svg>`;
+  }
+  if ([1, 2].includes(code)) {
+    // 🌤 Partly cloudy — sun + cloud
+    return `<svg width="22" height="22" viewBox="0 0 24 24"><circle cx="9" cy="9" r="4" fill="#ffd43b"/><path d="M11 14a4 4 0 0 1 4-4 5 5 0 0 1 5 5 4 4 0 0 1-4 4H9a4 4 0 0 1 0-8 4 4 0 0 1 2 .5z" fill="#dfe5eb" stroke="#a8b0bc" stroke-width=".5"/></svg>`;
+  }
+  if (code === 3) {
+    // ☁ Overcast — grey cloud
+    return `<svg width="22" height="22" viewBox="0 0 24 24"><path d="M7 18a5 5 0 0 1 0-10 6 6 0 0 1 11.5 1 4 4 0 0 1-.5 8H7z" fill="#c4ccd5" stroke="#7a838f" stroke-width=".5"/></svg>`;
+  }
+  if ([45, 48].includes(code)) {
+    // 🌫 Fog — horizontal bars
+    return `<svg width="22" height="22" viewBox="0 0 24 24"><g stroke="#b0b8c4" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="8" x2="21" y2="8"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="3" y1="16" x2="21" y2="16"/></g></svg>`;
+  }
+  if ([51, 53, 55, 56, 57].includes(code)) {
+    // 🌦 Drizzle — cloud + small drops
+    return `<svg width="22" height="22" viewBox="0 0 24 24"><path d="M7 14a5 5 0 0 1 0-10 6 6 0 0 1 11.5 1 4 4 0 0 1-.5 8H7z" fill="#c4ccd5"/><path d="M9 17v3M13 17v4M17 17v3" stroke="#74c0fc" stroke-width="2" stroke-linecap="round"/></svg>`;
+  }
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) {
+    // 🌧 Rain — bigger cloud + heavier drops
+    return `<svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 12a5 5 0 0 1 0-10 6 6 0 0 1 12 1 4 4 0 0 1-.5 8H6z" fill="#7a8a99"/><path d="M8 14l-1 6M12 14l-1 7M16 14l-1 6" stroke="#22b8cf" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+  }
+  if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    // ❄ Snow — snowflake
+    return `<svg width="20" height="20" viewBox="0 0 24 24"><g stroke="#74c0fc" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></g></svg>`;
+  }
+  if ([95, 96, 99].includes(code)) {
+    // ⛈ Thunderstorm — cloud + lightning bolt
+    return `<svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 11a5 5 0 0 1 0-10 6 6 0 0 1 12 1 4 4 0 0 1-.5 8H6z" fill="#5a6470"/><path d="M13 13l-4 6h3l-1 5 5-7h-3z" fill="#ffd43b" stroke="#a8841a" stroke-width=".4"/></svg>`;
+  }
+  return '·';
+}
+
+async function updateWeather() {
+  const iconEl = document.getElementById('hwIcon');
+  const tempEl = document.getElementById('hwTemp');
+  if (!iconEl || !tempEl) return;
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=-6.2&longitude=106.8&current=temperature_2m,weather_code&timezone=Asia%2FJakarta';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('weather fetch failed');
+    const data = await res.json();
+    const t = Math.round(data.current.temperature_2m);
+    iconEl.innerHTML = weatherSvgIcon(data.current.weather_code);
+    tempEl.textContent = `${t}°`;
+  } catch (e) {
+    tempEl.textContent = '--°';
+  }
+}
+updateWeather();
+// Refresh weather every 15 minutes
+setInterval(updateWeather, 15 * 60 * 1000);
+
+/* Tap the LCD clock → show 24-hour weather feed with rain forecast */
+function wmoIcon(code) {
+  return code === 0 ? '☀'
+    : [1, 2].includes(code) ? '🌤'
+    : code === 3 ? '☁'
+    : [45, 48].includes(code) ? '🌫'
+    : [51, 53, 55, 56, 57].includes(code) ? '🌦'
+    : [61, 63, 65, 66, 67, 80, 81, 82].includes(code) ? '🌧'
+    : [71, 73, 75, 77, 85, 86].includes(code) ? '❄'
+    : [95, 96, 99].includes(code) ? '⛈'
+    : '·';
+}
+async function openHourlyWeather() {
+  const popup = document.getElementById('weatherPopup');
+  popup.classList.add('active');
+  const nowEl = document.getElementById('weatherNow');
+  const grid = document.getElementById('weatherHourly');
+  nowEl.textContent = 'Loading…';
+  grid.innerHTML = '';
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=-6.2&longitude=106.8'
+      + '&current=temperature_2m,weather_code,precipitation'
+      + '&hourly=temperature_2m,weather_code,precipitation_probability,precipitation'
+      + '&forecast_hours=24'
+      + '&timezone=Asia%2FJakarta';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('fetch failed');
+    const data = await res.json();
+    const cur = data.current;
+    nowEl.innerHTML = `${wmoIcon(cur.weather_code)} ${Math.round(cur.temperature_2m)}°<span style="font-size:14px; color:var(--muted); font-weight:500; margin-left:8px">${cur.precipitation > 0 ? cur.precipitation.toFixed(1) + 'mm rain now' : 'no rain'}</span>`;
+    const h = data.hourly;
+    const nowHour = new Date(cur.time).getHours();
+    // Find the index in the hourly array that matches "now" so we start there
+    let startIdx = h.time.findIndex(t => new Date(t).getHours() === nowHour);
+    if (startIdx < 0) startIdx = 0;
+    const cards = [];
+    for (let i = startIdx; i < Math.min(startIdx + 24, h.time.length); i++) {
+      const t = new Date(h.time[i]);
+      const hh = String(t.getHours()).padStart(2, '0');
+      const temp = Math.round(h.temperature_2m[i]);
+      const code = h.weather_code[i];
+      const prob = h.precipitation_probability[i];
+      const mm = h.precipitation[i];
+      const rainCls = mm >= 2.5 ? ' heavy-rain' : (mm >= 0.2 || prob >= 60 ? ' rain' : '');
+      const rainText = mm >= 0.2 ? `${mm.toFixed(1)}mm` : (prob >= 30 ? `${prob}%` : '—');
+      const rainDry = mm < 0.2 && prob < 30 ? ' dry' : '';
+      cards.push(`
+        <div class="weather-hour${rainCls}">
+          <span class="wh-hour">${hh}:00</span>
+          <span class="wh-icon">${wmoIcon(code)}</span>
+          <span class="wh-temp">${temp}°</span>
+          <span class="wh-rain${rainDry}">${rainText}</span>
+        </div>`);
+    }
+    grid.innerHTML = cards.join('');
+  } catch (e) {
+    nowEl.textContent = 'Weather unavailable';
+  }
+}
+document.getElementById('headerWeather').addEventListener('click', openHourlyWeather);
+document.getElementById('weatherClose').addEventListener('click', () => {
+  document.getElementById('weatherPopup').classList.remove('active');
+});
+document.getElementById('weatherPopup').addEventListener('click', (e) => {
+  if (e.target.id === 'weatherPopup') {
+    document.getElementById('weatherPopup').classList.remove('active');
+  }
+});
+
+/* Tap the F logo → kiss emoji shower */
+function fireKissShower() {
+  const root = document.getElementById('kissShower');
+  root.classList.add('active');
+  const kisses = ['💋','😘','💕','💖','💗','💘'];
+  const count = 24;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('span');
+    el.className = 'kiss';
+    el.textContent = kisses[Math.floor(Math.random() * kisses.length)];
+    el.style.left = (Math.random() * 92 + 4) + 'vw';
+    el.style.animationDelay = (Math.random() * 0.6) + 's';
+    el.style.fontSize = (22 + Math.random() * 16) + 'px';
+    el.style.animationDuration = (1.8 + Math.random() * 1.2) + 's';
+    root.appendChild(el);
+  }
+  if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
+  setTimeout(() => {
+    root.innerHTML = '';
+    root.classList.remove('active');
+  }, 3200);
+}
+document.querySelector('.logo-badge').addEventListener('click', fireKissShower);
 
 /* =========================================================
    BACKGROUND CHOICES
@@ -2712,7 +3735,7 @@ detectPhotos();
 
 // Settings open/close
 document.getElementById('settingsBtn').addEventListener('click', () => showView('settings'));
-document.getElementById('closeSettings').addEventListener('click', () => showView('availability'));
+document.getElementById('closeSettings').addEventListener('click', () => showView('tools'));
 
 // Theme choice buttons
 document.querySelectorAll('[data-theme-choice]').forEach(btn => {
@@ -2800,7 +3823,7 @@ function showView(name) {
     document.querySelector('nav.tabs button[data-view="profiles"]').classList.add('active');
   } else if (name === 'settings') {
     document.getElementById('view-settings').classList.add('active');
-    applyBg(); // refresh active button highlight
+    applyBg();
   } else {
     document.getElementById('view-' + name).classList.add('active');
     const btn = document.querySelector(`nav.tabs button[data-view="${name}"]`);
@@ -2809,6 +3832,7 @@ function showView(name) {
   if (name === 'availability') renderAvailability();
   if (name === 'profiles') renderProfilesList();
   if (name === 'calendar') renderCalendar();
+  if (name === 'tools') showToolsLanding();
   // Toggle floating brand bars per view
   document.getElementById('floatBarRoster').classList.toggle('show', name === 'availability');
   document.getElementById('floatBarProfiles').classList.toggle('show', name === 'profiles');
@@ -2955,17 +3979,23 @@ function renderProfilesList() {
   root.appendChild(list);
   attachProfileDragHandlers();
 
-  // ARCHIVE section — collapsible, at the bottom
-  if (archivedProfiles.length) {
-    const archHeader = document.createElement('div');
-    archHeader.className = 'archive-header';
-    archHeader.innerHTML = `<span>🗄 Archive</span><span class="archive-count">${archivedProfiles.length}</span>`;
-    archHeader.addEventListener('click', () => {
-      const isOpen = archHeader.classList.toggle('open');
-      document.getElementById('archivedList').style.display = isOpen ? '' : 'none';
-    });
-    root.appendChild(archHeader);
+  // ARCHIVE drop zone — always visible at the bottom, even when empty (so you can drag into it)
+  const archZone = document.createElement('div');
+  archZone.id = 'archiveDropZone';
+  archZone.innerHTML = `
+    <span><span class="arch-icon">🗄</span> Archive · drop here</span>
+    <span style="display:inline-flex; align-items:center; gap:8px">
+      ${archivedProfiles.length ? `<span class="arch-count">${archivedProfiles.length}</span>` : ''}
+      <span class="arch-chevron">▾</span>
+    </span>`;
+  archZone.addEventListener('click', () => {
+    const isOpen = archZone.classList.toggle('open');
+    const archList = document.getElementById('archivedList');
+    if (archList) archList.style.display = isOpen ? '' : 'none';
+  });
+  root.appendChild(archZone);
 
+  if (archivedProfiles.length) {
     const archList = document.createElement('div');
     archList.id = 'archivedList';
     archList.className = 'profile-list archived';
@@ -2990,88 +4020,180 @@ function renderProfilesList() {
 document.getElementById('newProfileBtn').addEventListener('click', () => openEditor(null));
 
 /* =========================================================
-   PROFILE LIST — drag-to-reorder via long-press hold (touch + mouse)
+   PROFILE LIST — live drag-to-reorder (touch + mouse).
+   Card follows the finger/cursor in real time. Other cards animate to make room.
+   Drag into the archive drop-zone to archive.
    ========================================================= */
 function attachProfileDragHandlers() {
   document.querySelectorAll('#activeProfileList .profile-card').forEach(card => {
     let holdTimer = null;
     let isDragging = false;
-    let startY = null;
+    let startX = 0, startY = 0;
+    let cardRect = null;
+    let pointerOffsetY = 0;
+    let placeholder = null;
 
-    // Mouse drag (desktop)
-    card.draggable = true;
-    card.addEventListener('dragstart', (e) => {
+    const beginDrag = (clientX, clientY) => {
       isDragging = true;
-      card.classList.add('dragging');
+      cardRect = card.getBoundingClientRect();
+      pointerOffsetY = clientY - cardRect.top;
       card.dataset.wasDragged = '1';
-      e.dataTransfer.effectAllowed = 'move';
-      try { e.dataTransfer.setData('text/plain', card.dataset.profileId); } catch(_){}
-    });
-    card.addEventListener('dragend', () => {
-      isDragging = false;
-      card.classList.remove('dragging');
-      document.querySelectorAll('.profile-card.drop-target').forEach(r => r.classList.remove('drop-target'));
-    });
-    card.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      card.classList.add('drop-target');
-    });
-    card.addEventListener('dragleave', () => card.classList.remove('drop-target'));
-    card.addEventListener('drop', (e) => {
-      e.preventDefault();
-      card.classList.remove('drop-target');
-      const srcId = e.dataTransfer.getData('text/plain');
-      const tgtId = card.dataset.profileId;
-      if (!srcId || srcId === tgtId) return;
-      reorderProfilePriority(srcId, tgtId);
-      saveState();
-      renderProfilesList();
-    });
 
-    // Touch: long-press (250ms) to enter drag mode, then track with finger
+      // Create an invisible placeholder where the card used to be (keeps list height stable)
+      placeholder = document.createElement('div');
+      placeholder.className = 'profile-card-placeholder';
+      placeholder.style.height = cardRect.height + 'px';
+      card.parentNode.insertBefore(placeholder, card);
+
+      // Pop the card out of the flow as a fixed-position floating element
+      card.classList.add('dragging-live');
+      card.style.width = cardRect.width + 'px';
+      card.style.left = cardRect.left + 'px';
+      card.style.top = cardRect.top + 'px';
+      if (navigator.vibrate) navigator.vibrate(35);
+      moveTo(clientY);
+    };
+
+    const moveTo = (clientY) => {
+      if (!isDragging || !placeholder) return;
+      const newTop = clientY - pointerOffsetY;
+      card.style.top = newTop + 'px';
+
+      // Find what we're hovering over — either another active card or the archive zone
+      // (temporarily hide our own card so elementFromPoint sees through it)
+      card.style.pointerEvents = 'none';
+      const el = document.elementFromPoint(window.innerWidth / 2, clientY);
+      card.style.pointerEvents = '';
+
+      // Clear previous highlights
+      document.querySelectorAll('.profile-card.drop-target, #archiveDropZone.drop-target')
+        .forEach(r => r.classList.remove('drop-target'));
+
+      const archiveZone = el && el.closest('#archiveDropZone');
+      if (archiveZone) {
+        archiveZone.classList.add('drop-target');
+        return;
+      }
+
+      const over = el && el.closest('.profile-card:not(.dragging-live):not(.archived-card)');
+      if (!over) return;
+
+      const overRect = over.getBoundingClientRect();
+      const overMid = overRect.top + overRect.height / 2;
+      const list = document.getElementById('activeProfileList');
+      if (clientY < overMid) {
+        list.insertBefore(placeholder, over);
+      } else {
+        list.insertBefore(placeholder, over.nextSibling);
+      }
+    };
+
+    const endDrag = (clientY) => {
+      clearTimeout(holdTimer);
+      if (!isDragging) { startX = startY = 0; return; }
+      isDragging = false;
+
+      // Check if we ended on the archive drop zone
+      card.style.pointerEvents = 'none';
+      const el = document.elementFromPoint(window.innerWidth / 2, clientY);
+      card.style.pointerEvents = '';
+      const archiveZone = el && el.closest('#archiveDropZone');
+
+      card.classList.remove('dragging-live');
+      card.style.removeProperty('width');
+      card.style.removeProperty('left');
+      card.style.removeProperty('top');
+      document.querySelectorAll('.drop-target').forEach(r => r.classList.remove('drop-target'));
+
+      if (archiveZone) {
+        // Archive this profile
+        const p = state.profiles.find(p => p.id === card.dataset.profileId);
+        if (p) {
+          p.archived = true;
+          saveState();
+        }
+        if (placeholder) placeholder.remove();
+        placeholder = null;
+        renderProfilesList();
+        return;
+      }
+
+      // Reorder based on placeholder's final position
+      if (placeholder) {
+        // Build new priority order from current DOM (which has placeholder in the new spot)
+        const list = document.getElementById('activeProfileList');
+        const newOrderActive = [];
+        list.childNodes.forEach(n => {
+          if (n === placeholder) newOrderActive.push(card.dataset.profileId);
+          else if (n.dataset && n.dataset.profileId) newOrderActive.push(n.dataset.profileId);
+        });
+        // Merge with archived (which stay at the end of priorityOrder)
+        const archivedIds = state.priorityOrder.filter(id => {
+          const p = state.profiles.find(p => p.id === id);
+          return p && p.archived;
+        });
+        state.priorityOrder = [...newOrderActive, ...archivedIds];
+        // catch any missing
+        state.profiles.forEach(p => {
+          if (!state.priorityOrder.includes(p.id)) state.priorityOrder.push(p.id);
+        });
+        saveState();
+        placeholder.remove();
+        placeholder = null;
+      }
+      renderProfilesList();
+    };
+
+    // Touch: 250ms hold → enter drag mode
     card.addEventListener('touchstart', (e) => {
-      startY = e.touches[0].clientY;
-      holdTimer = setTimeout(() => {
-        isDragging = true;
-        card.classList.add('dragging');
-        card.dataset.wasDragged = '1';
-        if (navigator.vibrate) navigator.vibrate(40);
-      }, 250);
+      const t = e.touches[0];
+      startX = t.clientX; startY = t.clientY;
+      holdTimer = setTimeout(() => beginDrag(t.clientX, t.clientY), 250);
     }, { passive: true });
     card.addEventListener('touchmove', (e) => {
-      if (!startY) return;
       const t = e.touches[0];
       if (!isDragging) {
-        // If user moves too much before long-press fires, cancel as scroll
-        if (Math.abs(t.clientY - startY) > 12) { clearTimeout(holdTimer); startY = null; }
+        // Cancel hold if user starts scrolling
+        if (Math.abs(t.clientY - startY) > 12 || Math.abs(t.clientX - startX) > 12) {
+          clearTimeout(holdTimer);
+        }
         return;
       }
       e.preventDefault();
-      const el = document.elementFromPoint(t.clientX, t.clientY);
-      const over = el && el.closest('.profile-card');
-      document.querySelectorAll('.profile-card.drop-target').forEach(r => r.classList.remove('drop-target'));
-      if (over && over !== card && over.dataset.profileId) over.classList.add('drop-target');
+      moveTo(t.clientY);
     }, { passive: false });
     card.addEventListener('touchend', (e) => {
-      clearTimeout(holdTimer);
-      if (isDragging) {
-        const t = (e.changedTouches && e.changedTouches[0]);
-        const el = t ? document.elementFromPoint(t.clientX, t.clientY) : null;
-        const over = el && el.closest('.profile-card');
-        card.classList.remove('dragging');
-        if (over && over !== card && over.dataset.profileId) {
-          over.classList.remove('drop-target');
-          reorderProfilePriority(card.dataset.profileId, over.dataset.profileId);
-          saveState();
-          renderProfilesList();
-        }
-      }
-      startY = null; isDragging = false;
+      const t = (e.changedTouches && e.changedTouches[0]) || { clientY: startY };
+      endDrag(t.clientY);
     });
     card.addEventListener('touchcancel', () => {
-      clearTimeout(holdTimer); startY = null; isDragging = false;
-      card.classList.remove('dragging');
+      clearTimeout(holdTimer);
+      if (isDragging) endDrag(startY);
+    });
+
+    // Mouse (desktop): hold mousedown for 200ms to enter drag mode
+    card.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      if (e.target.closest('.wa-btn')) return; // let WA button work
+      startX = e.clientX; startY = e.clientY;
+      holdTimer = setTimeout(() => beginDrag(e.clientX, e.clientY), 200);
+      const mouseMoveHandler = (ev) => {
+        if (!isDragging) {
+          if (Math.abs(ev.clientY - startY) > 8 || Math.abs(ev.clientX - startX) > 8) {
+            clearTimeout(holdTimer);
+          }
+          return;
+        }
+        ev.preventDefault();
+        moveTo(ev.clientY);
+      };
+      const mouseUpHandler = (ev) => {
+        document.removeEventListener('mousemove', mouseMoveHandler);
+        document.removeEventListener('mouseup', mouseUpHandler);
+        endDrag(ev.clientY);
+      };
+      document.addEventListener('mousemove', mouseMoveHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
     });
   });
 }
@@ -3877,7 +4999,8 @@ function renderCalendar() {
       sel.className = 'who-sel';
       const blank = document.createElement('option'); blank.value = ''; blank.textContent = '— who —';
       sel.appendChild(blank);
-      state.profiles.forEach(p => {
+      // Use priority order, skip archived
+      orderedProfiles().filter(p => !p.archived).forEach(p => {
         const opt = document.createElement('option');
         opt.value = p.id; opt.textContent = p.name;
         if (entry.profileId === p.id) opt.selected = true;
@@ -4261,15 +5384,15 @@ async function renderCalendarToCanvas() {
   ctx.fillStyle = '#ff5c8a';
   ctx.beginPath(); ctx.arc(PAD + 24, PAD + 24, 24, 0, Math.PI*2); ctx.fill();
   ctx.fillStyle = 'white';
-  ctx.font = '700 28px "Space Grotesk", system-ui, sans-serif';
+  ctx.font = '700 28px "Montserrat", system-ui, sans-serif';
   ctx.textBaseline = 'middle';
   ctx.fillText('F', PAD + 16, PAD + 25);
 
   ctx.fillStyle = 'white';
-  ctx.font = '800 32px "Space Grotesk", system-ui, sans-serif';
+  ctx.font = '800 32px "Montserrat", system-ui, sans-serif';
   ctx.fillText('My calendar', PAD + 64, PAD + 18);
   ctx.fillStyle = 'rgba(255,255,255,.55)';
-  ctx.font = '600 13px "Space Grotesk", system-ui, sans-serif';
+  ctx.font = '600 13px "Montserrat", system-ui, sans-serif';
   ctx.fillText(`Next ${weeks} week${weeks===1?'':'s'} · generated ${fmtDateShort(new Date())}`, PAD + 64, PAD + 42);
 
   // Day rows
@@ -4295,14 +5418,14 @@ async function renderCalendarToCanvas() {
     const monStr = d.date.toLocaleDateString('en-US', {month:'short'}).toUpperCase();
 
     ctx.fillStyle = isToday ? '#ff8fa3' : 'rgba(255,255,255,.55)';
-    ctx.font = '700 11px "Space Grotesk", system-ui, sans-serif';
+    ctx.font = '700 11px "Montserrat", system-ui, sans-serif';
     ctx.textBaseline = 'top';
     ctx.fillText(dowStr, x + 18, y + 14);
     ctx.fillStyle = 'white';
-    ctx.font = '800 30px "Space Grotesk", system-ui, sans-serif';
+    ctx.font = '800 30px "Montserrat", system-ui, sans-serif';
     ctx.fillText(dateStr, x + 18, y + 28);
     ctx.fillStyle = 'rgba(255,255,255,.55)';
-    ctx.font = '600 11px "Space Grotesk", system-ui, sans-serif';
+    ctx.font = '600 11px "Montserrat", system-ui, sans-serif';
     ctx.fillText(monStr, x + 18 + ctx.measureText(dateStr).width + 6, y + 46);
 
     // Today badge
@@ -4311,7 +5434,7 @@ async function renderCalendarToCanvas() {
       ctx.fillStyle = '#ff5c8a';
       roundRect(ctx, x + w - tw - 14, y + 12, tw, 20, 6); ctx.fill();
       ctx.fillStyle = 'white';
-      ctx.font = '700 10px "Space Grotesk", system-ui, sans-serif';
+      ctx.font = '700 10px "Montserrat", system-ui, sans-serif';
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'center';
       ctx.fillText('TODAY', x + w - tw/2 - 14, y + 22);
@@ -4322,7 +5445,7 @@ async function renderCalendarToCanvas() {
     const namesX = x + 96;
     if (!d.entries.length) {
       ctx.fillStyle = 'rgba(255,255,255,.3)';
-      ctx.font = 'italic 500 16px "Inter", system-ui, sans-serif';
+      ctx.font = 'italic 500 16px "Montserrat", system-ui, sans-serif';
       ctx.textBaseline = 'middle';
       ctx.fillText('— free —', namesX, y + h/2);
       ctx.textBaseline = 'top';
@@ -4333,7 +5456,7 @@ async function renderCalendarToCanvas() {
         const p = profById.get(entry.profileId);
         if (!p) return;
         const name = p.name;
-        ctx.font = '700 15px "Inter", system-ui, sans-serif';
+        ctx.font = '700 15px "Montserrat", system-ui, sans-serif';
         const tw = ctx.measureText(name).width + 28;
         if (px + tw > x + w - 14) { px = namesX; py += 28; }
         // pill
@@ -4354,7 +5477,7 @@ async function renderCalendarToCanvas() {
 
   // Footer
   ctx.fillStyle = 'rgba(255,255,255,.35)';
-  ctx.font = '600 11px "Space Grotesk", system-ui, sans-serif';
+  ctx.font = '600 11px "Montserrat", system-ui, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('Rotation · personal calendar', W/2, H - PAD - 14);
   ctx.textAlign = 'left';
@@ -4511,6 +5634,165 @@ updatePinButtons();
 
 // Show lock screen on startup if a PIN is set
 if (state.pinHash) openPinLock('check');
+
+/* =========================================================
+   TOOLS — landing + Clipboard sub-page
+   ========================================================= */
+const DEFAULT_SNIPPETS = [
+  "Hi, my name is Steven from Austria. Now I stay in Kuningan. Are you nearby?",
+  "Whats your daily schedule like? What job do you work?\nAnd what are you looking for here?",
+  "If you are interested in me, lets write on whatsapp:\n+43 677 6237 3922",
+  "I don't use this app much. If you are interested in me, lets talk on whatsapp:\n+43 677 6237 3922",
+  "You promise you won't ask for money, or sell me some service or do something rude like that?",
+  "I think you look cute, I would totally hug and kiss you when we meet! 😘",
+  "May I ask you: Have you ever dated a foreigner before?\nHave you ever been intimate with someone?",
+  "I'm patient even if you don't speak good English. I've had dates where the girl uses translate app. As long as you find me attractive, the vibe will be good and it will be a fun time together."
+];
+function getSnippets() {
+  if (state.snippets && state.snippets.length) return state.snippets;
+  return DEFAULT_SNIPPETS.slice();
+}
+function setSnippets(arr) {
+  state.snippets = arr;
+  saveState();
+}
+
+function showToolsLanding() {
+  document.getElementById('tools-landing').style.display = '';
+  document.getElementById('tools-clipboard').style.display = 'none';
+  document.getElementById('tools-links').style.display = 'none';
+  document.getElementById('tools-daygame').style.display = 'none';
+}
+function showToolsClipboard() {
+  document.getElementById('tools-landing').style.display = 'none';
+  document.getElementById('tools-clipboard').style.display = '';
+  document.getElementById('tools-links').style.display = 'none';
+  document.getElementById('tools-daygame').style.display = 'none';
+  renderClipboard();
+}
+function showToolsLinks() {
+  document.getElementById('tools-landing').style.display = 'none';
+  document.getElementById('tools-clipboard').style.display = 'none';
+  document.getElementById('tools-links').style.display = '';
+  document.getElementById('tools-daygame').style.display = 'none';
+}
+function showToolsDaygame() {
+  document.getElementById('tools-landing').style.display = 'none';
+  document.getElementById('tools-clipboard').style.display = 'none';
+  document.getElementById('tools-links').style.display = 'none';
+  document.getElementById('tools-daygame').style.display = '';
+}
+
+function renderClipboard() {
+  const list = document.getElementById('clipboardList');
+  list.innerHTML = '';
+  const snippets = getSnippets();
+  snippets.forEach((text, idx) => {
+    const div = document.createElement('div');
+    div.className = 'clipboard-snippet';
+    div.innerHTML = `
+      <div class="snippet-text">${escapeHtml(text)}</div>
+      <div class="snippet-actions">
+        <button class="snippet-action-btn" data-action="edit" data-idx="${idx}">EDIT</button>
+        <button class="snippet-action-btn danger" data-action="del" data-idx="${idx}">DEL</button>
+      </div>
+      <div class="copy-flash">COPIED ✓</div>
+    `;
+    // Click body to copy
+    div.addEventListener('click', async (e) => {
+      if (e.target.closest('.snippet-action-btn')) return;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (err) {
+        // Fallback for older browsers
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (_) {}
+        ta.remove();
+      }
+      div.classList.add('copied');
+      if (navigator.vibrate) navigator.vibrate(20);
+      setTimeout(() => div.classList.remove('copied'), 900);
+    });
+    // Edit button
+    div.querySelector('[data-action="edit"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      startEditSnippet(idx, div);
+    });
+    // Delete button
+    div.querySelector('[data-action="del"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!confirm('Delete this snippet?')) return;
+      const cur = getSnippets();
+      cur.splice(idx, 1);
+      setSnippets(cur);
+      renderClipboard();
+    });
+    list.appendChild(div);
+  });
+}
+
+function startEditSnippet(idx, container) {
+  const current = getSnippets()[idx];
+  container.innerHTML = `
+    <textarea class="snippet-edit-area">${escapeHtml(current)}</textarea>
+    <div class="actions-row" style="margin-top:8px">
+      <button class="btn small" data-act="save">Save</button>
+      <button class="btn ghost small" data-act="cancel">Cancel</button>
+    </div>
+  `;
+  const ta = container.querySelector('textarea');
+  ta.focus();
+  container.querySelector('[data-act="save"]').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const cur = getSnippets();
+    cur[idx] = ta.value;
+    setSnippets(cur);
+    renderClipboard();
+  });
+  container.querySelector('[data-act="cancel"]').addEventListener('click', (e) => {
+    e.stopPropagation();
+    renderClipboard();
+  });
+}
+
+document.querySelector('[data-tool="clipboard"]').addEventListener('click', showToolsClipboard);
+document.querySelector('[data-tool="links"]').addEventListener('click', () => showToolsLinks());
+document.querySelector('[data-tool="daygame"]').addEventListener('click', showToolsDaygame);
+document.querySelector('[data-tool="settings"]').addEventListener('click', () => showView('settings'));
+document.getElementById('toolsBack').addEventListener('click', showToolsLanding);
+document.getElementById('toolsBackLinks').addEventListener('click', showToolsLanding);
+document.getElementById('toolsBackDaygame').addEventListener('click', showToolsLanding);
+document.querySelectorAll('.tools-quick-chip[data-jump]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    showToolsLinks();
+    requestAnimationFrame(() => {
+      const target = document.getElementById(chip.dataset.jump);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // small highlight flash so user sees where it landed
+        target.classList.add('jump-flash');
+        setTimeout(() => target.classList.remove('jump-flash'), 1400);
+      }
+    });
+  });
+});
+document.getElementById('addSnippetBtn').addEventListener('click', () => {
+  const txt = prompt('New snippet text:');
+  if (!txt || !txt.trim()) return;
+  const cur = getSnippets();
+  cur.push(txt.trim());
+  setSnippets(cur);
+  renderClipboard();
+});
+document.getElementById('resetSnippetsBtn').addEventListener('click', () => {
+  if (!confirm('Reset all snippets to defaults? Your custom snippets will be lost.')) return;
+  state.snippets = null;
+  saveState();
+  renderClipboard();
+});
 
 /* =========================================================
    CLASSIC HOTEL — secret status button
@@ -5209,13 +6491,9 @@ function showLaunchPopup() {
   // Auto-dismiss after 5 seconds
   setTimeout(() => popup.classList.remove('show'), 5000);
 }
-document.getElementById('launchPopupClose').addEventListener('click', () => {
+// Tap anywhere on the popup (backdrop or card) to dismiss
+document.getElementById('launchPopup').addEventListener('click', () => {
   document.getElementById('launchPopup').classList.remove('show');
-});
-document.getElementById('launchPopup').addEventListener('click', (e) => {
-  if (e.target.id === 'launchPopup') {
-    document.getElementById('launchPopup').classList.remove('show');
-  }
 });
 // Show the launch popup 600ms after page load
 setTimeout(showLaunchPopup, 600);
