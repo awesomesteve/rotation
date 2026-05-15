@@ -1,0 +1,8 @@
+[
+  { "key": "back-in-black", "label": "Back in Black",   "file": "audio/back-in-black.mp3", "startSec": 6  },
+  { "key": "jarvis",        "label": "Jarvis Startup",  "file": "audio/jarvis.mp3",         "startSec": 6  },
+  { "key": "mask",          "label": "M.A.S.K. Theme",  "file": "audio/mask.mp3",           "startSec": 6  },
+  { "key": "heman",         "label": "He-Man Theme",    "file": "audio/heman.mp3",          "startSec": 6  },
+  { "key": "goodtimes",     "label": "Good Times",      "file": "audio/goodtimes.mp3",      "startSec": 55 },
+  { "key": "youre-broke",   "label": "You're Broke",    "file": "audio/youre-broke.mp3",    "startSec": 0  }
+]
