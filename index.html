@@ -61,8 +61,6 @@
     letter-spacing: -0.01em;
   }
   body { min-height: 100vh; padding-bottom: 120px; position: relative; overflow-x: hidden; }
-  /* When a floating brand bar is showing, lift the bottom padding so the last row clears the bar */
-  body:has(.floating-brand-bar.show) { padding-bottom: 140px; }
 
   /* Full-bleed background system */
   .bg-decor {
@@ -94,7 +92,10 @@
 
   .bg-decor .skyline-svg {
     position: absolute; left: 0; right: 0; bottom: 0;
-    width: 100%; height: 72vh; max-height: 800px;
+    width: 100%;
+    /* Fill from bottom; JS sets viewBox dynamically based on screen width.
+       Height fills available space so towers aren't clipped on laptop. */
+    height: 100%;
     opacity: 0; transition: opacity .4s;
   }
   body[data-bg="svg"] .skyline-svg { opacity: .95; }
@@ -307,14 +308,16 @@
   .twk.a21 { animation: twinkle-c 11.8s ease-in-out infinite; animation-delay: -4.8s; }
 
   /* ── Falling star ── */
+  /* Falling stars — short diagonal streaks in the upper sky area.
+     SVG elements so translate is in SVG user units, not CSS px.
+     Keep travel short: 80 SVG units right, 60 SVG units down. */
   @keyframes falling-star {
-    0%   { transform: translate(0,0) rotate(-35deg); opacity: 1; }
-    80%  { opacity: .8; }
-    100% { transform: translate(260px, 180px) rotate(-35deg); opacity: 0; }
+    0%   { transform: translate(0,0);           opacity: 1; }
+    70%  { opacity: .85; }
+    100% { transform: translate(80px, 60px);    opacity: 0; }
   }
   .fstar {
-    animation: falling-star 1.8s ease-in forwards;
-    opacity: 0;
+    animation: falling-star 1.4s ease-in forwards;
     animation-fill-mode: forwards;
   }
   .fstar-trail {
@@ -374,6 +377,26 @@
   .twk.c20 { animation: twinkle-d 12.8s ease-in-out infinite; animation-delay: -5.1s; }
   .twk.c21 { animation: twinkle-a 13.6s ease-in-out infinite; animation-delay: -3.7s; }
   .twk.c22 { animation: twinkle-b 11.4s ease-in-out infinite; animation-delay: -7.9s; }
+
+  /* "d" group — extra small random windows on blue near-layer buildings */
+  .twk.d1  { animation: twinkle-a 8.1s ease-in-out infinite; animation-delay: -1.4s; }
+  .twk.d2  { animation: twinkle-c 6.7s ease-in-out infinite; animation-delay: -3.9s; }
+  .twk.d3  { animation: twinkle-b 11.3s ease-in-out infinite; animation-delay: -6.2s; }
+  .twk.d4  { animation: twinkle-d 9.5s ease-in-out infinite; animation-delay: -4.7s; }
+  .twk.d5  { animation: twinkle-a 7.4s ease-in-out infinite; animation-delay: -2.1s; }
+  .twk.d6  { animation: twinkle-c 12.6s ease-in-out infinite; animation-delay: -8.5s; }
+  .twk.d7  { animation: twinkle-b 8.9s ease-in-out infinite; animation-delay: -0.6s; }
+  .twk.d8  { animation: twinkle-d 10.2s ease-in-out infinite; animation-delay: -5.8s; }
+  .twk.d9  { animation: twinkle-a 6.3s ease-in-out infinite; animation-delay: -3.3s; }
+  .twk.d10 { animation: twinkle-c 13.1s ease-in-out infinite; animation-delay: -7.1s; }
+  .twk.d11 { animation: twinkle-b 7.8s ease-in-out infinite; animation-delay: -2.6s; }
+  .twk.d12 { animation: twinkle-a 9.0s ease-in-out infinite; animation-delay: -4.4s; }
+  .twk.d13 { animation: twinkle-d 11.7s ease-in-out infinite; animation-delay: -6.9s; }
+  .twk.d14 { animation: twinkle-c 8.4s ease-in-out infinite; animation-delay: -1.8s; }
+  .twk.d15 { animation: twinkle-b 10.8s ease-in-out infinite; animation-delay: -5.3s; }
+  .twk.d16 { animation: twinkle-a 7.1s ease-in-out infinite; animation-delay: -3.0s; }
+  .twk.d17 { animation: twinkle-d 12.4s ease-in-out infinite; animation-delay: -7.6s; }
+  .twk.d18 { animation: twinkle-c 9.7s ease-in-out infinite; animation-delay: -2.9s; }
 
   /* Headlights traveling along the road */
   .car { filter: drop-shadow(0 0 4px currentColor); }
@@ -507,16 +530,16 @@
 
   /* Bullet train — zips by on an elevated track between mid-layer and near-layer (y≈530) */
   .bullet-train {
-    transform: translate(-150px, 530px);
+    transform: translate(-150px, 500px);
     opacity: 0;
     filter: drop-shadow(0 0 8px rgba(255,255,255,.4));
   }
   @keyframes bullet-zip {
-    0%        { transform: translate(-150px, 530px); opacity: 0; }
+    0%        { transform: translate(-150px, 500px); opacity: 0; }
     2%        { opacity: 1; }
-    18%       { transform: translate(1350px, 530px); opacity: 1; }
+    18%       { transform: translate(1350px, 500px); opacity: 1; }
     20%       { opacity: 0; }
-    100%      { transform: translate(1350px, 530px); opacity: 0; }
+    100%      { transform: translate(1350px, 500px); opacity: 0; }
   }
   /* Train runs once every ~80s; the long tail of the keyframe keeps it offscreen between runs */
   .bullet-train { animation: bullet-zip 80s linear infinite; animation-delay: 35s; }
@@ -1060,21 +1083,21 @@
     text-transform: uppercase; color: var(--muted); margin-left: 6px;
     background: var(--chip); padding: 2px 6px; border-radius: 4px;
   }
-  /* Sky gradient that covers everything above the skyline */
+  /* Sky gradient — fills the entire bg-decor area so there's no black void above the SVG */
   .bg-decor .sky {
     position: absolute; inset: 0;
     background: linear-gradient(180deg,
-      rgba(255, 200, 220, 0) 0%,
-      rgba(255, 180, 200, 0) 35%,
-      rgba(255, 150, 180, 0.04) 60%,
-      rgba(255, 120, 150, 0.06) 80%,
-      rgba(120, 80, 110, 0.08) 100%);
+      rgba(200, 210, 240, 0.55) 0%,
+      rgba(220, 200, 230, 0.25) 40%,
+      rgba(255, 150, 180, 0.08) 70%,
+      rgba(120, 80, 110, 0.10) 100%);
   }
   html[data-theme="dark"] .bg-decor .sky {
     background: linear-gradient(180deg,
-      rgba(10, 12, 25, 0) 0%,
-      rgba(30, 20, 45, 0.15) 30%,
-      rgba(60, 25, 60, 0.35) 60%,
+      rgba(10, 12, 25, 0.96) 0%,
+      rgba(18, 15, 35, 0.92) 25%,
+      rgba(30, 20, 45, 0.75) 50%,
+      rgba(60, 25, 60, 0.45) 75%,
       rgba(120, 30, 70, 0.45) 85%,
       rgba(180, 50, 90, 0.35) 100%);
   }
@@ -1375,6 +1398,16 @@
   main { padding: 18px 14px 12px; max-width: 720px; margin: 0 auto; }
   .view { display: none; }
   .view.active { display: block; }
+
+  /* Scroll breathing room — each view gets a generous bottom spacer so the user can
+     scroll down and the skyline stays visible behind the content as they scroll up.
+     The spacer is transparent and clickable-through. */
+  .view.active::after {
+    content: '';
+    display: block;
+    height: min(45vh, 340px);
+    pointer-events: none;
+  }
 
   .section-head { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 22px; gap: 8px; flex-wrap: wrap; }
   .section-head strong {
@@ -2024,6 +2057,55 @@
     .sched-grid .sg-row-label { font-size: 11px; padding: 0 4px; }
     .sched-cell { min-height: 34px; }
   }
+
+  /* ── Party-goers: walk in and out of Cinema XXI entrance ── */
+  @keyframes walk-in  { 0%{transform:translateX(20px);opacity:0} 10%{opacity:1} 80%{opacity:1} 100%{transform:translateX(-12px);opacity:0} }
+  @keyframes walk-out { 0%{transform:translateX(-12px);opacity:0} 10%{opacity:1} 80%{opacity:1} 100%{transform:translateX(24px);opacity:0} }
+  /* Use animation-fill-mode:both so opacity:0 applies during delay too */
+  .pg-in  { animation: walk-in  8s ease-in-out infinite both; animation-delay: 1s;  }
+  .pg-in2 { animation: walk-in  8s ease-in-out infinite both; animation-delay: 4s;  }
+  .pg-out { animation: walk-out 7s ease-in-out infinite both; animation-delay: 2s;  }
+  .pg-out2{ animation: walk-out 7s ease-in-out infinite both; animation-delay: 5s;  }
+
+  /* ── C-130 Hercules + paratroopers (Toumi & Steve) ── */
+  /* Plane flies right→left across the visible SVG zone (viewBox x=150–1050).
+     Total animation cycle = 120s so it repeats every 2 minutes.
+     Plane is visible for ~18s of each cycle; the rest is hidden at opacity:0. */
+  /* C130 Hercules — flies LEFT → RIGHT (opposite of 747) at lower altitude.
+     Like the 747, this uses CSS px in SVG transform space.
+     The <g> has NO SVG base translate — geometry is relative to (0,0).
+     y=180px puts it ~100px below the 747 (which flies at y=80px).
+     Starts off left edge, exits off right edge.
+     60s cycle — appears more often than the rare 747. */
+  @keyframes c130-cross {
+    0%   { transform: translate(-250px, 180px) scaleX(-1); opacity:0; }
+    3%   { opacity: 1; }
+    18%  { transform: translate(110vw, 180px)  scaleX(-1); opacity:1; }
+    20%  { opacity: 0; }
+    100% { transform: translate(110vw, 180px)  scaleX(-1); opacity:0; }
+  }
+  /* Paratroopers: drop from y=180px (C130 altitude) down toward the skyline.
+     Each parachutist appears as the plane passes overhead and drifts down ~150px. */
+  @keyframes para-drop-toumi {
+    0%    { transform: translate(50vw,  180px); opacity:0; }
+    20%   { transform: translate(50vw,  180px); opacity:0; }
+    22%   { opacity: 1; }
+    55%   { transform: translate(52vw,  330px); opacity:1; }
+    65%   { opacity: 0; }
+    100%  { transform: translate(50vw,  180px); opacity:0; }
+  }
+  @keyframes para-drop-steve {
+    0%    { transform: translate(55vw,  180px); opacity:0; }
+    24%   { transform: translate(55vw,  180px); opacity:0; }
+    26%   { opacity: 1; }
+    58%   { transform: translate(53vw,  330px); opacity:1; }
+    68%   { opacity: 0; }
+    100%  { transform: translate(55vw,  180px); opacity:0; }
+  }
+  /* 60s cycle — more frequent than the 747 */
+  .c130       { animation: c130-cross      60s linear  infinite; animation-delay: 6s;  opacity:0; }
+  .para-toumi { animation: para-drop-toumi 60s ease-in infinite; animation-delay: 6s;  opacity:0; }
+  .para-steve { animation: para-drop-steve  60s ease-in infinite; animation-delay: 6s;  opacity:0; }
 </style>
 </head>
 <body>
@@ -2053,48 +2135,7 @@
   <iframe id="ytPlayer" allow="autoplay; encrypted-media" frameborder="0"></iframe>
 </div>
 
-<!-- Floating brand bars — bottom of screen, one per main tab -->
-<div class="floating-brand-bar" id="floatBarRoster">
-  <button class="brand-btn-label" id="grabBtn" title="Grab">
-    <div class="brand-btn grab">
-      <svg viewBox="0 0 24 24"><path fill="white" d="M12 3a9 9 0 1 0 9 9h-9V9h6.5C18 5.5 15.3 3 12 3z"/></svg>
-    </div>
-    <span>GRAB</span>
-  </button>
-  <button class="brand-btn-label" id="gojekBtn" title="Gojek">
-    <div class="brand-btn gojek">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="white"/><path fill="#00AA13" d="M8 11h6l-2-2 1-1 4 4-4 4-1-1 2-2H8z"/></svg>
-    </div>
-    <span>GOJEK</span>
-  </button>
-</div>
-<div class="floating-brand-bar" id="floatBarProfiles">
-  <button class="brand-btn-label" id="bumbleBtn" title="Bumble">
-    <div class="brand-btn bumble">
-      <svg viewBox="0 0 24 24"><polygon fill="white" points="12,2 21,7 21,17 12,22 3,17 3,7"/><polygon fill="#FFC629" points="12,5.5 18.2,9 18.2,15 12,18.5 5.8,15 5.8,9"/><circle fill="white" cx="12" cy="12" r="2.2"/></svg>
-    </div>
-    <span>BUMBLE</span>
-  </button>
-  <button class="brand-btn-label" id="tinderBtn" title="Tinder">
-    <div class="brand-btn tinder">
-      <svg viewBox="0 0 24 24"><path fill="white" d="M14 2c0 0-1 4-4 6 0 0 0-3-2-4 0 0 2 5-2 9 -2 2-2 5 0 7 3 3 9 3 12 0 3-3 3-8 0-12-2-3-3-5-4-6z"/></svg>
-    </div>
-    <span>TINDER</span>
-  </button>
-  <button class="brand-btn-label" id="okcupidBtn" title="OkCupid">
-    <div class="brand-btn okcupid">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="white"/><text x="12" y="16" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="11" fill="#0E59F2">OK</text></svg>
-    </div>
-    <span>OKCUPID</span>
-  </button>
-  <button class="brand-btn-label" id="badooBtn" title="Badoo">
-    <div class="brand-btn badoo">
-      <!-- Badoo "b" mark: circle with a small dot, in their signature purple -->
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="white"/><text x="12" y="17" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="15" fill="#7B2CBF">b</text></svg>
-    </div>
-    <span>BADOO</span>
-  </button>
-</div>
+<!-- Floating brand bars removed — ride-hail moved to Tools, dating apps moved to Tools > Dating Apps -->
 
 <!-- Easter-egg peekers — guy from the left, girl from the right -->
 <div id="peekerGuy" class="peeker peeker-left" aria-hidden="true">
@@ -2125,20 +2166,6 @@
     <path d="M58 64 L58 70" stroke="#c89878" stroke-width=".8"/>
     <path d="M62 63 L62 70" stroke="#c89878" stroke-width=".8"/>
 
-
-  <!-- ══ FALLING STARS (shown/hidden via JS) ══ -->
-  <g id="fstar1" class="fstar" style="display:none">
-    <line class="fstar-trail" x1="600" y1="80" x2="620" y2="95" stroke="white" stroke-width="2.5" opacity=".9"/>
-    <line class="fstar-trail" x1="600" y1="80" x2="598" y2="72" stroke="white" stroke-width="1" opacity=".4"/>
-  </g>
-  <g id="fstar2" class="fstar" style="display:none">
-    <line class="fstar-trail" x1="750" y1="50" x2="770" y2="65" stroke="white" stroke-width="2" opacity=".85"/>
-    <line class="fstar-trail" x1="750" y1="50" x2="748" y2="42" stroke="white" stroke-width="1" opacity=".35"/>
-  </g>
-  <g id="fstar3" class="fstar" style="display:none">
-    <line class="fstar-trail" x1="500" y1="100" x2="522" y2="118" stroke="white" stroke-width="2" opacity=".9"/>
-    <line class="fstar-trail" x1="500" y1="100" x2="498" y2="91" stroke="white" stroke-width="1" opacity=".4"/>
-  </g>
 
   </svg>
 </div>
@@ -2202,7 +2229,7 @@
 <div class="bg-decor" id="bgDecor" aria-hidden="true">
   <div class="sky"></div>
   <div class="skyline-photo"></div>
-  <svg class="skyline-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+  <svg class="skyline-svg" id="skylineSvg" viewBox="150 0 900 700" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
     <!-- Photoreal-style multi-layer Jakarta skyline.
          Layers back→front: far haze, mid-distance buildings, foreground tower cluster
          with Monas, Wisma 46, Treasury Tower, BNI, Gama Tower, Istiqlal mosque. -->
@@ -2213,12 +2240,12 @@
         <stop offset="100%" stop-color="#7a1c4d" stop-opacity=".5"/>
       </linearGradient>
       <linearGradient id="layerFar" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#3a2f4d"/>
-        <stop offset="100%" stop-color="#241a36"/>
+        <stop offset="0%" stop-color="#1e2d45"/>
+        <stop offset="100%" stop-color="#0f1a2e"/>
       </linearGradient>
       <linearGradient id="layerMid" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#2a1d3a"/>
-        <stop offset="100%" stop-color="#15102a"/>
+        <stop offset="0%" stop-color="#152340"/>
+        <stop offset="100%" stop-color="#0a1428"/>
       </linearGradient>
       <linearGradient id="layerNear" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#0d0918"/>
@@ -2226,13 +2253,13 @@
       </linearGradient>
       <!-- Dark navy blue for low-rise buildings -->
       <linearGradient id="layerLowrise" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#3a3a4a"/>
-        <stop offset="60%" stop-color="#2a2a38"/>
-        <stop offset="100%" stop-color="#1e1e2a"/>
+        <stop offset="0%" stop-color="#1a2d45"/>
+        <stop offset="60%" stop-color="#112035"/>
+        <stop offset="100%" stop-color="#0c1828"/>
       </linearGradient>
       <linearGradient id="layerLowrise2" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#283d58"/>
-        <stop offset="100%" stop-color="#162232"/>
+        <stop offset="0%" stop-color="#1a3050"/>
+        <stop offset="100%" stop-color="#0d1a30"/>
       </linearGradient>
       <!-- Street — warm dark asphalt so it contrasts with the buildings -->
       <linearGradient id="streetBand" x1="0" y1="0" x2="0" y2="1">
@@ -2352,8 +2379,7 @@
         <rect x="920" y="405" width="40" height="295"/>
         <rect x="970" y="390" width="46" height="310"/>
         <rect x="1025" y="415" width="38" height="285"/>
-        <rect x="1075" y="395" width="44" height="305"/>
-        <rect x="1130" y="405" width="50" height="295"/>
+        <!-- x=1075 far-layer skyscraper removed — TV tower occupies this zone -->
       </g>
       <!-- haze of windows -->
       <rect x="0" y="430" width="1200" height="270" fill="url(#windowsFar)" opacity=".35"/>
@@ -2369,59 +2395,61 @@
         <rect x="170" y="465" width="60" height="235"/>
         <rect x="235" y="485" width="45" height="215"/>
         <!-- ===== MONAS — National Monument obelisk with golden flame ===== -->
-        <rect x="295" y="280" width="14" height="220"/>
-        <polygon points="295,280 309,280 313,265 291,265"/>
-        <polygon points="293,265 311,265 313,255 291,255"/>
+        <rect x="338" y="280" width="14" height="220"/>
+        <polygon points="338,280 352,280 356,265 334,265"/>
+        <polygon points="336,265 354,265 356,255 334,255"/>
         <!-- Base of the flame (small cup) -->
-        <polygon points="296,255 308,255 305,240 299,240"/>
+        <polygon points="339,255 351,255 348,240 342,240"/>
         <!-- Monas plaza base -->
-        <rect x="280" y="495" width="44" height="14"/>
-        <rect x="285" y="509" width="34" height="6"/>
+        <rect x="323" y="495" width="44" height="14"/>
+        <rect x="328" y="509" width="34" height="6"/>
         <!-- /Monas -->
       </g>
       <!-- Monas golden flame — drawn outside the dark layer fill so it stays gold and glows -->
-      <g transform="translate(302, 240)">
+      <g transform="translate(345, 240)">
         <ellipse cx="0" cy="-4" rx="6" ry="11" fill="#ffc107" style="filter: drop-shadow(0 0 6px #ffd43b)"/>
         <ellipse cx="0" cy="-7" rx="3.5" ry="7" fill="#fff3a0"/>
         <ellipse cx="0" cy="-9" rx="1.5" ry="3" fill="#ffffff"/>
       </g>
       <!-- Istiqlal mosque dome — golden/amber, glowing, matching the reference image -->
       <g style="filter: drop-shadow(0 0 8px rgba(255, 167, 47, .5))">
-        <!-- Large main dome -->
-        <path d="M905,430 Q947,330 990,430 Z" fill="#d97a1c"/>
-        <path d="M905,430 Q947,335 990,430 Q947,365 905,430 Z" fill="#f4a44a"/>
+        <!-- Large main dome — shifted left 65px -->
+        <path d="M840,430 Q882,330 925,430 Z" fill="#d97a1c"/>
+        <path d="M840,430 Q882,335 925,430 Q882,365 840,430 Z" fill="#f4a44a"/>
         <!-- Small dome cap (lantern) on top of main dome -->
-        <rect x="945" y="307" width="4" height="14" fill="#a85a14"/>
-        <ellipse cx="947" cy="307" rx="7" ry="4" fill="#d97a1c"/>
-        <ellipse cx="947" cy="305" rx="5" ry="3" fill="#f4a44a"/>
+        <rect x="880" y="307" width="4" height="14" fill="#a85a14"/>
+        <ellipse cx="882" cy="307" rx="7" ry="4" fill="#d97a1c"/>
+        <ellipse cx="882" cy="305" rx="5" ry="3" fill="#f4a44a"/>
         <!-- Crescent on top -->
-        <path d="M946 297 Q949 295 951 297 Q949 296 948 298" fill="#ffd43b"/>
+        <path d="M881 297 Q884 295 886 297 Q884 296 883 298" fill="#ffd43b"/>
       </g>
       <!-- Indonesian flag fluttering atop Wisma 46 flagpole (red over white) -->
       <g class="flag-wave" transform="translate(497, 130)">
         <rect x="0" y="0" width="16" height="6" fill="#dc2626"/>
         <rect x="0" y="6" width="16" height="6" fill="#ffffff"/>
       </g>
-      <!-- Telkom-style radio antenna tower on the right with red-and-white striped mast -->
+      <!-- TV / Telkom-style antenna tower — where BCA Tower was (x≈785 zone) -->
       <g>
-        <!-- Tower base -->
-        <polygon points="1100,500 1112,500 1108,360 1104,360" fill="url(#layerMid)"/>
+        <!-- Tower base (tapered lattice legs) -->
+        <polygon points="785,510 803,510 799,340 789,340" fill="url(#layerMid)"/>
+        <!-- Observation deck platform -->
+        <rect x="781" y="335" width="26" height="8" rx="2" fill="#2a3a2a"/>
         <!-- Red-and-white striped mast -->
-        <rect x="1105" y="280" width="2.5" height="10" fill="#dc2626"/>
-        <rect x="1105" y="290" width="2.5" height="10" fill="#ffffff"/>
-        <rect x="1105" y="300" width="2.5" height="10" fill="#dc2626"/>
-        <rect x="1105" y="310" width="2.5" height="10" fill="#ffffff"/>
-        <rect x="1105" y="320" width="2.5" height="10" fill="#dc2626"/>
-        <rect x="1105" y="330" width="2.5" height="10" fill="#ffffff"/>
-        <rect x="1105" y="340" width="2.5" height="10" fill="#dc2626"/>
-        <rect x="1105" y="350" width="2.5" height="10" fill="#ffffff"/>
+        <rect x="792" y="255" width="3" height="12" fill="#dc2626"/>
+        <rect x="792" y="267" width="3" height="12" fill="#ffffff"/>
+        <rect x="792" y="279" width="3" height="12" fill="#dc2626"/>
+        <rect x="792" y="291" width="3" height="12" fill="#ffffff"/>
+        <rect x="792" y="303" width="3" height="12" fill="#dc2626"/>
+        <rect x="792" y="315" width="3" height="12" fill="#ffffff"/>
+        <rect x="792" y="327" width="3" height="8" fill="#dc2626"/>
         <!-- Antenna spike -->
-        <polygon points="1105.5,280 1106.5,280 1106,265" fill="#999"/>
+        <polygon points="792,255 795,255 793.5,236" fill="#bbb"/>
         <!-- Crossbars -->
-        <rect x="1098" y="295" width="16" height="1.5" fill="#aaa"/>
-        <rect x="1100" y="320" width="12" height="1.5" fill="#aaa"/>
-        <!-- Red blinking light on top -->
-        <circle class="aviation-light al-tele" cx="1106" cy="266" r="2.2" fill="#ff4d6d"/>
+        <rect x="782" y="272" width="23" height="2" fill="#aaa" opacity=".8"/>
+        <rect x="784" y="298" width="19" height="2" fill="#aaa" opacity=".8"/>
+        <rect x="786" y="318" width="15" height="2" fill="#aaa" opacity=".7"/>
+        <!-- Red blinking aviation light on very top -->
+        <circle class="aviation-light al-tele" cx="793.5" cy="237" r="2.5" fill="#ff4d6d"/>
       </g>
       <g fill="url(#layerMid)">
         <rect x="335" y="455" width="55" height="245"/>
@@ -2455,22 +2483,18 @@
         <rect x="733" y="240" width="20" height="28"/>
         <!-- /IDX twins -->
 
-        <!-- ===== BCA TOWER (sleek dark) ===== -->
-        <rect x="770" y="240" width="42" height="260"/>
-        <rect x="780" y="222" width="22" height="22"/>
-        <rect x="786" y="205" width="10" height="20"/>
-        <!-- /BCA -->
+        <!-- BCA Tower removed — TV tower now occupies x≈785 zone -->
         <rect x="855" y="450" width="34" height="250"/>
 
         <!-- Istiqlal mosque body silhouette (dark) — dome rendered in golden glow above this -->
-        <rect x="895" y="430" width="105" height="70"/>
-        <!-- Minaret shaft extended down to anchor into the mid-rise band — no more floating -->
-        <rect x="1005" y="375" width="9" height="170"/>
-        <polygon points="1005,375 1014,375 1009.5,360"/>
+        <rect x="830" y="430" width="100" height="70"/>
+        <!-- Minaret shaft — moved left 65px -->
+        <rect x="940" y="375" width="9" height="170"/>
+        <polygon points="940,375 949,375 944.5,360"/>
         <!-- Small base block at the foot of the minaret -->
-        <rect x="1002" y="540" width="15" height="6"/>
+        <rect x="937" y="540" width="15" height="6"/>
         <rect x="1025" y="425" width="40" height="275"/>
-        <rect x="1075" y="395" width="48" height="305"/>
+        <!-- rightmost skyscraper removed — TV tower placed here instead -->
         <rect x="1130" y="445" width="40" height="255"/>
         <rect x="1175" y="465" width="35" height="235"/>
       </g>
@@ -2483,9 +2507,9 @@
         <rect x="640" y="180" width="36" height="320" fill="url(#windowsMid)" opacity=".82"/>
         <rect x="685" y="265" width="36" height="235" fill="url(#windowsMid)" opacity=".75"/>
         <rect x="725" y="265" width="36" height="235" fill="url(#windowsMid)" opacity=".75"/>
-        <rect x="770" y="240" width="42" height="260" fill="url(#windowsMid)" opacity=".8"/>
+        <!-- BCA windows removed with tower -->
         <rect x="1025" y="425" width="40" height="275" fill="url(#windowsMid)" opacity=".7"/>
-        <rect x="1075" y="395" width="48" height="305" fill="url(#windowsMid)" opacity=".7"/>
+        <!-- windows for removed skyscraper omitted -->
       </g>
     </g>
 
@@ -2560,63 +2584,42 @@
       <line x1="350" y1="555" x2="575" y2="555" stroke="#2a3a5a" stroke-width="0.8" opacity=".7"/>
       <line x1="350" y1="580" x2="575" y2="580" stroke="#2a3a5a" stroke-width="0.8" opacity=".7"/>
       <line x1="350" y1="603" x2="575" y2="603" stroke="#2a3a5a" stroke-width="0.8" opacity=".7"/>
-      <!-- Floor 1 windows — bright yellow/warm individual rooms -->
-      <rect class="twk a1" x="356" y="530" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a3" x="372" y="530" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a5" x="388" y="530" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a2" x="404" y="530" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a4" x="420" y="530" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a1" x="436" y="530" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a3" x="452" y="530" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a5" x="468" y="530" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a2" x="484" y="530" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a4" x="500" y="530" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a1" x="516" y="530" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a3" x="532" y="530" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a5" x="548" y="530" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a2" x="564" y="530" width="8"  height="9" rx="1" fill="#ffd089"/>
-      <!-- Floor 2 windows -->
-      <rect class="twk a4" x="356" y="559" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a2" x="372" y="559" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a1" x="388" y="559" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a5" x="404" y="559" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a3" x="420" y="559" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a1" x="436" y="559" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a4" x="452" y="559" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a2" x="468" y="559" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a5" x="484" y="559" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a3" x="500" y="559" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a1" x="516" y="559" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a4" x="532" y="559" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a2" x="548" y="559" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a5" x="564" y="559" width="8"  height="9" rx="1" fill="#ffe3b0"/>
-      <!-- Floor 3 windows -->
-      <rect class="twk a3" x="356" y="584" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a5" x="372" y="584" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a2" x="388" y="584" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a4" x="404" y="584" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a1" x="420" y="584" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a3" x="436" y="584" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a5" x="452" y="584" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a2" x="468" y="584" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a4" x="484" y="584" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a1" x="500" y="584" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a3" x="516" y="584" width="12" height="9" rx="1" fill="#ffe3b0"/>
-      <rect class="twk a5" x="532" y="584" width="12" height="9" rx="1" fill="#ffd089"/>
-      <rect class="twk a2" x="548" y="584" width="12" height="9" rx="1" fill="#bde0ff"/>
-      <rect class="twk a4" x="564" y="584" width="8"  height="9" rx="1" fill="#ffd089"/>
+      <!-- Floor windows — sparse twinkling, well inside building bounds (x 360-565, y 530-605) -->
+      <rect class="twk a1"  x="362" y="533" width="14" height="10" rx="1" fill="#ffd089"/>
+      <rect class="twk a4"  x="400" y="533" width="14" height="10" rx="1" fill="#ffe3b0"/>
+      <rect class="twk a7"  x="440" y="533" width="14" height="10" rx="1" fill="#bde0ff"/>
+      <rect class="twk a10" x="480" y="533" width="14" height="10" rx="1" fill="#ffd089"/>
+      <rect class="twk a2"  x="520" y="533" width="14" height="10" rx="1" fill="#ffe3b0"/>
+      <rect class="twk a5"  x="362" y="560" width="14" height="10" rx="1" fill="#bde0ff"/>
+      <rect class="twk a8"  x="418" y="560" width="14" height="10" rx="1" fill="#ffd089"/>
+      <rect class="twk a11" x="470" y="560" width="14" height="10" rx="1" fill="#ffe3b0"/>
+      <rect class="twk a3"  x="522" y="560" width="14" height="10" rx="1" fill="#ffd089"/>
+      <rect class="twk a6"  x="380" y="587" width="14" height="10" rx="1" fill="#bde0ff"/>
+      <rect class="twk a9"  x="435" y="587" width="14" height="10" rx="1" fill="#ffd089"/>
+      <rect class="twk a12" x="490" y="587" width="14" height="10" rx="1" fill="#ffe3b0"/>
+      <rect class="twk a13" x="545" y="587" width="14" height="10" rx="1" fill="#ffd089"/>
 
       <!-- Mall windows on center Kota mall — same vibe with grid of lit rooms -->
       <rect x="390" y="533" width="95" height="14" fill="rgba(140,200,255,.25)"/>
       <rect x="390" y="553" width="95" height="14" fill="rgba(140,200,255,.2)"/>
-      <!-- "KOTA" rooftop sign — high above the mall, against the dark purple mid-rise band -->
-      <g transform="translate(437, 478)">
-        <!-- Support posts running from the mall roof up to the sign -->
-        <rect x="-26" y="0" width="2" height="64" fill="#3a2535"/>
-        <rect x="24" y="0" width="2" height="64" fill="#3a2535"/>
-        <!-- Sign plate -->
-        <rect x="-34" y="-20" width="68" height="24" rx="3" fill="#1a1525" stroke="#22b8cf" stroke-width="1.5"/>
-        <text class="neon-text neon-cyan" x="0" y="-3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#22b8cf">KOTA</text>
+      <!-- ZOO nightclub rooftop sign — LCD-glow style, funky and bright -->
+      <g transform="translate(447, 462)">
+        <!-- Support posts -->
+        <rect x="-20" y="0" width="2" height="64" fill="#3a2535"/>
+        <rect x="20" y="0" width="2" height="64" fill="#3a2535"/>
+        <!-- Sign plate — wider to fit stretched text -->
+        <rect x="-34" y="-20" width="68" height="26" rx="3" fill="#050a0f" stroke="#22b8cf" stroke-width="1.8"/>
+        <!-- Outer glow border pulse -->
+        <rect x="-34" y="-20" width="68" height="26" rx="3" fill="none" stroke="#22b8cf" stroke-width="4" opacity=".18" class="neon-blue"/>
+        <!-- LCD ghost segments (dim background digits for authentic LCD look) -->
+        <text x="0" y="-1" text-anchor="middle"
+              font-family="DSEG7Classic, VT323, monospace" font-size="15" font-weight="700"
+              fill="#22b8cf" opacity=".12" letter-spacing="5">ZOO</text>
+        <!-- Bright foreground LCD text -->
+        <text class="neon-text neon-cyan" x="0" y="-1" text-anchor="middle"
+              font-family="DSEG7Classic, VT323, monospace" font-size="15" font-weight="700"
+              fill="#22b8cf" letter-spacing="5"
+              style="filter:drop-shadow(0 0 4px #22b8cf) drop-shadow(0 0 10px #22b8cf)">ZOO</text>
       </g>
 
       <!-- General residential / low-rise filler — same grey as main block -->
@@ -2639,6 +2642,11 @@
       </g>
       <!-- Hotel windows on the visible center hotel -->
       <rect x="706" y="490" width="46" height="165" fill="url(#windowsNear)" opacity=".7"/>
+      <!-- Hotel tower entrance door — ground level, x=721-737 -->
+      <rect x="721" y="620" width="16" height="20" rx="2" fill="#1a0d05" stroke="#5a3a1a" stroke-width="1"/>
+      <rect x="729" y="620" width="1" height="20" fill="#5a3a1a" opacity=".5"/>
+      <rect x="723" y="630" width="4" height="3" rx="1" fill="#c8a000" opacity=".7"/>
+      <rect x="733" y="630" width="4" height="3" rx="1" fill="#c8a000" opacity=".7"/>
       <!-- Right-side hotel windows (offscreen but stays consistent on wider screens) -->
       <rect x="1108" y="490" width="62" height="165" fill="url(#windowsNear)" opacity=".7"/>
 
@@ -2668,14 +2676,16 @@
       </g>
 
       <!-- "Classic" rooftop neon sign — high above the hotel, against the dark purple mid-rise band -->
-      <g transform="translate(729, 450)">
+      <g transform="translate(729, 434)">
         <!-- Support posts -->
         <rect x="-22" y="22" width="2" height="40" fill="#3a2535"/>
         <rect x="20" y="22" width="2" height="40" fill="#3a2535"/>
-        <!-- Sign plate -->
-        <rect x="-32" y="-2" width="64" height="28" rx="3" fill="#1a1525" stroke="#ff5c8a" stroke-width="1.5"/>
-        <text class="neon-text neon-pink" x="0" y="18" text-anchor="middle" font-family="Brush Script MT, Lucida Handwriting, cursive" font-style="italic" font-weight="700" font-size="18" fill="#ff5c8a">Classic</text>
+        <!-- Sign plate — original size -->
+        <rect x="-32" y="-2" width="64" height="26" rx="3" fill="#1a1525" stroke="#ff5c8a" stroke-width="1.5"/>
+        <text class="neon-text neon-pink" x="0" y="16" text-anchor="middle" font-family="Brush Script MT, Lucida Handwriting, cursive" font-style="italic" font-weight="700" font-size="18" fill="#ff5c8a">Classic</text>
       </g>
+      <!-- HOTEL small label — sits between the sign bottom (y≈460) and the neon-tube (y=483) -->
+      <text x="731" y="471" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="6" fill="#ff8fa3" letter-spacing="3" opacity=".85">HOTEL</text>
       <!-- Neon glow tube under the rooftop sign -->
       <rect class="neon-tube" x="703" y="483" width="52" height="2" rx="1" fill="#ff5c8a"/>
 
@@ -2794,6 +2804,28 @@
       <rect class="twk c20" x="1045" y="400" width="2" height="3" fill="#fff5b8"/>
       <rect class="twk c21" x="1095" y="415" width="2" height="3" fill="#ffe7a3"/>
       <rect class="twk c22" x="1145" y="420" width="2" height="3" fill="#ffd089"/>
+
+      <!-- "d" group — extra small random fading windows on blue near-layer buildings -->
+      <!-- Left block x=350-575, y=525-625 -->
+      <rect class="twk d1"  x="358" y="530" width="3" height="4" fill="#a0c8e8"/>
+      <rect class="twk d2"  x="373" y="545" width="3" height="4" fill="#c8e4ff"/>
+      <rect class="twk d3"  x="392" y="558" width="3" height="4" fill="#ffeaa0"/>
+      <rect class="twk d4"  x="412" y="530" width="3" height="4" fill="#a0c8e8"/>
+      <rect class="twk d5"  x="428" y="547" width="3" height="4" fill="#c8e4ff"/>
+      <rect class="twk d6"  x="447" y="562" width="3" height="4" fill="#ffeaa0"/>
+      <rect class="twk d7"  x="463" y="531" width="3" height="4" fill="#a0c8e8"/>
+      <rect class="twk d8"  x="482" y="548" width="3" height="4" fill="#c8e4ff"/>
+      <rect class="twk d9"  x="498" y="563" width="3" height="4" fill="#ffeaa0"/>
+      <rect class="twk d10" x="517" y="532" width="3" height="4" fill="#a0c8e8"/>
+      <rect class="twk d11" x="360" y="577" width="3" height="4" fill="#c8e4ff"/>
+      <rect class="twk d12" x="383" y="592" width="3" height="4" fill="#ffeaa0"/>
+      <rect class="twk d13" x="410" y="578" width="3" height="4" fill="#a0c8e8"/>
+      <rect class="twk d14" x="433" y="593" width="3" height="4" fill="#c8e4ff"/>
+      <!-- Right mid-block x=620-760 and x=830-960, y=520-630 -->
+      <rect class="twk d15" x="628" y="528" width="3" height="4" fill="#ffeaa0"/>
+      <rect class="twk d16" x="648" y="545" width="3" height="4" fill="#a0c8e8"/>
+      <rect class="twk d17" x="835" y="534" width="3" height="4" fill="#c8e4ff"/>
+      <rect class="twk d18" x="857" y="550" width="3" height="4" fill="#ffeaa0"/>
     </g>
 
     <!-- Headlights crawling along an imaginary road through the city -->
@@ -2810,35 +2842,75 @@
     <!-- Phone visible x ≈ 380–820. Layout:
          KOPI TIAM:    x=382–444   (left edge of view)
          KOTA MALL:    x=488–574   (focal center)
-         CAFÉ:         x=700–770   (right side)
-         24H MART:     x=790–848   (far right, near edge)  -->
+         FamilyMart:   x=760–832   (right side)
+         SaladStop:    x=840–898   (far right, near edge)  -->
 
     <!-- Fascia strip — only behind actual shop units, no full-width band -->
+    <rect x="310" y="636" width="66" height="24" fill="#141018"/>
     <rect x="380" y="636" width="66" height="24" fill="#141018"/>
     <rect x="486" y="628" width="90" height="32" fill="#141018"/>
     <rect x="698" y="636" width="74" height="24" fill="#141018"/>
     <rect x="788" y="636" width="62" height="24" fill="#141018"/>
 
-    <!-- ══ KOPI TIAM ══  x=382–444, y=595–658 -->
-    <rect x="382" y="560" width="62" height="65" rx="2" fill="#2a1800"/>
-    <rect x="384" y="562" width="58" height="58" fill="#ff9f1c" opacity=".18"/>
-    <!-- Awning -->
-    <rect x="381" y="555" width="64" height="7" rx="2" fill="#cc1f1f"/>
-    <rect x="383" y="555" width="8" height="7" fill="#e8c000" opacity=".8"/>
-    <rect x="393" y="555" width="8" height="7" fill="#e8c000" opacity=".8"/>
-    <rect x="403" y="555" width="8" height="7" fill="#e8c000" opacity=".8"/>
-    <rect x="413" y="555" width="8" height="7" fill="#e8c000" opacity=".8"/>
-    <rect x="423" y="555" width="8" height="7" fill="#e8c000" opacity=".8"/>
-    <rect x="433" y="555" width="8" height="7" fill="#e8c000" opacity=".8"/>
-    <!-- Sign -->
-    <rect x="383" y="563" width="60" height="14" rx="2" fill="#3d1f00" stroke="#ffa94d" stroke-width="1"/>
-    <text x="413" y="573" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="9" fill="#ffd89b">KOPI TIAM</text>
-    <!-- Patrons -->
-    <rect x="388" y="583" width="8" height="22" rx="3" fill="#5a3010" class="mw mw2"/>
-    <rect x="401" y="580" width="8" height="25" rx="3" fill="#5a3010" class="mw mw3"/>
-    <rect x="416" y="583" width="8" height="22" rx="3" fill="#5a3010" class="mw mw1"/>
+    <!-- ══ Starbucks ══  x=312–374, y=555–623 -->
+    <!-- Building body — Starbucks dark green -->
+    <rect x="312" y="560" width="62" height="65" rx="2" fill="#00241a"/>
+    <rect x="314" y="562" width="58" height="58" fill="#00704a" opacity=".15"/>
+    <!-- Awning — Starbucks forest green -->
+    <rect x="311" y="553" width="64" height="8" rx="2" fill="#00704a"/>
+    <rect x="311" y="558" width="64" height="2" fill="#1e9c6a" opacity=".6"/>
+    <!-- Awning scallops -->
+    <rect x="313" y="553" width="9" height="8" fill="#005c3a" opacity=".7"/>
+    <rect x="324" y="553" width="9" height="8" fill="#00704a" opacity=".6"/>
+    <rect x="335" y="553" width="9" height="8" fill="#005c3a" opacity=".7"/>
+    <rect x="346" y="553" width="9" height="8" fill="#00704a" opacity=".6"/>
+    <rect x="357" y="553" width="9" height="8" fill="#005c3a" opacity=".7"/>
+    <!-- Sign board — dark green with white border + siren circle -->
+    <rect x="313" y="562" width="60" height="15" rx="2" fill="#1a3a2a" stroke="#00704a" stroke-width="1"/>
+    <circle cx="323" cy="569" r="5" fill="#00704a" stroke="#fff" stroke-width="0.8" opacity=".9"/>
+    <text x="323" y="572" text-anchor="middle" font-family="serif" font-size="6" fill="#fff" opacity=".8">✦</text>
+    <text x="348" y="572" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="7.5" fill="#fff">Starbucks</text>
+    <!-- Interior warm glow -->
+    <rect x="314" y="578" width="58" height="40" fill="#ffe0a0" opacity=".04"/>
+    <!-- Tables + laptop silhouettes -->
+    <rect x="318" y="585" width="10" height="2" rx="1" fill="#00704a" opacity=".4"/>
+    <rect x="318" y="587" width="8" height="16" rx="2" fill="#1a2a1a" class="mw mw1"/>
+    <rect x="334" y="582" width="10" height="2" rx="1" fill="#00704a" opacity=".4"/>
+    <rect x="335" y="584" width="8" height="18" rx="2" fill="#1a2a1a" class="mw mw3"/>
+    <rect x="350" y="585" width="10" height="2" rx="1" fill="#00704a" opacity=".4"/>
+    <rect x="351" y="587" width="8" height="16" rx="2" fill="#1a2a1a" class="mw mw2"/>
     <!-- Door -->
-    <rect x="430" y="608" width="12" height="15" rx="1" fill="#2a2a2a"/>
+    <rect x="358" y="606" width="12" height="17" rx="1" fill="#0a1a0a" stroke="#00704a" stroke-width="1" stroke-opacity=".5"/>
+
+    <!-- ══ Steak21 ══  x=382–444, y=555–623 -->
+    <!-- Building body — dark charcoal, warm steakhouse feel -->
+    <rect x="382" y="560" width="62" height="65" rx="2" fill="#1a0f08"/>
+    <rect x="384" y="562" width="58" height="58" fill="#8b1a1a" opacity=".10"/>
+    <!-- Awning — deep burgundy red, classic Steak21 -->
+    <rect x="381" y="553" width="64" height="8" rx="2" fill="#8b0000"/>
+    <rect x="381" y="557" width="64" height="3" fill="#a00000" opacity=".7"/>
+    <!-- Awning scallops — alternating dark red panels -->
+    <rect x="383" y="553" width="9" height="8" fill="#6b0000" opacity=".7"/>
+    <rect x="394" y="553" width="9" height="8" fill="#a00000" opacity=".6"/>
+    <rect x="405" y="553" width="9" height="8" fill="#6b0000" opacity=".7"/>
+    <rect x="416" y="553" width="9" height="8" fill="#a00000" opacity=".6"/>
+    <rect x="427" y="553" width="9" height="8" fill="#6b0000" opacity=".7"/>
+    <!-- Sign board — cream/ivory with dark red border, gold text -->
+    <rect x="383" y="562" width="60" height="15" rx="2" fill="#f5f0e0" stroke="#8b0000" stroke-width="1.2"/>
+    <text x="413" y="572" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="8" fill="#8b0000">Steak</text>
+    <text x="431" y="572" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="8" fill="#c8a000">21</text>
+    <!-- Interior warm amber glow — like candlelit dining -->
+    <rect x="384" y="578" width="58" height="40" fill="#ff8c00" opacity=".06"/>
+    <!-- Table silhouettes — diners inside -->
+    <rect x="388" y="583" width="10" height="2" rx="1" fill="#5a3010" opacity=".6"/>
+    <rect x="388" y="590" width="8" height="18" rx="2" fill="#3a1808" class="mw mw2"/>
+    <rect x="402" y="585" width="10" height="2" rx="1" fill="#5a3010" opacity=".6"/>
+    <rect x="403" y="587" width="8" height="20" rx="2" fill="#3a1808" class="mw mw3"/>
+    <rect x="418" y="583" width="10" height="2" rx="1" fill="#5a3010" opacity=".6"/>
+    <rect x="419" y="585" width="8" height="18" rx="2" fill="#3a1808" class="mw mw1"/>
+    <!-- Door — dark wood with brass handle hint -->
+    <rect x="430" y="606" width="12" height="17" rx="1" fill="#1a0a00" stroke="#5a3010" stroke-width="1" stroke-opacity=".6"/>
+    <rect x="435" y="612" width="3" height="3" rx="1" fill="#c8a000" opacity=".7"/>
 
     <!-- ══ KOTA MALL ENTRANCE ══  x=488–572, y=580–658 -->
     <!-- Simple dark arch, NO outer glow box -->
@@ -2846,77 +2918,104 @@
     <!-- Entrance void -->
     <rect x="544" y="553" width="74" height="70" rx="3" fill="#0a0714"/>
     <!-- KOTA MALL sign — flat, no neon box -->
-    <text x="581" y="561" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="10" fill="#22d4f0" style="filter:drop-shadow(0 0 6px #22d4f0)">KOTA MALL</text>
+    <!-- Cinema XXI sign — gold text, 2 horizontal rules (no side lines) -->
+    <rect x="545" y="553" width="72" height="16" rx="0" fill="#0a0a0a"/>
+    <line x1="545" y1="553" x2="617" y2="553" stroke="#c8a84b" stroke-width="0.9"/>
+    <line x1="545" y1="569" x2="617" y2="569" stroke="#c8a84b" stroke-width="0.9"/>
+    <text x="567" y="563" text-anchor="middle" font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="9" fill="#c8a84b" letter-spacing="1.2">Cinema</text>
+    <text x="597" y="563" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-weight="700" font-size="9" fill="#c8a84b" letter-spacing="0.5">XXI</text>
     <!-- Pink neon arch — left side, top, right side only (open at bottom) -->
     <path d="M544,623 L544,565 L618,565 L618,623" fill="none" stroke="#ff5c8a" stroke-width="1.5" stroke-opacity=".7"/>
-    <!-- Animated glass doors -->
-    <rect class="mall-door-l" x="545" y="585" width="35" height="36" rx="1" fill="#22d4f0" opacity=".14" stroke="#22d4f0" stroke-width="1" stroke-opacity=".5"/>
-    <rect class="mall-door-r" x="583" y="585" width="35" height="36" rx="1" fill="#22d4f0" opacity=".14" stroke="#22d4f0" stroke-width="1" stroke-opacity=".5"/>
+    <!-- Animated glass doors — nicer: more visible cyan tint, slight reflection line -->
+    <rect class="mall-door-l" x="545" y="585" width="35" height="36" rx="1" fill="#22d4f0" opacity=".18" stroke="#22d4f0" stroke-width="1.2" stroke-opacity=".7"/>
+    <rect x="555" y="587" width="1" height="32" fill="#fff" opacity=".15"/>
+    <rect class="mall-door-r" x="583" y="585" width="35" height="36" rx="1" fill="#22d4f0" opacity=".18" stroke="#22d4f0" stroke-width="1.2" stroke-opacity=".7"/>
+    <rect x="593" y="587" width="1" height="32" fill="#fff" opacity=".15"/>
     <!-- Door handles -->
-    <rect x="575" y="601" width="7" height="3" rx="1" fill="#22d4f0" opacity=".8"/>
-    <rect x="586" y="601" width="7" height="3" rx="1" fill="#22d4f0" opacity=".8"/>
+    <rect x="575" y="601" width="7" height="3" rx="1" fill="#22d4f0" opacity=".9"/>
+    <rect x="586" y="601" width="7" height="3" rx="1" fill="#22d4f0" opacity=".9"/>
 
-    <!-- ══ CAFÉ ══  x=700–770, y=595–658 -->
-    <rect x="700" y="560" width="72" height="65" rx="2" fill="#0d1f0d"/>
-    <rect x="702" y="562" width="68" height="58" fill="#40c057" opacity=".12"/>
-    <!-- Awning -->
-    <rect x="699" y="555" width="74" height="7" rx="2" fill="#1e6b3a"/>
-    <rect x="701" y="555" width="9" height="7" fill="#69db7c" opacity=".8"/>
-    <rect x="712" y="555" width="9" height="7" fill="#69db7c" opacity=".8"/>
-    <rect x="723" y="555" width="9" height="7" fill="#69db7c" opacity=".8"/>
-    <rect x="734" y="555" width="9" height="7" fill="#69db7c" opacity=".8"/>
-    <rect x="745" y="555" width="9" height="7" fill="#69db7c" opacity=".8"/>
-    <rect x="756" y="555" width="9" height="7" fill="#69db7c" opacity=".8"/>
-    <!-- Sign -->
-    <rect x="701" y="563" width="70" height="14" rx="2" fill="#0a1f0a" stroke="#69db7c" stroke-width="1"/>
-    <text x="736" y="573" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="9" fill="#8ce99a">CAFÉ ☕</text>
-    <!-- Patrons -->
-    <rect x="706" y="583" width="8" height="22" rx="3" fill="#1e4020" class="mw mw1"/>
-    <rect x="720" y="580" width="8" height="25" rx="3" fill="#1e4020" class="mw mw3"/>
-    <rect x="736" y="583" width="8" height="22" rx="3" fill="#1e4020" class="mw mw2"/>
-    <!-- Door -->
-    <rect x="754" y="608" width="14" height="15" rx="1" fill="#2a2a2a"/>
+    <!-- Party goers walking in/out of ZOO -->
 
-    <!-- ══ 24H MART ══  x=790–848, y=595–658 -->
-    <rect x="790" y="560" width="58" height="65" rx="2" fill="#080f18"/>
-    <rect x="792" y="562" width="54" height="58" fill="#74c0fc" opacity=".14"/>
-    <!-- Awning -->
-    <rect x="789" y="555" width="60" height="7" rx="2" fill="#c92a2a"/>
-    <rect x="791" y="555" width="8" height="7" fill="#fff" opacity=".5"/>
-    <rect x="801" y="555" width="8" height="7" fill="#fff" opacity=".5"/>
-    <rect x="811" y="555" width="8" height="7" fill="#fff" opacity=".5"/>
-    <rect x="821" y="555" width="8" height="7" fill="#fff" opacity=".5"/>
-    <rect x="831" y="555" width="8" height="7" fill="#fff" opacity=".5"/>
-    <!-- Sign -->
-    <rect x="791" y="563" width="56" height="14" rx="2" fill="#08101f" stroke="#74c0fc" stroke-width="1"/>
-    <text x="819" y="573" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="9" fill="#a5d8ff">24H MART</text>
-    <!-- Shelves -->
-    <rect x="795" y="585" width="44" height="2" rx="1" fill="#74c0fc" opacity=".3"/>
-    <rect x="795" y="595" width="44" height="2" rx="1" fill="#74c0fc" opacity=".3"/>
-    <rect x="795" y="605" width="44" height="2" rx="1" fill="#74c0fc" opacity=".3"/>
-    <!-- Door -->
-    <rect x="826" y="608" width="16" height="15" rx="1" fill="#2a2a2a"/>
+    <!-- ══ FamilyMart ══  x=760–832, y=555–623 (right next to MART) -->
+    <!-- Building body — FamilyMart dark blue-green -->
+    <rect x="760" y="560" width="72" height="65" rx="2" fill="#05183a"/>
+    <rect x="762" y="562" width="68" height="58" fill="#0066cc" opacity=".10"/>
+    <!-- Awning — FamilyMart signature blue + green stripe -->
+    <rect x="759" y="553" width="74" height="8" rx="2" fill="#0066cc"/>
+    <rect x="759" y="557" width="74" height="3" fill="#00a651"/>
+    <!-- Awning scallop panels -->
+    <rect x="761" y="553" width="9" height="8" fill="#0055aa" opacity=".6"/>
+    <rect x="772" y="553" width="9" height="8" fill="#00a651" opacity=".7"/>
+    <rect x="783" y="553" width="9" height="8" fill="#0055aa" opacity=".6"/>
+    <rect x="794" y="553" width="9" height="8" fill="#00a651" opacity=".7"/>
+    <rect x="805" y="553" width="9" height="8" fill="#0055aa" opacity=".6"/>
+    <rect x="816" y="553" width="9" height="8" fill="#00a651" opacity=".7"/>
+    <!-- Sign board — white with blue border -->
+    <rect x="761" y="562" width="70" height="14" rx="2" fill="#f0f8ff" stroke="#0066cc" stroke-width="1.2"/>
+    <text x="796" y="572" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="8" fill="#0066cc">FamilyMart</text>
+    <!-- Interior: warm convenience store glow -->
+    <rect x="763" y="578" width="66" height="40" fill="#fff8e0" opacity=".06"/>
+    <!-- Shelf lines -->
+    <rect x="765" y="585" width="44" height="2" rx="1" fill="#0066cc" opacity=".25"/>
+    <rect x="765" y="595" width="44" height="2" rx="1" fill="#0066cc" opacity=".25"/>
+    <rect x="765" y="605" width="44" height="2" rx="1" fill="#0066cc" opacity=".25"/>
+    <!-- Glass door — sliding, with FM logo hint -->
+    <rect x="784" y="608" width="16" height="15" rx="1" fill="#a8d8f0" opacity=".3" stroke="#0066cc" stroke-width="1" stroke-opacity=".5"/>
+    <rect x="788" y="610" width="1" height="11" fill="#fff" opacity=".3"/>
+
+    <!-- ══ SaladStop ══  x=840–898, y=555–623 -->
+    <!-- Building body — clean white/light grey, health-food fresh look -->
+    <rect x="840" y="560" width="58" height="65" rx="2" fill="#0d1a0d"/>
+    <rect x="842" y="562" width="54" height="58" fill="#5cb85c" opacity=".12"/>
+    <!-- Awning — SaladStop signature fresh green -->
+    <rect x="839" y="553" width="60" height="8" rx="2" fill="#3a8a3a"/>
+    <rect x="839" y="558" width="60" height="2" fill="#5cb85c" opacity=".8"/>
+    <!-- Awning scallops — bright green panels -->
+    <rect x="841" y="553" width="8" height="8" fill="#2d7a2d" opacity=".7"/>
+    <rect x="851" y="553" width="8" height="8" fill="#5cb85c" opacity=".6"/>
+    <rect x="861" y="553" width="8" height="8" fill="#2d7a2d" opacity=".7"/>
+    <rect x="871" y="553" width="8" height="8" fill="#5cb85c" opacity=".6"/>
+    <rect x="881" y="553" width="8" height="8" fill="#2d7a2d" opacity=".7"/>
+    <!-- Sign board — white with bright green border -->
+    <rect x="841" y="562" width="56" height="15" rx="2" fill="#f8fff8" stroke="#3a8a3a" stroke-width="1.2"/>
+    <!-- SaladStop logo text — green with leaf accent -->
+    <text x="869" y="572" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="7.5" fill="#2d7a2d">SaladStop!</text>
+    <!-- Interior — fresh, bright with counter -->
+    <rect x="843" y="579" width="54" height="3" rx="1" fill="#5cb85c" opacity=".3"/>
+    <rect x="843" y="584" width="54" height="20" rx="1" fill="#f0fff0" opacity=".05"/>
+    <!-- Salad bowl icons on counter (abstract) -->
+    <ellipse cx="855" cy="590" rx="6" ry="3" fill="#5cb85c" opacity=".4"/>
+    <ellipse cx="869" cy="590" rx="6" ry="3" fill="#8bc34a" opacity=".35"/>
+    <ellipse cx="883" cy="590" rx="6" ry="3" fill="#5cb85c" opacity=".4"/>
+    <!-- Ingredient stripe lines inside bowls -->
+    <rect x="851" y="589" width="8" height="1" fill="#ff7043" opacity=".5"/>
+    <rect x="865" y="589" width="8" height="1" fill="#ffd740" opacity=".5"/>
+    <rect x="879" y="589" width="8" height="1" fill="#ff7043" opacity=".5"/>
+    <!-- Glass door -->
+    <rect x="858" y="606" width="14" height="17" rx="1" fill="#c8f0c8" opacity=".25" stroke="#3a8a3a" stroke-width="1" stroke-opacity=".5"/>
+    <rect x="862" y="608" width="1" height="13" fill="#fff" opacity=".25"/>
 
     <!-- NEON SIGNS on mid-rise rooftops -->
-    <g transform="translate(410, 480)">
+    <g transform="translate(420, 508)">
       <rect x="-2" y="0" width="2" height="18" fill="#2a1e35"/>
       <rect x="84" y="0" width="2" height="18" fill="#2a1e35"/>
-      <rect x="-44" y="-15" width="88" height="18" rx="3" fill="#1a1525" stroke="#74c0fc" stroke-width="1.4"/>
-      <text class="neon-text neon-blue" x="0" y="-3" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" fill="#74c0fc">GRAND INDO</text>
+      <rect x="-44" y="-15" width="88" height="18" rx="3" fill="#1a1525" stroke="#ff8c00" stroke-width="1.4"/>
+      <text class="neon-text neon-orange" x="0" y="-3" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" fill="#ff8c00">GRAND INDO</text>
     </g>
-    <g transform="translate(560, 458)">
+    <g transform="translate(560, 468)">
       <rect x="-2" y="0" width="2" height="14" fill="#2a1e35"/>
       <rect x="56" y="0" width="2" height="14" fill="#2a1e35"/>
       <rect x="-30" y="-14" width="60" height="18" rx="3" fill="#1a1525" stroke="#ffd43b" stroke-width="1.4"/>
       <text class="neon-text neon-yellow" x="0" y="-2" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" fill="#ffd43b">SENAYAN</text>
     </g>
-    <g transform="translate(670, 462)">
+    <g transform="translate(653, 496)">
       <rect x="-2" y="0" width="2" height="14" fill="#2a1e35"/>
       <rect x="46" y="0" width="2" height="14" fill="#2a1e35"/>
       <rect x="-26" y="-14" width="52" height="18" rx="3" fill="#1a1525" stroke="#ff6b6b" stroke-width="1.4"/>
       <text class="neon-text neon-red" x="0" y="-2" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" fill="#ff6b6b">LOTTE</text>
     </g>
-    <g transform="translate(800, 462)">
+    <g transform="translate(810, 512)">
       <rect x="-2" y="0" width="2" height="16" fill="#2a1e35"/>
       <rect x="56" y="0" width="2" height="16" fill="#2a1e35"/>
       <rect x="-30" y="-15" width="60" height="18" rx="3" fill="#1a1525" stroke="#94d82d" stroke-width="1.4"/>
@@ -2924,20 +3023,24 @@
     </g>
 
 
-  <!-- ══ FALLING STARS (shown/hidden via JS) ══ -->
-  <g id="fstar1" class="fstar" style="display:none">
-    <line class="fstar-trail" x1="600" y1="80" x2="620" y2="95" stroke="white" stroke-width="2.5" opacity=".9"/>
-    <line class="fstar-trail" x1="600" y1="80" x2="598" y2="72" stroke="white" stroke-width="1" opacity=".4"/>
-  </g>
-  <g id="fstar2" class="fstar" style="display:none">
-    <line class="fstar-trail" x1="750" y1="50" x2="770" y2="65" stroke="white" stroke-width="2" opacity=".85"/>
-    <line class="fstar-trail" x1="750" y1="50" x2="748" y2="42" stroke="white" stroke-width="1" opacity=".35"/>
-  </g>
-  <g id="fstar3" class="fstar" style="display:none">
-    <line class="fstar-trail" x1="500" y1="100" x2="522" y2="118" stroke="white" stroke-width="2" opacity=".9"/>
-    <line class="fstar-trail" x1="500" y1="100" x2="498" y2="91" stroke="white" stroke-width="1" opacity=".4"/>
-  </g>
 
+
+    <!-- Street trees between shops (3 cute trees on pavement) -->
+    <!-- Tree 1: left of CAFÉ -->
+    <rect x="624" y="618" width="4" height="16" rx="1" fill="#2a1a0a"/>
+    <ellipse cx="626" cy="614" rx="9" ry="8" fill="#1a4a1a"/>
+    <ellipse cx="623" cy="617" rx="5" ry="4" fill="#1e5a1e" opacity=".8"/>
+    <ellipse cx="629" cy="616" rx="5" ry="4" fill="#166016" opacity=".7"/>
+    <!-- Tree 2: between Cinema XXI and FamilyMart (x≈748) -->
+    <rect x="748" y="616" width="4" height="18" rx="1" fill="#2a1a0a"/>
+    <ellipse cx="750" cy="612" rx="10" ry="9" fill="#154a15"/>
+    <ellipse cx="746" cy="615" rx="6" ry="5" fill="#1a5a1a" opacity=".8"/>
+    <ellipse cx="754" cy="614" rx="5" ry="4" fill="#0f500f" opacity=".7"/>
+    <!-- Tree 3: right of MART -->
+    <rect x="888" y="618" width="4" height="16" rx="1" fill="#2a1a0a"/>
+    <ellipse cx="890" cy="614" rx="9" ry="8" fill="#1a4a1a"/>
+    <ellipse cx="887" cy="617" rx="5" ry="4" fill="#1e5a1e" opacity=".8"/>
+    <ellipse cx="893" cy="616" rx="5" ry="4" fill="#166016" opacity=".7"/>
   <!-- ══ ROAD + PARK (on top of shops, below falling stars) ══ -->
       <!-- DARK STREET / GROUND BAND beneath all buildings -->
       <!-- Road (highway) first -->
@@ -3003,15 +3106,7 @@
         <rect x="-1" y="0" width="2" height="22" fill="#3a2818"/>
         <path d="M0 0 Q-12 -6 -16 -2 M0 0 Q-10 -10 -14 -10 M0 0 Q12 -6 16 -2 M0 0 Q10 -10 14 -10 M0 0 Q0 -12 -2 -16 M0 0 Q0 -12 2 -16" stroke="#2d8a4f" stroke-width="3" fill="none" stroke-linecap="round"/>
       </g>
-      <!-- Shrubs / bushes — sitting on the sidewalk just above the road (y≈655, not on the asphalt) -->
-      <g opacity=".75">
-        <ellipse cx="155" cy="653" rx="14" ry="5" fill="#1f5934"/>
-        <ellipse cx="380" cy="653" rx="18" ry="5" fill="#1f5934"/>
-        <ellipse cx="490" cy="653" rx="14" ry="5" fill="#1f5934"/>
-        <ellipse cx="725" cy="653" rx="20" ry="6" fill="#1f5934"/>
-        <ellipse cx="950" cy="653" rx="16" ry="5" fill="#1f5934"/>
-        <ellipse cx="1010" cy="653" rx="12" ry="4" fill="#2d8a4f"/>
-      </g>
+
 
 
     <!-- Buses — TransJakarta-style red bus (BRT) traveling left-to-right at street level -->
@@ -3243,19 +3338,6 @@
       <circle cx="-2" cy="6" r="1.2" fill="#d6cfb8" opacity=".55"/>
       <circle cx="6" cy="-5" r="1" fill="#d6cfb8" opacity=".5"/>
     </g>
-    <!-- ══ FALLING STARS (shown/hidden via JS) ══ -->
-  <g id="fstar1" class="fstar" style="display:none">
-    <line class="fstar-trail" x1="600" y1="80" x2="620" y2="95" stroke="white" stroke-width="2.5" opacity=".9"/>
-    <line class="fstar-trail" x1="600" y1="80" x2="598" y2="72" stroke="white" stroke-width="1" opacity=".4"/>
-  </g>
-  <g id="fstar2" class="fstar" style="display:none">
-    <line class="fstar-trail" x1="750" y1="50" x2="770" y2="65" stroke="white" stroke-width="2" opacity=".85"/>
-    <line class="fstar-trail" x1="750" y1="50" x2="748" y2="42" stroke="white" stroke-width="1" opacity=".35"/>
-  </g>
-  <g id="fstar3" class="fstar" style="display:none">
-    <line class="fstar-trail" x1="500" y1="100" x2="522" y2="118" stroke="white" stroke-width="2" opacity=".9"/>
-    <line class="fstar-trail" x1="500" y1="100" x2="498" y2="91" stroke="white" stroke-width="1" opacity=".4"/>
-  </g>
 
   </svg>
 </div>
@@ -3294,6 +3376,86 @@
       <path d="M14 60 Q4 56 4 48 Q4 42 10 42 Q14 42 16 48 L16 54 Q22 50 24 58 L22 66 Q14 68 14 62 Z" fill="#f0c8a8"/>
       <path d="M10 48 L10 54 M14 47 L14 54" stroke="#d6a888" stroke-width=".8"/>
     </g>
+
+
+  <!-- ══ PARTY GOERS (topmost layer — Cinema XXI entrance, moved up to stay above UI chrome) ══ -->
+  <g id="partyGoers">
+    <g class="pg-in"  transform="translate(560, 548)"><rect x="0" y="9" width="7" height="18" rx="2" fill="#3a2a5a"/><ellipse cx="3.5" cy="6" rx="5" ry="5" fill="#c8956a"/></g>
+    <g class="pg-in2" transform="translate(568, 551)"><rect x="0" y="9" width="7" height="18" rx="2" fill="#5a2a3a"/><ellipse cx="3.5" cy="6" rx="5" ry="5" fill="#e0b090"/></g>
+    <g class="pg-out" transform="translate(586, 549)"><rect x="0" y="9" width="7" height="18" rx="2" fill="#2a3a5a"/><ellipse cx="3.5" cy="6" rx="5" ry="5" fill="#d4a882"/></g>
+    <g class="pg-out2" transform="translate(594, 552)"><rect x="0" y="9" width="7" height="18" rx="2" fill="#3a5a2a"/><ellipse cx="3.5" cy="6" rx="5" ry="5" fill="#c8956a"/></g>
+  </g>
+
+  <!-- ══ C-130 HERCULES + PARATROOPERS (Toumi & Steve) — topmost layer ══ -->
+  <!-- No SVG base translate — positioning is 100% via CSS animation (like the 747 jumbo). -->
+  <g class="c130">
+    <!-- Fuselage -->
+    <rect x="-90" y="-8" width="90" height="16" rx="4" fill="#6b7c6b"/>
+    <rect x="-88" y="-6" width="86" height="12" rx="3" fill="#7a8e7a"/>
+    <!-- Nose -->
+    <path d="M-90,-4 L-108,-1 L-90,4 Z" fill="#5a6e5a"/>
+    <!-- Tail fin -->
+    <rect x="0" y="-20" width="6" height="14" rx="2" fill="#6b7c6b"/>
+    <!-- Horizontal stabilisers -->
+    <rect x="-4" y="-8" width="20" height="4" rx="2" fill="#6b7c6b"/>
+    <!-- Wings -->
+    <rect x="-75" y="-4" width="60" height="6" rx="3" fill="#5a6e5a"/>
+    <!-- 4 propeller discs -->
+    <ellipse cx="-70" cy="-1" rx="7" ry="7" fill="#2a2a2a" opacity=".35"/>
+    <ellipse cx="-55" cy="-1" rx="7" ry="7" fill="#2a2a2a" opacity=".35"/>
+    <ellipse cx="-40" cy="-1" rx="7" ry="7" fill="#2a2a2a" opacity=".35"/>
+    <ellipse cx="-25" cy="-1" rx="7" ry="7" fill="#2a2a2a" opacity=".35"/>
+    <!-- Prop crosses -->
+    <line x1="-70" y1="-8" x2="-70" y2="6"  stroke="#888" stroke-width="1.5" opacity=".5"/>
+    <line x1="-77" y1="-1" x2="-63" y2="-1" stroke="#888" stroke-width="1.5" opacity=".5"/>
+    <line x1="-55" y1="-8" x2="-55" y2="6"  stroke="#888" stroke-width="1.5" opacity=".5"/>
+    <line x1="-62" y1="-1" x2="-48" y2="-1" stroke="#888" stroke-width="1.5" opacity=".5"/>
+    <line x1="-40" y1="-8" x2="-40" y2="6"  stroke="#888" stroke-width="1.5" opacity=".5"/>
+    <line x1="-47" y1="-1" x2="-33" y2="-1" stroke="#888" stroke-width="1.5" opacity=".5"/>
+    <line x1="-25" y1="-8" x2="-25" y2="6"  stroke="#888" stroke-width="1.5" opacity=".5"/>
+    <line x1="-32" y1="-1" x2="-18" y2="-1" stroke="#888" stroke-width="1.5" opacity=".5"/>
+    <!-- Cargo ramp open at rear -->
+    <path d="M0,4 L10,12 L10,4 Z" fill="#3a4a3a" opacity=".8"/>
+    <!-- Cockpit windows -->
+    <rect x="-94" y="-3" width="6" height="4" rx="1" fill="#a8d8f0" opacity=".7"/>
+  </g>
+  <!-- Toumi — parachutist 1 — pure CSS positioning -->
+  <g class="para-toumi">
+    <path d="M-14,0 Q0,-22 14,0 Z" fill="#ff6b35" opacity=".9"/>
+    <path d="M-14,0 Q0,-18 14,0" fill="none" stroke="#cc4400" stroke-width="0.8" opacity=".7"/>
+    <line x1="-10" y1="0" x2="0" y2="12" stroke="#cc4400" stroke-width="0.6" opacity=".6"/>
+    <line x1="0"   y1="-8" x2="0" y2="12" stroke="#cc4400" stroke-width="0.6" opacity=".6"/>
+    <line x1="10"  y1="0" x2="0" y2="12" stroke="#cc4400" stroke-width="0.6" opacity=".6"/>
+    <rect x="-3" y="12" width="6" height="10" rx="2" fill="#3a3a5a"/>
+    <ellipse cx="0" cy="10" rx="4" ry="4" fill="#d4a882"/>
+    <text x="16" y="16" font-family="Montserrat,sans-serif" font-size="5" font-weight="700" fill="#ff6b35" opacity=".9">Toumi</text>
+  </g>
+  <!-- ══ FALLING STARS — upper sky, well below SVG top edge, above the towers ══ -->
+  <!-- y=280–340 sits in the open sky zone, above tallest towers (~y=120) but below flight paths -->
+  <g id="fstar1" class="fstar" style="display:none">
+    <line class="fstar-trail" x1="500" y1="290" x2="522" y2="306" stroke="white" stroke-width="2.5" opacity=".9"/>
+    <line class="fstar-trail" x1="500" y1="290" x2="498" y2="281" stroke="white" stroke-width="1.2" opacity=".45"/>
+  </g>
+  <g id="fstar2" class="fstar" style="display:none">
+    <line class="fstar-trail" x1="660" y1="270" x2="682" y2="285" stroke="white" stroke-width="2" opacity=".85"/>
+    <line class="fstar-trail" x1="660" y1="270" x2="658" y2="261" stroke="white" stroke-width="1" opacity=".38"/>
+  </g>
+  <g id="fstar3" class="fstar" style="display:none">
+    <line class="fstar-trail" x1="420" y1="320" x2="442" y2="338" stroke="white" stroke-width="2.2" opacity=".9"/>
+    <line class="fstar-trail" x1="420" y1="320" x2="418" y2="311" stroke="white" stroke-width="1" opacity=".4"/>
+  </g>
+
+  <!-- Steve — parachutist 2 — pure CSS positioning -->
+  <g class="para-steve">
+    <path d="M-14,0 Q0,-22 14,0 Z" fill="#4ecdc4" opacity=".9"/>
+    <path d="M-14,0 Q0,-18 14,0" fill="none" stroke="#2a9d95" stroke-width="0.8" opacity=".7"/>
+    <line x1="-10" y1="0" x2="0" y2="12" stroke="#2a9d95" stroke-width="0.6" opacity=".6"/>
+    <line x1="0"   y1="-8" x2="0" y2="12" stroke="#2a9d95" stroke-width="0.6" opacity=".6"/>
+    <line x1="10"  y1="0" x2="0" y2="12" stroke="#2a9d95" stroke-width="0.6" opacity=".6"/>
+    <rect x="-3" y="12" width="6" height="10" rx="2" fill="#2a4a3a"/>
+    <ellipse cx="0" cy="10" rx="4" ry="4" fill="#c8956a"/>
+    <text x="16" y="16" font-family="Montserrat,sans-serif" font-size="5" font-weight="700" fill="#4ecdc4" opacity=".9">Steve</text>
+  </g>
 
   </svg>
 </div>
@@ -3729,6 +3891,14 @@
         </div>
         <div class="tool-arrow">›</div>
       </div>
+      <div class="tool-card" data-tool="dating">
+        <div class="tool-icon">💘</div>
+        <div class="tool-meta">
+          <div class="tool-title">Dating Apps</div>
+          <div class="tool-sub">Bumble, Tinder, OkCupid, Badoo — quick launch</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
       <div class="tool-card" data-tool="settings">
         <div class="tool-icon">⚙</div>
         <div class="tool-meta">
@@ -3745,6 +3915,41 @@
         <button class="tools-quick-chip" data-jump="links-expat"><span>🌐</span> Expat / social</button>
         <button class="tools-quick-chip" data-jump="links-events"><span>🎉</span> What's happening</button>
         <button class="tools-quick-chip" data-jump="links-date"><span>🍻</span> Date-night spots</button>
+      </div>
+    </div>
+
+    <!-- Dating Apps sub-page -->
+    <div id="tools-dating" class="tool-sub-page" style="display:none">
+      <div class="tool-sub-head">
+        <button class="btn ghost small" id="toolsBackDating">‹ Back</button>
+        <span class="tool-sub-title">💘 Dating Apps</span>
+      </div>
+      <div class="hint" style="margin-bottom:16px">Tap any app to open it. They'll launch in the installed app (if you have it) or the web.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px">
+        <button class="brand-btn-label" id="bumbleBtn" title="Bumble" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column">
+          <div class="brand-btn bumble" style="margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><polygon fill="white" points="12,2 21,7 21,17 12,22 3,17 3,7"/><polygon fill="#FFC629" points="12,5.5 18.2,9 18.2,15 12,18.5 5.8,15 5.8,9"/><circle fill="white" cx="12" cy="12" r="2.2"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">BUMBLE</span>
+        </button>
+        <button class="brand-btn-label" id="tinderBtn" title="Tinder" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column">
+          <div class="brand-btn tinder" style="margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><path fill="white" d="M14 2c0 0-1 4-4 6 0 0 0-3-2-4 0 0 2 5-2 9 -2 2-2 5 0 7 3 3 9 3 12 0 3-3 3-8 0-12-2-3-3-5-4-6z"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">TINDER</span>
+        </button>
+        <button class="brand-btn-label" id="okcupidBtn" title="OkCupid" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column">
+          <div class="brand-btn okcupid" style="margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="white"/><text x="12" y="16" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="11" fill="#0E59F2">OK</text></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">OKCUPID</span>
+        </button>
+        <button class="brand-btn-label" id="badooBtn" title="Badoo" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column">
+          <div class="brand-btn badoo" style="margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="white"/><text x="12" y="17" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="15" fill="#7B2CBF">b</text></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">BADOO</span>
+        </button>
       </div>
     </div>
 
@@ -4009,11 +4214,58 @@
     void el.offsetWidth; // reflow
     el.classList.add('fstar');
     setTimeout(() => { el.style.display = 'none'; }, 2000);
-    // schedule next star randomly 18–45 seconds later
-    setTimeout(shootStar, 18000 + Math.random() * 27000);
+    // schedule next star randomly 10–22 seconds later
+    setTimeout(shootStar, 10000 + Math.random() * 12000);
   }
-  // First star fires 8–20 seconds after page load
-  setTimeout(shootStar, 8000 + Math.random() * 12000);
+  // First star fires 4–8 seconds after page load
+  setTimeout(shootStar, 4000 + Math.random() * 4000);
+})();
+</script>
+
+<script>
+/* ── Skyline SVG viewBox autoscaling ──────────────────────────────────────
+   Goal: always show from just left of Monas (SVG x≈318) to just right of
+   mosque minaret (SVG x≈960), i.e. a content width of 642 SVG units.
+   The full scene height is 700 SVG units.
+   Aspect ratio of content = 642/700 = 0.917 (wider than tall).
+
+   Strategy (xMidYMax meet):
+   - On narrow phones: viewBox width = 642 units shows exactly the target zone.
+   - On wider screens: expand viewBox width proportionally so towers don't get
+     cut off at top. Cap at the full scene width (1200 units).
+   - viewBox always anchored so x-centre = 629 (midpoint of 318–960).
+   - Height always 700 to show full tower height.
+   The JS runs on load and on resize.
+*/
+(function() {
+  const svg = document.getElementById('skylineSvg');
+  if (!svg) return;
+
+  const CONTENT_MID_X = 629;   // midpoint of Monas(338)–mosque(940) zone
+  const CONTENT_W_MIN = 642;   // minimum visible width (phone: exactly Monas→mosque)
+  const SCENE_H       = 700;   // fixed SVG scene height
+  const SCENE_W_MAX   = 1200;  // don't expand viewBox beyond full scene
+
+  function fitViewBox() {
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+
+    // How many SVG units wide do we need to show so the scene isn't clipped?
+    // With "meet", SVG scales uniformly to fit container. Container is 100vw × 100vh.
+    // Scale = min(screenW / vbW, screenH / SCENE_H).
+    // We want scale × SCENE_H ≤ screenH  → always true with meet.
+    // We want the scene to fill most of the screen width → solve for vbW:
+    //   screenW / vbW = screenH / SCENE_H  → vbW = screenW * SCENE_H / screenH
+    // This keeps the full scene height visible while filling the width.
+    let vbW = Math.round(screenW * SCENE_H / screenH);
+    vbW = Math.max(CONTENT_W_MIN, Math.min(SCENE_W_MAX, vbW));
+
+    const vbX = Math.round(CONTENT_MID_X - vbW / 2);
+    svg.setAttribute('viewBox', `${vbX} 0 ${vbW} ${SCENE_H}`);
+  }
+
+  fitViewBox();
+  window.addEventListener('resize', fitViewBox);
 })();
 </script>
 
