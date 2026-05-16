@@ -1053,7 +1053,6 @@ function buildAvailRow(p, dayKey, jsDate) {
   const row = document.createElement('div');
   row.className = 'avail-row';
   row.dataset.profileId = p.id;
-  row.draggable = true;
   const idx = p.primaryPhotoIdx || 0;
   const thumbSrc = p.photos && p.photos[idx] ? p.photos[idx] : '';
   const s = p.schedule[dayKey] || {};
@@ -1111,91 +1110,20 @@ function buildAvailRow(p, dayKey, jsDate) {
   addBtn.addEventListener('click', (e) => { e.stopPropagation(); openAddDateModal(p.id, jsDate); });
   actions.appendChild(addBtn);
 
+  // Tap the avatar to open the profile — rest of row is a free swipe surface
+  thumb.style.cursor = 'pointer';
+  thumb.addEventListener('click', (e) => { e.stopPropagation(); openEditor(p.id); });
+
   row.appendChild(thumb);
   row.appendChild(name);
   row.appendChild(pills);
   row.appendChild(actions);
-
-  row.addEventListener('click', () => {
-    if (!row.dataset.wasDragged) openEditor(p.id);
-    row.dataset.wasDragged = '';
-  });
   return row;
 }
 
-let dragSrcId = null;
-function attachDragHandlers() {
-  document.querySelectorAll('.avail-row').forEach(row => {
-    row.addEventListener('dragstart', (e) => {
-      dragSrcId = row.dataset.profileId; row.classList.add('dragging'); row.dataset.wasDragged = '1';
-      e.dataTransfer.effectAllowed = 'move';
-      try { e.dataTransfer.setData('text/plain', dragSrcId); } catch(_){}
-    });
-    row.addEventListener('dragend', () => {
-      row.classList.remove('dragging');
-      document.querySelectorAll('.avail-row').forEach(r => r.classList.remove('drop-target'));
-    });
-    row.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect='move'; row.classList.add('drop-target'); });
-    row.addEventListener('dragleave', () => row.classList.remove('drop-target'));
-    row.addEventListener('drop', (e) => {
-      e.preventDefault(); row.classList.remove('drop-target');
-      const targetId = row.dataset.profileId;
-      if (!dragSrcId || dragSrcId === targetId) return;
-      reorderPriority(dragSrcId, targetId); saveState(); renderAvailability();
-    });
-    // Touch drag-to-reorder.
-    // Hold (250 ms without much movement) → enters drag mode (vibrate + highlight).
-    // Quick horizontal swipe → clears hold timer, lets the day-scroll container handle it.
-    // Quick vertical movement → clears hold timer, lets page scroll handle it.
-    let touchStart = null, holdTimer = null, isDragging = false;
-    row.addEventListener('touchstart', (e) => {
-      touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, touch: e.touches[0] };
-      holdTimer = setTimeout(() => {
-        isDragging = true;
-        row.classList.add('dragging');
-        row.dataset.wasDragged = '1';
-        if (navigator.vibrate) navigator.vibrate(40);
-      }, 300);
-    }, {passive: true});
-    row.addEventListener('touchmove', (e) => {
-      if (!touchStart) return;
-      const t = e.touches[0];
-      const dx = Math.abs(t.clientX - touchStart.x);
-      const dy = Math.abs(t.clientY - touchStart.y);
-      if (!isDragging) {
-        // Any movement before hold timer fires → abort hold, let scroll handle it
-        if (dx > 6 || dy > 6) { clearTimeout(holdTimer); holdTimer = null; touchStart = null; return; }
-      } else {
-        // In drag mode — prevent scroll and track position for reorder
-        e.preventDefault();
-        const el = document.elementFromPoint(t.clientX, t.clientY);
-        const overRow = el && el.closest('.avail-row');
-        document.querySelectorAll('.avail-row.drop-target').forEach(r => r.classList.remove('drop-target'));
-        if (overRow && overRow !== row) overRow.classList.add('drop-target');
-      }
-    }, {passive: false});
-    row.addEventListener('touchend', (e) => {
-      clearTimeout(holdTimer); holdTimer = null;
-      if (isDragging) {
-        const t = e.changedTouches && e.changedTouches[0];
-        const el = t ? document.elementFromPoint(t.clientX, t.clientY) : null;
-        const overRow = el && el.closest('.avail-row');
-        row.classList.remove('dragging');
-        if (overRow && overRow !== row) {
-          overRow.classList.remove('drop-target');
-          reorderPriority(row.dataset.profileId, overRow.dataset.profileId);
-          saveState(); renderAvailability();
-        }
-      }
-      touchStart = null; isDragging = false;
-    });
-    row.addEventListener('touchcancel', () => {
-      clearTimeout(holdTimer); holdTimer = null;
-      touchStart = null; isDragging = false;
-      row.classList.remove('dragging');
-    });
-  });
-}
+// Drag-to-reorder removed — rows are now a free swipe surface.
+// Reordering is done via the Sort buttons (Priority / Recent / Stale).
+function attachDragHandlers() { /* no-op — drag removed */ }
 function reorderPriority(srcId, targetId) {
   const order = state.priorityOrder.slice();
   const sIdx = order.indexOf(srcId);
