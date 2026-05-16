@@ -1083,23 +1083,28 @@
     text-transform: uppercase; color: var(--muted); margin-left: 6px;
     background: var(--chip); padding: 2px 6px; border-radius: 4px;
   }
-  /* Sky gradient — fills the entire bg-decor area so there's no black void above the SVG */
+  /* Sky gradient — fills the ENTIRE screen behind the SVG skyline.
+     Must be fully opaque at top so no black void shows when SVG doesn't fill full height. */
   .bg-decor .sky {
     position: absolute; inset: 0;
+    /* Light mode: deep indigo-to-blush twilight sky, fully opaque */
     background: linear-gradient(180deg,
-      rgba(200, 210, 240, 0.55) 0%,
-      rgba(220, 200, 230, 0.25) 40%,
-      rgba(255, 150, 180, 0.08) 70%,
-      rgba(120, 80, 110, 0.10) 100%);
+      #1a1535 0%,
+      #2d1f4a 20%,
+      #4a1f4a 45%,
+      #7a2a50 65%,
+      #a03060 80%,
+      #c04070 100%);
   }
   html[data-theme="dark"] .bg-decor .sky {
     background: linear-gradient(180deg,
-      rgba(10, 12, 25, 0.96) 0%,
-      rgba(18, 15, 35, 0.92) 25%,
-      rgba(30, 20, 45, 0.75) 50%,
-      rgba(60, 25, 60, 0.45) 75%,
-      rgba(120, 30, 70, 0.45) 85%,
-      rgba(180, 50, 90, 0.35) 100%);
+      #080a14 0%,
+      #0f0d1e 20%,
+      #1a1030 40%,
+      #2a1040 58%,
+      #3d1040 72%,
+      #5a1a40 85%,
+      #7a2040 100%);
   }
 
   /* Ensure foreground content sits above decor */
@@ -1919,21 +1924,24 @@
   .day-scroll {
     display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 16px;
     scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
-    touch-action: pan-x; /* let the whole row be a swipe target */
+    /* pan-x for the strip itself; pan-y still propagates to page scroll */
+    touch-action: pan-x pan-y;
     /* extend hit area to screen edges — negative margin + matching padding */
     margin-left: -16px; margin-right: -16px;
     padding-left: 16px; padding-right: 16px;
     /* hide scrollbar for cleanliness */
     scrollbar-width: none;
+    /* ensure full-width hit area */
+    width: calc(100% + 32px);
+    box-sizing: border-box;
   }
   .day-scroll::-webkit-scrollbar { display: none; }
   .day-col {
-    flex: 0 0 86%; max-width: 340px; min-width: 260px;
-    background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 12px 10px;
+    flex: 0 0 88%; max-width: 360px; min-width: 270px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 14px 12px;
     scroll-snap-align: start; min-height: 220px;
     backdrop-filter: blur(12px) saturate(1.2); -webkit-backdrop-filter: blur(12px) saturate(1.2);
-    /* ensure the whole card body is touchable */
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
   }
   .day-col h3 { margin: 0 0 10px; font-size: 12px; color: var(--muted); text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
   .day-col h3 .date { display: block; font-size: 17px; color: var(--text); font-weight: 800; margin-top: 4px; letter-spacing: 0; text-transform: none; }
@@ -1943,7 +1951,7 @@
     background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px;
     padding: 8px 10px; margin-bottom: 8px; cursor: grab; display: flex; align-items: center; gap: 10px;
     transition: transform .12s, box-shadow .12s, background .12s;
-    touch-action: pan-y;
+    touch-action: none; /* allow JS drag to intercept all touch directions */
   }
   .avail-row.dragging { opacity: .55; cursor: grabbing; box-shadow: var(--shadow); transform: scale(1.03); z-index: 10; }
   .avail-row.drop-target { border-color: var(--accent); background: var(--panel); }
@@ -2200,13 +2208,23 @@
   <div class="modal weather-modal">
     <div class="weather-head">
       <div>
-        <div class="weather-eyebrow">JAKARTA</div>
+        <div class="weather-eyebrow" id="weatherCity">LOCATING…</div>
         <div class="weather-now" id="weatherNow">—</div>
       </div>
       <button class="btn ghost small" id="weatherClose">Close</button>
     </div>
+    <!-- City quick-switch row -->
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+      <button class="btn ghost small" id="weatherGps" title="Use my GPS location">📍 My location</button>
+      <button class="btn ghost small" id="weatherVienna" title="Vienna, Austria">🇦🇹 Vienna</button>
+      <button class="btn ghost small" id="weatherCustomBtn" title="Enter any city">🔍 Other city…</button>
+    </div>
+    <div id="weatherCustomRow" style="display:none;margin-bottom:10px;gap:8px;display:none;align-items:center">
+      <input id="weatherCustomInput" type="text" placeholder="City name…" style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-size:13px;font-family:inherit"/>
+      <button class="btn primary small" id="weatherCustomGo">Go</button>
+    </div>
     <div id="weatherHourly" class="weather-hourly"></div>
-    <div class="hint" style="margin-top:10px">Next 24 hours · powered by Open-Meteo</div>
+    <div class="hint" style="margin-top:10px">Next 24 hours · Open-Meteo · <span id="weatherAttrib"></span></div>
   </div>
 </div>
 
@@ -2235,9 +2253,11 @@
          with Monas, Wisma 46, Treasury Tower, BNI, Gama Tower, Istiqlal mosque. -->
     <defs>
       <linearGradient id="bgSky" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"  stop-color="#1a1832" stop-opacity="0"/>
-        <stop offset="60%" stop-color="#3b1f4a" stop-opacity=".25"/>
-        <stop offset="100%" stop-color="#7a1c4d" stop-opacity=".5"/>
+        <stop offset="0%"   stop-color="#0a0818" stop-opacity="1"/>
+        <stop offset="30%"  stop-color="#1a1035" stop-opacity="1"/>
+        <stop offset="60%"  stop-color="#3b1f4a" stop-opacity=".9"/>
+        <stop offset="85%"  stop-color="#7a1c4d" stop-opacity=".7"/>
+        <stop offset="100%" stop-color="#a02050" stop-opacity=".5"/>
       </linearGradient>
       <linearGradient id="layerFar" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#1e2d45"/>
