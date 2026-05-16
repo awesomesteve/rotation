@@ -717,17 +717,16 @@ document.getElementById('calcDistanceBtn').addEventListener('click', () => {
   }
 });
 // Brand quick-launch buttons (use the shared helpers defined earlier)
-document.getElementById('grabBtn').addEventListener('click', openGrab);
-document.getElementById('gojekBtn').addEventListener('click', openGojek);
-// Also wire the Tools-section Grab/Gojek buttons
-const _grabTools  = document.getElementById('grabBtnTools');
-const _gojekTools = document.getElementById('gojekBtnTools');
-if (_grabTools)  _grabTools.addEventListener('click', openGrab);
-if (_gojekTools) _gojekTools.addEventListener('click', openGojek);
-document.getElementById('bumbleBtn').addEventListener('click', openBumble);
-document.getElementById('tinderBtn').addEventListener('click', openTinder);
-document.getElementById('okcupidBtn').addEventListener('click', openOkCupid);
-document.getElementById('badooBtn').addEventListener('click', openBadoo);
+// Guard every button binding — elements may have been removed from HTML
+function _bind(id, fn) { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); }
+_bind('grabBtn',      openGrab);
+_bind('gojekBtn',     openGojek);
+_bind('grabBtnTools', openGrab);
+_bind('gojekBtnTools',openGojek);
+_bind('bumbleBtn',    openBumble);
+_bind('tinderBtn',    openTinder);
+_bind('okcupidBtn',   openOkCupid);
+_bind('badooBtn',     openBadoo);
 // Show the WA button only when there's a phone number; live-toggle as user types
 document.getElementById('f-phone').addEventListener('input', (e) => {
   document.getElementById('waProfileBtn').style.display = e.target.value.trim() ? '' : 'none';
@@ -1607,32 +1606,47 @@ function openBadoo() {
 
 
 
-/* === REBUILT: Tools sub-page navigation === */
+/* === Tools sub-page navigation ===
+   Uses a SINGLE delegated listener on document so it works regardless of
+   display:none state, render order, or dynamic injection.               */
+const _TOOL_PANES = ['tools-landing','tools-clipboard','tools-links','tools-daygame','tools-dating'];
+
 function _toolsShowPane(paneId) {
-  ['tools-landing','tools-clipboard','tools-links','tools-daygame'].forEach(id => {
+  _TOOL_PANES.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = (id === paneId) ? '' : 'none';
+    if (!el) return;
+    el.style.display = (id === paneId) ? 'block' : 'none';
   });
 }
 function showToolsLanding()  { _toolsShowPane('tools-landing'); }
 function showToolsClipboard(){ _toolsShowPane('tools-clipboard'); if (typeof renderClipboard === 'function') renderClipboard(); }
 function showToolsLinks()    { _toolsShowPane('tools-links'); }
 function showToolsDaygame()  { _toolsShowPane('tools-daygame'); }
+function showToolsDating()   { _toolsShowPane('tools-dating'); }
 
-// Wire the tool cards (data-tool="...") and back buttons — guarded so missing elements don't crash
-function _safeBind(id, fn) { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); }
-function _safeBindSel(sel, fn) { const el = document.querySelector(sel); if (el) el.addEventListener('click', fn); }
-_safeBindSel('[data-tool="clipboard"]', showToolsClipboard);
-_safeBindSel('[data-tool="links"]',     showToolsLinks);
-_safeBindSel('[data-tool="daygame"]',   showToolsDaygame);
-_safeBindSel('[data-tool="settings"]',  () => showView('settings'));
-_safeBind('toolsBack',        showToolsLanding);
-_safeBind('toolsBackLinks',   showToolsLanding);
-_safeBind('toolsBackDaygame', showToolsLanding);
-
-// Quick-jump chips on the Tools landing page (the "Jump to section" pills)
-document.querySelectorAll('.tools-quick-chip[data-jump]').forEach(chip => {
-  chip.addEventListener('click', () => {
+// Single delegated listener — catches clicks anywhere in the document.
+// Uses closest() so clicking a child (icon, arrow, text) still works.
+document.addEventListener('click', function(e) {
+  // Tool card navigation
+  const card = e.target.closest('[data-tool]');
+  if (card) {
+    const tool = card.dataset.tool;
+    if      (tool === 'clipboard') showToolsClipboard();
+    else if (tool === 'links')     showToolsLinks();
+    else if (tool === 'daygame')   showToolsDaygame();
+    else if (tool === 'dating')    showToolsDating();
+    else if (tool === 'settings')  { if (typeof showView === 'function') showView('settings'); }
+    return;
+  }
+  // Back buttons
+  const id = e.target.id || (e.target.closest('button') && e.target.closest('button').id);
+  if (id === 'toolsBack' || id === 'toolsBackLinks' || id === 'toolsBackDaygame' || id === 'toolsBackDating') {
+    showToolsLanding();
+    return;
+  }
+  // Quick-jump chips
+  const chip = e.target.closest('.tools-quick-chip[data-jump]');
+  if (chip) {
     showToolsLinks();
     requestAnimationFrame(() => {
       const target = document.getElementById(chip.dataset.jump);
@@ -1642,7 +1656,7 @@ document.querySelectorAll('.tools-quick-chip[data-jump]').forEach(chip => {
         setTimeout(() => target.classList.remove('jump-flash'), 1400);
       }
     });
-  });
+  }
 });
 
 

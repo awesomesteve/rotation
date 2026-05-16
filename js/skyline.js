@@ -246,12 +246,32 @@ function weatherSvgIcon(code) {
   return '·';
 }
 
+/* ── Weather location state ────────────────────────────────────────────── */
+let _wxLat = -6.2, _wxLon = 106.8, _wxCity = 'Jakarta';  // defaults
+
+/* Attempt GPS once; silently fall back to Jakarta if denied/unavailable */
+function _tryGpsWeather(onSuccess) {
+  if (!navigator.geolocation) { if (onSuccess) onSuccess(); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      _wxLat  = pos.coords.latitude;
+      _wxLon  = pos.coords.longitude;
+      _wxCity = '📍 My location';
+      if (onSuccess) onSuccess();
+    },
+    _err => { if (onSuccess) onSuccess(); },  // permission denied → keep Jakarta
+    { timeout: 8000, maximumAge: 300000 }
+  );
+}
+
 async function updateWeather() {
   const iconEl = document.getElementById('hwIcon');
   const tempEl = document.getElementById('hwTemp');
   if (!iconEl || !tempEl) return;
   try {
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=-6.2&longitude=106.8&current=temperature_2m,weather_code,precipitation,wind_speed_10m&timezone=Asia%2FJakarta';
+    const tz  = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || 'auto');
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${_wxLat}&longitude=${_wxLon}`
+              + `&current=temperature_2m,weather_code,precipitation,wind_speed_10m&timezone=${tz}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('weather fetch failed');
     const data = await res.json();
@@ -259,12 +279,14 @@ async function updateWeather() {
     const t = Math.round(cur.temperature_2m);
     iconEl.innerHTML = weatherSvgIcon(cur.weather_code);
     tempEl.textContent = `${t}°`;
-    // Also drive the live skyline weather animation
     applyWeatherToSky(cur.weather_code, cur.precipitation || 0);
   } catch (e) {
     tempEl.textContent = '--°';
   }
 }
+
+/* On first load, try GPS then update header widget */
+_tryGpsWeather(updateWeather);
 
 // Render rain drops once based on density; called when intensity changes
 let currentRainLevel = '';
@@ -357,8 +379,7 @@ function setLightningActive(on) {
     lightningTimer = null;
   }
 }
-updateWeather();
-// Refresh weather every 15 minutes
+// Refresh header widget every 15 minutes
 setInterval(updateWeather, 15 * 60 * 1000);
 
 /* Tap the LCD clock → show 24-hour weather feed with rain forecast */
@@ -373,53 +394,120 @@ function wmoIcon(code) {
     : [95, 96, 99].includes(code) ? '⛈'
     : '·';
 }
-async function openHourlyWeather() {
-  const popup = document.getElementById('weatherPopup');
-  popup.classList.add('active');
-  const nowEl = document.getElementById('weatherNow');
-  const grid = document.getElementById('weatherHourly');
+
+async function _fetchHourly() {
+  const nowEl  = document.getElementById('weatherNow');
+  const grid   = document.getElementById('weatherHourly');
+  const cityEl = document.getElementById('weatherCity');
+  const attrib = document.getElementById('weatherAttrib');
   nowEl.textContent = 'Loading…';
   grid.innerHTML = '';
+  if (cityEl) cityEl.textContent = _wxCity.toUpperCase();
   try {
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=-6.2&longitude=106.8'
-      + '&current=temperature_2m,weather_code,precipitation'
-      + '&hourly=temperature_2m,weather_code,precipitation_probability,precipitation'
-      + '&forecast_hours=24'
-      + '&timezone=Asia%2FJakarta';
+    const tz  = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || 'auto');
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${_wxLat}&longitude=${_wxLon}`
+      + `&current=temperature_2m,weather_code,precipitation`
+      + `&hourly=temperature_2m,weather_code,precipitation_probability,precipitation`
+      + `&forecast_hours=24&timezone=${tz}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('fetch failed');
     const data = await res.json();
     const cur = data.current;
-    nowEl.innerHTML = `${wmoIcon(cur.weather_code)} ${Math.round(cur.temperature_2m)}°<span style="font-size:14px; color:var(--muted); font-weight:500; margin-left:8px">${cur.precipitation > 0 ? cur.precipitation.toFixed(1) + 'mm rain now' : 'no rain'}</span>`;
+    nowEl.innerHTML = `${wmoIcon(cur.weather_code)} ${Math.round(cur.temperature_2m)}°`
+      + `<span style="font-size:14px;color:var(--muted);font-weight:500;margin-left:8px">`
+      + `${cur.precipitation > 0 ? cur.precipitation.toFixed(1) + 'mm rain now' : 'no rain'}</span>`;
+    if (attrib) attrib.textContent = `${_wxLat.toFixed(2)}, ${_wxLon.toFixed(2)}`;
     const h = data.hourly;
     const nowHour = new Date(cur.time).getHours();
-    // Find the index in the hourly array that matches "now" so we start there
     let startIdx = h.time.findIndex(t => new Date(t).getHours() === nowHour);
     if (startIdx < 0) startIdx = 0;
     const cards = [];
     for (let i = startIdx; i < Math.min(startIdx + 24, h.time.length); i++) {
-      const t = new Date(h.time[i]);
-      const hh = String(t.getHours()).padStart(2, '0');
+      const t    = new Date(h.time[i]);
+      const hh   = String(t.getHours()).padStart(2, '0');
       const temp = Math.round(h.temperature_2m[i]);
       const code = h.weather_code[i];
       const prob = h.precipitation_probability[i];
-      const mm = h.precipitation[i];
-      const rainCls = mm >= 2.5 ? ' heavy-rain' : (mm >= 0.2 || prob >= 60 ? ' rain' : '');
+      const mm   = h.precipitation[i];
+      const rainCls  = mm >= 2.5 ? ' heavy-rain' : (mm >= 0.2 || prob >= 60 ? ' rain' : '');
       const rainText = mm >= 0.2 ? `${mm.toFixed(1)}mm` : (prob >= 30 ? `${prob}%` : '—');
-      const rainDry = mm < 0.2 && prob < 30 ? ' dry' : '';
-      cards.push(`
-        <div class="weather-hour${rainCls}">
-          <span class="wh-hour">${hh}:00</span>
-          <span class="wh-icon">${wmoIcon(code)}</span>
-          <span class="wh-temp">${temp}°</span>
-          <span class="wh-rain${rainDry}">${rainText}</span>
-        </div>`);
+      const rainDry  = mm < 0.2 && prob < 30 ? ' dry' : '';
+      cards.push(`<div class="weather-hour${rainCls}">
+        <span class="wh-hour">${hh}:00</span>
+        <span class="wh-icon">${wmoIcon(code)}</span>
+        <span class="wh-temp">${temp}°</span>
+        <span class="wh-rain${rainDry}">${rainText}</span>
+      </div>`);
     }
     grid.innerHTML = cards.join('');
   } catch (e) {
     nowEl.textContent = 'Weather unavailable';
   }
 }
+
+/* Geocode a city name via Open-Meteo geocoding API */
+async function _geocodeCity(name) {
+  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=en&format=json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('geocode failed');
+  const data = await res.json();
+  if (!data.results || !data.results.length) throw new Error('city not found');
+  return data.results[0]; // { latitude, longitude, name, country }
+}
+
+async function openHourlyWeather() {
+  document.getElementById('weatherPopup').classList.add('active');
+  await _fetchHourly();
+}
+
+/* GPS button */
+document.getElementById('weatherGps').addEventListener('click', () => {
+  const cityEl = document.getElementById('weatherCity');
+  if (cityEl) cityEl.textContent = 'LOCATING…';
+  _tryGpsWeather(async () => {
+    await updateWeather();
+    await _fetchHourly();
+  });
+});
+
+/* Vienna quick link */
+document.getElementById('weatherVienna').addEventListener('click', async () => {
+  _wxLat = 48.2085; _wxLon = 16.3721; _wxCity = '🇦🇹 Vienna';
+  await updateWeather();
+  await _fetchHourly();
+});
+
+/* Custom city */
+document.getElementById('weatherCustomBtn').addEventListener('click', () => {
+  const row = document.getElementById('weatherCustomRow');
+  row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+  if (row.style.display === 'flex') document.getElementById('weatherCustomInput').focus();
+});
+
+async function _doCustomCity() {
+  const input = document.getElementById('weatherCustomInput');
+  const name  = input.value.trim();
+  if (!name) return;
+  const nowEl = document.getElementById('weatherNow');
+  nowEl.textContent = 'Looking up…';
+  try {
+    const place = await _geocodeCity(name);
+    _wxLat  = place.latitude;
+    _wxLon  = place.longitude;
+    _wxCity = place.name + (place.country ? `, ${place.country}` : '');
+    document.getElementById('weatherCustomRow').style.display = 'none';
+    input.value = '';
+    await updateWeather();
+    await _fetchHourly();
+  } catch(e) {
+    nowEl.textContent = 'City not found — try again';
+  }
+}
+document.getElementById('weatherCustomGo').addEventListener('click', _doCustomCity);
+document.getElementById('weatherCustomInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') _doCustomCity();
+});
+
 document.getElementById('headerWeather').addEventListener('click', openHourlyWeather);
 document.getElementById('weatherClose').addEventListener('click', () => {
   document.getElementById('weatherPopup').classList.remove('active');
@@ -628,9 +716,6 @@ function showView(name) {
   if (name === 'profiles') renderProfilesList();
   if (name === 'calendar') renderCalendar();
   if (name === 'tools') showToolsLanding();
-  // Toggle floating brand bars per view
-  document.getElementById('floatBarRoster').classList.toggle('show', name === 'availability');
-  document.getElementById('floatBarProfiles').classList.toggle('show', name === 'profiles');
   window.scrollTo({top:0, behavior:'instant'});
 }
 document.querySelectorAll('nav.tabs button').forEach(b => {

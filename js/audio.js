@@ -71,16 +71,21 @@ fetch('audio/songs.json')
     _songsLoadCallbacks.forEach(cb => cb());
     _songsLoadCallbacks = [];
   });
+
 const PLAY_DURATION_MS = 25000;
 const FADE_DURATION_MS = 4000;
+const MUSIC_VOLUME     = 0.35;   // 35% default volume
+
 let localAudio = null;
 let fadeTimer = null;
 let stopTimer = null;
+
 function stopMusic() {
   if (fadeTimer) { clearInterval(fadeTimer); fadeTimer = null; }
   if (stopTimer) { clearTimeout(stopTimer); stopTimer = null; }
   if (localAudio) { try { localAudio.pause(); localAudio.src = ''; } catch(e){} localAudio = null; }
 }
+
 function playLocalMp3(songKey) {
   stopMusic();
   const file = SONG_MP3_FILES[songKey];
@@ -88,7 +93,7 @@ function playLocalMp3(songKey) {
   if (!file) return;
   const audio = new Audio();
   audio.preload = 'auto';
-  audio.volume = 0.7;
+  audio.volume = MUSIC_VOLUME;
   audio.addEventListener('loadedmetadata', () => {
     try { audio.currentTime = startSec; } catch(e){}
   }, { once: true });
@@ -102,7 +107,7 @@ function playLocalMp3(songKey) {
         let i = 0;
         fadeTimer = setInterval(() => {
           i++;
-          audio.volume = Math.max(0, 1 - i/steps) * 0.7;
+          audio.volume = Math.max(0, 1 - i/steps) * MUSIC_VOLUME;
           if (i >= steps) { clearInterval(fadeTimer); fadeTimer = null; }
         }, FADE_DURATION_MS/steps);
       }, fadeStartMs);
@@ -112,8 +117,38 @@ function playLocalMp3(songKey) {
   if (audio.readyState >= 1) tryPlay();
   else audio.addEventListener('loadedmetadata', tryPlay, { once: true });
 }
+
+// Returns 'morning' (6am–12pm), 'afternoon' (12pm–6pm), or null (outside both windows)
+function _musicSlot() {
+  const h = new Date().getHours();
+  if (h >= 6  && h < 12) return 'morning';
+  if (h >= 12 && h < 18) return 'afternoon';
+  return null;
+}
+
+// Returns the localStorage key for today's slot, e.g. 'music_played_morning_2026-05-16'
+function _musicSlotKey(slot) {
+  const d = new Date();
+  const iso = d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
+  return 'music_played_' + slot + '_' + iso;
+}
+
 function startMusic() {
   if (!state.startupSong || state.startupSong === 'off') return;
+
+  // Frequency limit: once per morning window, once per afternoon window
+  const slot = _musicSlot();
+  if (slot) {
+    const key = _musicSlotKey(slot);
+    if (localStorage.getItem(key)) return;   // already played this slot today
+    localStorage.setItem(key, '1');
+  } else {
+    // Outside 6am–6pm: skip music entirely
+    return;
+  }
+
   onSongsReady(() => {
     const songKey = state.startupSong === 'shuffle'
       ? SHUFFLE_POOL[Math.floor(Math.random() * SHUFFLE_POOL.length)]
@@ -173,7 +208,7 @@ function classicHotelClosedSet(year) {
 }
 function classicHotelStatus(date) {
   const d = new Date(date); d.setHours(0,0,0,0);
-  // Saturday (getDay() === 6) is always closed
+d
   if (d.getDay() === 6) return 'closed';
   const y = d.getFullYear();
   const closed = new Set([
