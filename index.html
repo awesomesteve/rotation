@@ -1939,9 +1939,23 @@
   .day-col {
     flex: 0 0 88%; max-width: 360px; min-width: 270px;
     background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 14px 12px;
-    scroll-snap-align: start; min-height: 220px;
+    scroll-snap-align: start; min-height: 240px;
     backdrop-filter: blur(12px) saturate(1.2); -webkit-backdrop-filter: blur(12px) saturate(1.2);
     touch-action: pan-x pan-y;
+    /* flex column so the spacer fills the bottom, making the whole card touchable */
+    display: flex; flex-direction: column;
+  }
+  .day-col h3 { flex: none; }
+  /* Invisible spacer that fills the empty bottom of the card — makes the whole area swipeable */
+  .day-col-spacer {
+    flex: 1; min-height: 40px;
+    /* subtle texture hint so user knows it's draggable */
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 18px,
+      rgba(128,128,128,.04) 18px, rgba(128,128,128,.04) 19px
+    );
+    border-radius: 8px; margin-top: 6px;
   }
   .day-col h3 { margin: 0 0 10px; font-size: 12px; color: var(--muted); text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
   .day-col h3 .date { display: block; font-size: 17px; color: var(--text); font-weight: 800; margin-top: 4px; letter-spacing: 0; text-transform: none; }
@@ -1951,7 +1965,7 @@
     background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px;
     padding: 8px 10px; margin-bottom: 8px; cursor: grab; display: flex; align-items: center; gap: 10px;
     transition: transform .12s, box-shadow .12s, background .12s;
-    touch-action: none; /* allow JS drag to intercept all touch directions */
+    touch-action: pan-x pan-y; /* horizontal pan scrolls the strip; JS hold-drag intercepts after 250ms */
   }
   .avail-row.dragging { opacity: .55; cursor: grabbing; box-shadow: var(--shadow); transform: scale(1.03); z-index: 10; }
   .avail-row.drop-target { border-color: var(--accent); background: var(--panel); }
@@ -3958,6 +3972,18 @@
           </div>
           <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">TINDER</span>
         </button>
+        <button class="brand-btn-label" id="hingeBtn" title="Hinge" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column" onclick="window.open('https://hinge.co','_blank')">
+          <div class="brand-btn" style="background:#E8484A;margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><path fill="white" d="M12 3C9.24 3 7 5.24 7 8c0 2.06 1.24 3.84 3 4.65V21h4V12.65c1.76-.81 3-2.59 3-4.65 0-2.76-2.24-5-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">HINGE</span>
+        </button>
+        <button class="brand-btn-label" id="feeldBtn" title="Feeld" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column" onclick="window.open('https://feeld.co','_blank')">
+          <div class="brand-btn" style="background:#1a1a2e;margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="white" stroke-width="2"/><circle cx="9" cy="12" r="3" fill="white" opacity=".7"/><circle cx="15" cy="12" r="3" fill="white" opacity=".7"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">FEELD</span>
+        </button>
         <button class="brand-btn-label" id="okcupidBtn" title="OkCupid" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column">
           <div class="brand-btn okcupid" style="margin:0 auto 8px">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="white"/><text x="12" y="16" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="11" fill="#0E59F2">OK</text></svg>
@@ -3969,6 +3995,30 @@
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="white"/><text x="12" y="17" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="15" fill="#7B2CBF">b</text></svg>
           </div>
           <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">BADOO</span>
+        </button>
+        <button class="brand-btn-label" id="cmgBtn" title="Coffee Meets Bagel" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column" onclick="window.open('https://coffeemeetsbagel.com','_blank')">
+          <div class="brand-btn" style="background:#6d2b3d;margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><path fill="white" d="M6 8c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v2c0 3.31-2.69 6-6 6s-6-2.69-6-6V8zm2 8.9V20h8v-3.1A7.96 7.96 0 0 1 12 18a7.96 7.96 0 0 1-4-1.1z"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">CMB</span>
+        </button>
+        <button class="brand-btn-label" id="omiBtn" title="Omi" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column" onclick="window.open('https://omi.sg','_blank')">
+          <div class="brand-btn" style="background:#ff6b35;margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="4" fill="white"/><path fill="white" d="M5 20c0-3.31 3.13-6 7-6s7 2.69 7 6"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">OMI.SG</span>
+        </button>
+        <button class="brand-btn-label" id="pureBtn" title="Pure" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column" onclick="window.open('https://pure.app','_blank')">
+          <div class="brand-btn" style="background:#111;margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="900" font-size="14" fill="white">P</text></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">PURE</span>
+        </button>
+        <button class="brand-btn-label" id="tantanBtn" title="TanTan" style="background:var(--panel);border-radius:16px;padding:18px 0;border:1px solid var(--border);flex-direction:column" onclick="window.open('https://tantanapp.com','_blank')">
+          <div class="brand-btn" style="background:#ff2d55;margin:0 auto 8px">
+            <svg viewBox="0 0 24 24"><path fill="white" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted)">TANTAN</span>
         </button>
       </div>
     </div>

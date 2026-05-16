@@ -1,4 +1,10 @@
 /* js/skyline.js — auto-extracted from index.html */
+/* Null-safe addEventListener helper — won't crash if element doesn't exist in DOM */
+function _skyOn(id, event, fn) {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener(event, fn);
+}
+
 /* HEADER LCD CLOCK — 24h local time + weather */
 function updateClock() {
   const timeEl = document.querySelector('#headerClock .lcd-active');
@@ -461,7 +467,7 @@ async function openHourlyWeather() {
 }
 
 /* GPS button */
-document.getElementById('weatherGps').addEventListener('click', () => {
+_skyOn('weatherGps', 'click', () => {
   const cityEl = document.getElementById('weatherCity');
   if (cityEl) cityEl.textContent = 'LOCATING…';
   _tryGpsWeather(async () => {
@@ -471,17 +477,18 @@ document.getElementById('weatherGps').addEventListener('click', () => {
 });
 
 /* Vienna quick link */
-document.getElementById('weatherVienna').addEventListener('click', async () => {
+_skyOn('weatherVienna', 'click', async () => {
   _wxLat = 48.2085; _wxLon = 16.3721; _wxCity = '🇦🇹 Vienna';
   await updateWeather();
   await _fetchHourly();
 });
 
 /* Custom city */
-document.getElementById('weatherCustomBtn').addEventListener('click', () => {
+_skyOn('weatherCustomBtn', 'click', () => {
   const row = document.getElementById('weatherCustomRow');
+  if (!row) return;
   row.style.display = row.style.display === 'none' ? 'flex' : 'none';
-  if (row.style.display === 'flex') document.getElementById('weatherCustomInput').focus();
+  if (row.style.display === 'flex') { const ci = document.getElementById('weatherCustomInput'); if (ci) ci.focus(); }
 });
 
 async function _doCustomCity() {
@@ -503,19 +510,15 @@ async function _doCustomCity() {
     nowEl.textContent = 'City not found — try again';
   }
 }
-document.getElementById('weatherCustomGo').addEventListener('click', _doCustomCity);
-document.getElementById('weatherCustomInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') _doCustomCity();
-});
+_skyOn('weatherCustomGo',    'click',   _doCustomCity);
+_skyOn('weatherCustomInput', 'keydown', e => { if (e.key === 'Enter') _doCustomCity(); });
 
-document.getElementById('headerWeather').addEventListener('click', openHourlyWeather);
-document.getElementById('weatherClose').addEventListener('click', () => {
-  document.getElementById('weatherPopup').classList.remove('active');
+_skyOn('headerWeather', 'click', openHourlyWeather);
+_skyOn('weatherClose',  'click', () => {
+  const wp = document.getElementById('weatherPopup'); if (wp) wp.classList.remove('active');
 });
-document.getElementById('weatherPopup').addEventListener('click', (e) => {
-  if (e.target.id === 'weatherPopup') {
-    document.getElementById('weatherPopup').classList.remove('active');
-  }
+_skyOn('weatherPopup',  'click', (e) => {
+  if (e.target.id === 'weatherPopup') e.target.classList.remove('active');
 });
 
 /* Tap the F logo → kiss emoji shower */
@@ -648,7 +651,7 @@ function makeFilename() {
   const stamp = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
   return `rotation-${stamp}.json`;
 }
-document.getElementById('exportFileBtn').addEventListener('click', () => {
+_skyOn('exportFileBtn', 'click', () => {
   const blob = new Blob([buildFullExport()], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -656,7 +659,7 @@ document.getElementById('exportFileBtn').addEventListener('click', () => {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
-document.getElementById('saveDriveBtn').addEventListener('click', async () => {
+_skyOn('saveDriveBtn', 'click', async () => {
   const json = buildFullExport();
   if (navigator.canShare && navigator.canShare({ files: [new File([json], makeFilename(), {type:'application/json'})] })) {
     try {
@@ -669,11 +672,11 @@ document.getElementById('saveDriveBtn').addEventListener('click', async () => {
     } catch (e) { /* fall through */ }
   }
   // Fallback: regular download (user can move to Drive manually)
-  document.getElementById('exportFileBtn').click();
+  const efb = document.getElementById('exportFileBtn'); if (efb) efb.click();
   alert('No share sheet available on this device — downloaded the file instead. Move it to Google Drive manually.');
 });
-document.getElementById('importFileBtn').addEventListener('click', () => document.getElementById('importFileInput').click());
-document.getElementById('importFileInput').addEventListener('change', async (e) => {
+_skyOn('importFileBtn', 'click', () => { const ifi = document.getElementById('importFileInput'); if (ifi) ifi.click(); });
+_skyOn('importFileInput', 'change', async (e) => {
   const f = e.target.files && e.target.files[0]; if (!f) return;
   try {
     const text = await f.text();
@@ -687,7 +690,7 @@ document.getElementById('importFileInput').addEventListener('change', async (e) 
   } catch (err) { alert('That file doesn\'t look like a Rotation backup.'); }
   e.target.value = '';
 });
-document.getElementById('wipeAllBtn').addEventListener('click', () => {
+_skyOn('wipeAllBtn', 'click', () => {
   if (!confirm('This deletes ALL profiles, schedules, dates, and photos. Are you sure?')) return;
   if (!confirm('Really sure? This cannot be undone.')) return;
   localStorage.removeItem(STORE_KEY);

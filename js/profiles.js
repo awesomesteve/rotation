@@ -1,5 +1,15 @@
 /* js/profiles.js — auto-extracted from index.html */
 
+/* ── Safe element binder — NEVER let a missing element crash the script ──
+   Use _on(id, event, fn) everywhere instead of getElementById().addEventListener().
+   If the element doesn't exist it silently skips, so moving/removing HTML
+   elements from one page to another never breaks the entire file.          */
+function _on(id, event, fn) {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener(event, fn);
+  // else: element was removed/renamed — skip silently, don't throw
+}
+
 /* Inject sparkle overlay divs into medal SVGs + cream-icon wrappers so the CSS animation runs */
 function initMedalSparkles() {
   // Medal SVGs: inject a sibling <div class="medal-sparkle-overlay"> after each .medal-mini
@@ -265,7 +275,7 @@ function renderProfilesList() {
     root.appendChild(archList);
   }
 }
-document.getElementById('newProfileBtn').addEventListener('click', () => openEditor(null));
+_on('newProfileBtn', 'click', () => openEditor(null));
 
 /* =========================================================
    PROFILE LIST — live drag-to-reorder (touch + mouse).
@@ -687,38 +697,32 @@ function renderAvatar() {
     attachPhotoPreviewHold(av, src);
   }
 }
-document.getElementById('avatarEditBtn').addEventListener('click', () => document.getElementById('photoInput').click());
+_on('avatarEditBtn', 'click', () => { const pi = document.getElementById('photoInput'); if (pi) pi.click(); });
+_on('f-name', 'input', renderAvatar);
 
-document.getElementById('f-name').addEventListener('input', renderAvatar);
-
-// WhatsApp button in the editor — uses whatever phone is currently typed
-document.getElementById('waProfileBtn').addEventListener('click', () => {
+// WhatsApp button in the editor
+_on('waProfileBtn', 'click', () => {
   const phone = document.getElementById('f-phone').value.trim();
   if (!phone) { alert('Add a WhatsApp number first.'); return; }
   openWhatsApp(phone);
 });
 
-// Distance: open Google Maps with directions from home → destination so user can read ETA.
-// Browser can't fetch Directions API without a key/billing, so this is the realistic flow.
-document.getElementById('calcDistanceBtn').addEventListener('click', () => {
+// Distance helper
+_on('calcDistanceBtn', 'click', () => {
   const link = document.getElementById('f-maps-link').value.trim();
   const status = document.getElementById('distanceStatus');
   const origin = encodeURIComponent(HOME_ADDRESS);
   if (link) {
-    // Use her pasted maps link as destination
-    // Google's universal directions URL — works with shortened goo.gl links too
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodeURIComponent(link)}&travelmode=driving`;
-    window.open(url, '_blank');
-    status.textContent = 'Maps opened — read the ETA, then type it in the Minutes box.';
+    window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodeURIComponent(link)}&travelmode=driving`, '_blank');
+    if (status) status.textContent = 'Maps opened — read the ETA, then type it in the Minutes box.';
   } else {
-    // No link — just open Maps centered on home so user can search the destination
     window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin}&travelmode=driving`, '_blank');
-    status.textContent = 'No link yet — search the destination in Maps and read the ETA.';
+    if (status) status.textContent = 'No link yet — search the destination in Maps and read the ETA.';
   }
 });
-// Brand quick-launch buttons (use the shared helpers defined earlier)
-// Guard every button binding — elements may have been removed from HTML
-function _bind(id, fn) { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); }
+
+// Brand quick-launch — all guarded via _on/_bind
+function _bind(id, fn) { _on(id, 'click', fn); }
 _bind('grabBtn',      openGrab);
 _bind('gojekBtn',     openGojek);
 _bind('grabBtnTools', openGrab);
@@ -727,9 +731,12 @@ _bind('bumbleBtn',    openBumble);
 _bind('tinderBtn',    openTinder);
 _bind('okcupidBtn',   openOkCupid);
 _bind('badooBtn',     openBadoo);
-// Show the WA button only when there's a phone number; live-toggle as user types
-document.getElementById('f-phone').addEventListener('input', (e) => {
-  document.getElementById('waProfileBtn').style.display = e.target.value.trim() ? '' : 'none';
+// New dating apps use inline onclick in HTML — no JS binding needed
+
+// Show WA button when phone field has content
+_on('f-phone', 'input', (e) => {
+  const btn = document.getElementById('waProfileBtn');
+  if (btn) btn.style.display = e.target.value.trim() ? '' : 'none';
 });
 
 function renderPhotoRow() {
@@ -758,8 +765,8 @@ function renderPhotoRow() {
     row.appendChild(div);
   });
 }
-document.getElementById('addPhotoBtn').addEventListener('click', () => document.getElementById('photoInput').click());
-document.getElementById('photoInput').addEventListener('change', async (e) => {
+_on('addPhotoBtn', 'click', () => { const pi = document.getElementById('photoInput'); if (pi) pi.click(); });
+_on('photoInput', 'change', async (e) => {
   const files = Array.from(e.target.files || []);
   for (const f of files) {
     const dataUrl = await fileToCompressedDataUrl(f, 720, 0.82);
@@ -886,10 +893,7 @@ function renderScheduleEditor() {
   function empty() { const e = document.createElement('div'); return e; }
 }
 
-document.getElementById('cancelEdit').addEventListener('click', () => {
-  editingId = null; editorDraft = null;
-  showView('profiles');
-});
+_on('cancelEdit', 'click', () => { editingId = null; editorDraft = null; showView('profiles'); });
 function saveProfileHandler() {
   editorDraft.name = document.getElementById('f-name').value.trim();
   editorDraft.age = document.getElementById('f-age').value.trim();
@@ -933,9 +937,9 @@ function saveProfileHandler() {
   editingId = null; editorDraft = null;
   showView('profiles');
 }
-document.getElementById('saveProfile').addEventListener('click', saveProfileHandler);
-document.getElementById('saveProfileTop').addEventListener('click', saveProfileHandler);
-document.getElementById('deleteProfile').addEventListener('click', () => {
+_on('saveProfile',    'click', saveProfileHandler);
+_on('saveProfileTop', 'click', saveProfileHandler);
+_on('deleteProfile',  'click', () => {
   if (!editingId) return;
   if (!confirm('Delete this profile?')) return;
   deleteProfile(editingId);
@@ -1036,6 +1040,10 @@ function renderAvailability() {
     } else {
       available.forEach(p => col.appendChild(buildAvailRow(p, key, d)));
     }
+    // Invisible flex spacer — fills empty bottom of card so the whole area is swipeable
+    const spacer = document.createElement('div');
+    spacer.className = 'day-col-spacer';
+    col.appendChild(spacer);
     root.appendChild(col);
   }
   attachDragHandlers();
@@ -1135,26 +1143,31 @@ function attachDragHandlers() {
       if (!dragSrcId || dragSrcId === targetId) return;
       reorderPriority(dragSrcId, targetId); saveState(); renderAvailability();
     });
-    // touch
+    // Touch drag-to-reorder.
+    // Hold (250 ms without much movement) → enters drag mode (vibrate + highlight).
+    // Quick horizontal swipe → clears hold timer, lets the day-scroll container handle it.
+    // Quick vertical movement → clears hold timer, lets page scroll handle it.
     let touchStart = null, holdTimer = null, isDragging = false;
     row.addEventListener('touchstart', (e) => {
-      touchStart = e.touches[0];
+      touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, touch: e.touches[0] };
       holdTimer = setTimeout(() => {
         isDragging = true;
         row.classList.add('dragging');
+        row.dataset.wasDragged = '1';
         if (navigator.vibrate) navigator.vibrate(40);
-      }, 250);
+      }, 300);
     }, {passive: true});
     row.addEventListener('touchmove', (e) => {
       if (!touchStart) return;
       const t = e.touches[0];
-      const dx = Math.abs(t.clientX - touchStart.clientX);
-      const dy = Math.abs(t.clientY - touchStart.clientY);
+      const dx = Math.abs(t.clientX - touchStart.x);
+      const dy = Math.abs(t.clientY - touchStart.y);
       if (!isDragging) {
-        if (dx > 10 || dy > 10) { clearTimeout(holdTimer); touchStart = null; return; }
+        // Any movement before hold timer fires → abort hold, let scroll handle it
+        if (dx > 6 || dy > 6) { clearTimeout(holdTimer); holdTimer = null; touchStart = null; return; }
       } else {
+        // In drag mode — prevent scroll and track position for reorder
         e.preventDefault();
-        row.dataset.wasDragged = '1';
         const el = document.elementFromPoint(t.clientX, t.clientY);
         const overRow = el && el.closest('.avail-row');
         document.querySelectorAll('.avail-row.drop-target').forEach(r => r.classList.remove('drop-target'));
@@ -1162,9 +1175,9 @@ function attachDragHandlers() {
       }
     }, {passive: false});
     row.addEventListener('touchend', (e) => {
-      clearTimeout(holdTimer);
+      clearTimeout(holdTimer); holdTimer = null;
       if (isDragging) {
-        const t = (e.changedTouches && e.changedTouches[0]) || touchStart;
+        const t = e.changedTouches && e.changedTouches[0];
         const el = t ? document.elementFromPoint(t.clientX, t.clientY) : null;
         const overRow = el && el.closest('.avail-row');
         row.classList.remove('dragging');
@@ -1176,7 +1189,11 @@ function attachDragHandlers() {
       }
       touchStart = null; isDragging = false;
     });
-    row.addEventListener('touchcancel', () => { clearTimeout(holdTimer); touchStart = null; isDragging = false; row.classList.remove('dragging'); });
+    row.addEventListener('touchcancel', () => {
+      clearTimeout(holdTimer); holdTimer = null;
+      touchStart = null; isDragging = false;
+      row.classList.remove('dragging');
+    });
   });
 }
 function reorderPriority(srcId, targetId) {
@@ -1226,18 +1243,18 @@ function addToDate(key) {
   // little success blip
   if (navigator.vibrate) navigator.vibrate(20);
 }
-document.getElementById('closeAddDate').addEventListener('click', () => {
-  document.getElementById('addDateModal').classList.remove('active');
+_on('closeAddDate', 'click', () => {
+  const m = document.getElementById('addDateModal'); if (m) m.classList.remove('active');
   pendingAddProfileId = null;
 });
-document.getElementById('addDateModal').addEventListener('click', (e) => {
-  if (e.target.id === 'addDateModal') { document.getElementById('addDateModal').classList.remove('active'); pendingAddProfileId = null; }
+_on('addDateModal', 'click', (e) => {
+  if (e.target.id === 'addDateModal') { e.target.classList.remove('active'); pendingAddProfileId = null; }
 });
 
 /* =========================================================
    DATE CALENDAR — simplified: just who, no time dropdown
    ========================================================= */
-document.getElementById('weeksAhead').addEventListener('input', (e) => {
+_on('weeksAhead', 'input', (e) => {
   const days = parseInt(e.target.value, 10) || 4;
   document.getElementById('weeksLabel').textContent = days + ' day' + (days === 1 ? '' : 's');
   renderCalendar();
@@ -1376,15 +1393,15 @@ function renderCalendar() {
 /* =========================================================
    SHARE / IMPORT (no server, just copy-paste through WhatsApp/email)
    ========================================================= */
-document.getElementById('shareBtn').addEventListener('click', () => {
-  document.getElementById('importBox').value = '';
-  document.getElementById('shareModal').classList.add('active');
+_on('shareBtn', 'click', () => {
+  const ib = document.getElementById('importBox'); if (ib) ib.value = '';
+  const sm = document.getElementById('shareModal'); if (sm) sm.classList.add('active');
 });
-document.getElementById('closeShareBtn').addEventListener('click', () => {
-  document.getElementById('shareModal').classList.remove('active');
+_on('closeShareBtn', 'click', () => {
+  const sm = document.getElementById('shareModal'); if (sm) sm.classList.remove('active');
 });
-document.getElementById('shareModal').addEventListener('click', (e) => {
-  if (e.target.id === 'shareModal') document.getElementById('shareModal').classList.remove('active');
+_on('shareModal', 'click', (e) => {
+  if (e.target.id === 'shareModal') e.target.classList.remove('active');
 });
 
 // Build a compact, photo-free snapshot suitable for pasting into a chat.
@@ -1420,7 +1437,7 @@ function parseShareSnapshot(text) {
   } catch (e) { return null; }
 }
 
-document.getElementById('exportShareBtn').addEventListener('click', async () => {
+_on('exportShareBtn', 'click', async () => {
   const code = buildShareSnapshot();
   // Try Web Share API first (opens native share sheet — WhatsApp, Telegram, etc.)
   if (navigator.share) {
@@ -1492,8 +1509,8 @@ function doImport(mode) {
   document.getElementById('shareModal').classList.remove('active');
   showView('profiles');
 }
-document.getElementById('importMergeBtn').addEventListener('click', () => doImport('merge'));
-document.getElementById('importReplaceBtn').addEventListener('click', () => doImport('replace'));
+_on('importMergeBtn',   'click', () => doImport('merge'));
+_on('importReplaceBtn', 'click', () => doImport('replace'));
 
 /* =========================================================
    UTIL
@@ -1528,8 +1545,8 @@ function attachPhotoPreviewHold(el, src) {
   el.addEventListener('touchmove', cancel, { passive: true });
 }
 // Tap anywhere on preview to dismiss
-document.getElementById('photoPreview').addEventListener('click', () => {
-  document.getElementById('photoPreview').classList.remove('show');
+_on('photoPreview', 'click', () => {
+  const pp = document.getElementById('photoPreview'); if (pp) pp.classList.remove('show');
 });
 // Single source of truth for date formatting across the whole app.
 // Format: "Tuesday 12. May"
