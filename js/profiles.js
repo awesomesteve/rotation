@@ -553,8 +553,13 @@ function classifyCycleDay(date, cycle) {
   if (isNaN(start.getTime())) return null;
   const cl = Math.max(20, Math.min(45, parseInt(cycle.cycleLength) || 28));
   const pl = Math.max(2, Math.min(10, parseInt(cycle.periodLength) || 5));
-  const diff = daysBetween(start, date);
-  if (diff < 0) return null;
+  let diff = daysBetween(start, date);
+  // If lastPeriod is a FUTURE date (next expected period), back-calculate
+  // which day of the CURRENT cycle today falls on by subtracting whole cycles.
+  if (diff < 0) {
+    const cyclesBack = Math.ceil(-diff / cl);
+    diff = diff + cyclesBack * cl;
+  }
   const dayInCycle = ((diff % cl) + cl) % cl; // 0 = period day 1
   if (dayInCycle < pl) return 'period';
   // Ovulation expected at cycleLength - 14
