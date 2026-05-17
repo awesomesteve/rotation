@@ -915,7 +915,7 @@ function showView(name) {
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
   if (name === 'editor') {
     document.getElementById('view-editor').classList.add('active');
-    document.querySelector('nav.tabs button[data-view="profiles"]').classList.add('active');
+    const _pb = document.querySelector('nav.tabs button[data-view="profiles"]'); if (_pb) _pb.classList.add('active');
   } else if (name === 'settings') {
     document.getElementById('view-settings').classList.add('active');
     applyBg();

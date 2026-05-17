@@ -971,7 +971,7 @@ if ('contacts' in navigator && 'ContactsManager' in window) {
       document.getElementById('f-notes').value = '';
       renderAvatar(); renderPhotoRow(); renderTags(); renderScheduleEditor();
       showView('editor');
-    } catch(e) { alert('Contact picker error: ' + (e && e.message ? e.message : String(e))); }
+    } catch(e) { if (e && e.name !== 'AbortError') console.warn('Contact picker:', e); }
   });
 }
 
