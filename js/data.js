@@ -30,7 +30,10 @@ function loadState() {
   } catch (e) {}
   return defaultState();
 }
-function saveState() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){ alert('Storage full — delete some photos.'); } }
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){ alert('Storage full — delete some photos.'); }
+  if (typeof window._autoSaveToFolder === 'function') window._autoSaveToFolder();
+}
 function defaultState() {
   return {
     profiles: [],
@@ -82,4 +85,3 @@ function applyTheme() {
   document.documentElement.setAttribute('data-theme', state.theme);
 }
 applyTheme();
-

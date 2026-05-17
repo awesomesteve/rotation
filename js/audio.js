@@ -158,7 +158,11 @@ function startMusic() {
 }
 {
   const prompt = document.getElementById('musicPrompt');
-  if (prompt && state.startupSong && state.startupSong !== 'off') {
+  // Only show the prompt if music would actually play this slot
+  // (song is set, we're in a valid time window, and this slot hasn't played yet today)
+  const _slot = _musicSlot();
+  const _alreadyPlayed = _slot ? !!localStorage.getItem(_musicSlotKey(_slot)) : true;
+  if (prompt && state.startupSong && state.startupSong !== 'off' && !_alreadyPlayed) {
     setTimeout(() => prompt.style.display = 'flex', 300);
     prompt.addEventListener('click', (e) => {
       if (e.target.id === 'musicPromptDismiss') return;
@@ -227,11 +231,10 @@ function renderClassicHotel() {
   const status = classicHotelStatus(new Date());
   if (status === 'open') {
     btn.innerHTML = 'Classic Hotel is <span class="ch-state open">OPEN</span> today';
+
     if (sub) sub.textContent = 'Go forth';
   } else {
     btn.innerHTML = 'Classic Hotel is <span class="ch-state closed">CLOSED</span> today';
     if (sub) sub.textContent = 'Take the day off';
   }
 }
-
-// Fireworks — retro DOS/VGA pixel style. No blur, no anti-alias, hard pixel lines.

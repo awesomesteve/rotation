@@ -747,11 +747,9 @@ async function autoSaveToFolder() {
   }
 }
 
-/* Hook into saveState so auto-folder write happens on every save */
-(function patchSaveState() {
-  const _orig = window.saveState;
-  window.saveState = function() { _orig(); autoSaveToFolder(); };
-})();
+/* Auto-folder hook: called explicitly at the end of saveState in data.js.
+   We expose autoSaveToFolder globally so data.js can call it. */
+window._autoSaveToFolder = function() { autoSaveToFolder(); };
 
 /* ── Backup nag: toast after 7 days without export ── */
 function checkBackupNag() {
