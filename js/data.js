@@ -62,15 +62,15 @@ const SLOTS = [
   {key:'night', label:'Night'}
 ];
 const DEFAULT_TAGS = [
-  'virgin','introvert','fun','boring',
+  'virgin','extrovert','fun',
   'jobless',
   'open for 3some',
   'classic hotel','daytime only',
-  'flakey','needs taxi money','meet late','borderline'
+  'flakey','meet late','borderline'
 ];
 const DEFAULT_RED_FLAGS = [
   'was late','was disrespectful','asked for money/gift',
-  'insisted on meeting near her'
+  'insists meeting near her','flakey'
 ];
 
 let state = loadState();

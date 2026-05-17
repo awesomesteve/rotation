@@ -205,7 +205,7 @@ function renderProfilesList() {
             const hasBadges = medalRow || distance || cycleBadge;
             return hasBadges ? `<div class="badge-row">
               ${medalRow}
-              ${cycleBadge ? `<span class="badge-spacer"></span>${cycleBadge}` : ''}
+              ${cycleBadge}
               ${distance ? `<span class="mini-tag distance-pill" title="${distance} min by car">🚗 ${distance} min</span>` : ''}
             </div>` : '';
           })()}
@@ -1100,7 +1100,7 @@ function buildAvailRow(p, dayKey, jsDate) {
     const waBtn = document.createElement('button');
     waBtn.className = 'av-action-btn wa-mini';
     waBtn.title = 'WhatsApp';
-    waBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.2-.7.2-.2.3-.8.9-1 1.1-.2.2-.4.2-.7.1-1.3-.7-2.6-1.5-3.6-3.1-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-1-2.2-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.6.2-1.2.2-1.4-.1-.1-.3-.1-.6-.1z"/></svg>';
+    waBtn.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="white"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.2-.7.2-.2.3-.8.9-1 1.1-.2.2-.4.2-.7.1-1.3-.7-2.6-1.5-3.6-3.1-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-1-2.2-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.6.2-1.2.2-1.4-.1-.1-.3-.1-.6-.1zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 4.9L2 22l5.3-1.3c1.4.7 3 1.1 4.7 1.1 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.3c-1.5 0-3-.4-4.2-1.2l-.3-.2-3.1.8.8-3.1-.2-.3c-.9-1.3-1.3-2.9-1.3-4.4 0-4.6 3.7-8.3 8.3-8.3s8.3 3.7 8.3 8.3-3.8 8.4-8.3 8.4z"/></svg>';
     waBtn.addEventListener('click', (e) => { e.stopPropagation(); openWhatsApp(p.phone); });
     actions.appendChild(waBtn);
   }

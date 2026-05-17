@@ -390,6 +390,7 @@ setInterval(updateWeather, 15 * 60 * 1000);
 
 /* Tap the LCD clock → show 24-hour weather feed with rain forecast */
 function wmoIcon(code) {
+  // plain emoji for non-HTML contexts (nowEl summary line)
   return code === 0 ? '☀'
     : [1, 2].includes(code) ? '🌤'
     : code === 3 ? '☁'
@@ -399,6 +400,30 @@ function wmoIcon(code) {
     : [71, 73, 75, 77, 85, 86].includes(code) ? '❄'
     : [95, 96, 99].includes(code) ? '⛈'
     : '·';
+}
+function wmoIconHtml(code) {
+  // colored wrapper for hourly cards
+  const icon = wmoIcon(code);
+  const col =
+      code === 0                                          ? '#ffd43b' // clear — gold sun
+    : [1, 2].includes(code)                              ? '#a9c8e8' // partly cloudy — soft blue
+    : code === 3                                          ? '#868e96' // overcast — grey
+    : [45, 48].includes(code)                            ? '#ced4da' // fog — light grey
+    : [51, 53, 55, 56, 57].includes(code)                ? '#74c0fc' // drizzle — light blue
+    : [61, 63, 65, 66, 67, 80, 81, 82].includes(code)   ? '#4dabf7' // rain — blue
+    : [71, 73, 75, 77, 85, 86].includes(code)            ? '#e3f2fd' // snow — ice white
+    : [95, 96, 99].includes(code)                        ? '#da77f2' // thunder — purple
+    : 'inherit';
+  return `<span style="color:${col};filter:drop-shadow(0 0 3px ${col}88)">${icon}</span>`;
+}
+function tempColor(t) {
+  // blue (≤10°) → teal (18°) → yellow (26°) → orange (32°) → red (≥38°)
+  if (t <= 10) return '#74c0fc';
+  if (t <= 18) { const r = (t-10)/8; return `rgb(${Math.round(116+r*123)},${Math.round(192-r*72)},${Math.round(252-r*102)})`; }
+  if (t <= 26) { const r = (t-18)/8; return `rgb(${Math.round(239+r*16)},${Math.round(120+r*122)},${Math.round(150-r*150)})`; }
+  if (t <= 32) { const r = (t-26)/6; return `rgb(255,${Math.round(242-r*112)},0)`; }
+  if (t <= 38) { const r = (t-32)/6; return `rgb(255,${Math.round(130-r*130)},0)`; }
+  return '#ff0000';
 }
 
 async function _fetchHourly() {
@@ -413,13 +438,14 @@ async function _fetchHourly() {
     const tz  = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || 'auto');
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${_wxLat}&longitude=${_wxLon}`
       + `&current=temperature_2m,weather_code,precipitation`
-      + `&hourly=temperature_2m,weather_code,precipitation_probability,precipitation`
+      + `&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,relative_humidity_2m`
       + `&forecast_hours=24&timezone=${tz}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('fetch failed');
     const data = await res.json();
     const cur = data.current;
-    nowEl.innerHTML = `${wmoIcon(cur.weather_code)} ${Math.round(cur.temperature_2m)}°`
+    const _t = Math.round(cur.temperature_2m); const _tc = tempColor(_t);
+    nowEl.innerHTML = `${wmoIconHtml(cur.weather_code)} <span style="color:${_tc};text-shadow:0 0 10px ${_tc}55">${_t}°</span>`
       + `<span style="font-size:14px;color:var(--muted);font-weight:500;margin-left:8px">`
       + `${cur.precipitation > 0 ? cur.precipitation.toFixed(1) + 'mm rain now' : 'no rain'}</span>`;
     if (attrib) attrib.textContent = `${_wxLat.toFixed(2)}, ${_wxLon.toFixed(2)}`;
@@ -435,14 +461,18 @@ async function _fetchHourly() {
       const code = h.weather_code[i];
       const prob = h.precipitation_probability[i];
       const mm   = h.precipitation[i];
+      const hum  = h.relative_humidity_2m ? h.relative_humidity_2m[i] : null;
       const rainCls  = mm >= 2.5 ? ' heavy-rain' : (mm >= 0.2 || prob >= 60 ? ' rain' : '');
       const rainText = mm >= 0.2 ? `${mm.toFixed(1)}mm` : (prob >= 30 ? `${prob}%` : '—');
       const rainDry  = mm < 0.2 && prob < 30 ? ' dry' : '';
+      const humText  = hum !== null ? `${hum}%` : '';
+      const tCol = tempColor(temp);
       cards.push(`<div class="weather-hour${rainCls}">
-        <span class="wh-hour">${hh}:00</span>
-        <span class="wh-icon">${wmoIcon(code)}</span>
-        <span class="wh-temp">${temp}°</span>
+        <span class="wh-hour" style="color:#69db7c">${hh}:00</span>
+        <span class="wh-icon">${wmoIconHtml(code)}</span>
+        <span class="wh-temp" style="color:${tCol};text-shadow:0 0 8px ${tCol}66">${temp}°</span>
         <span class="wh-rain${rainDry}">${rainText}</span>
+        ${humText ? `<span class="wh-hum">${humText}</span>` : ''}
       </div>`);
     }
     grid.innerHTML = cards.join('');
@@ -474,6 +504,13 @@ _skyOn('weatherGps', 'click', () => {
     await updateWeather();
     await _fetchHourly();
   });
+});
+
+/* Jakarta quick link */
+_skyOn('weatherJakarta', 'click', async () => {
+  _wxLat = -6.2088; _wxLon = 106.8456; _wxCity = '🇮🇩 Jakarta';
+  await updateWeather();
+  await _fetchHourly();
 });
 
 /* Vienna quick link */
@@ -773,7 +810,7 @@ function checkBackupNag() {
             showView('settings');
             setTimeout(() => {
               const el = document.getElementById('backupStatusLine');
-              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              if (el) { const top = el.getBoundingClientRect().top + window.scrollY - 120; window.scrollTo({ top, behavior: 'smooth' }); }
             }, 150);
           };
           t.addEventListener('click', _nagHandler);
