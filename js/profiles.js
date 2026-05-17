@@ -654,7 +654,7 @@ function renderCyclePreview() {
 
 // live update of preview as user types
 ['f-last-period','f-cycle-length','f-period-length'].forEach(id => {
-  document.addEventListener('input', (e) => {
+  ['input','change'].forEach(evtName => document.addEventListener(evtName, (e) => {
     if (e.target && e.target.id === id) {
       if (!editorDraft) return;
       editorDraft.cycle = editorDraft.cycle || {};
@@ -663,7 +663,7 @@ function renderCyclePreview() {
       if (id === 'f-period-length') editorDraft.cycle.periodLength = parseInt(e.target.value) || 5;
       renderCyclePreview();
     }
-  });
+  }));
 });
 
 function renderAvatar() {

@@ -910,7 +910,11 @@ document.addEventListener('click', (e) => {
 /* =========================================================
    TABS
    ========================================================= */
-function showView(name) {
+function showView(name, _fromPop) {
+  if (!_fromPop) {
+    // Push a history entry so swipe-back / Android back navigates within the app
+    history.pushState({ view: name }, '', '');
+  }
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
   if (name === 'editor') {
@@ -936,6 +940,21 @@ function showView(name) {
 document.querySelectorAll('nav.tabs button').forEach(b => {
   b.addEventListener('click', () => showView(b.dataset.view));
 });
+
+/* Handle browser back (swipe-back on iOS/Android, hardware back button) */
+window.addEventListener('popstate', (e) => {
+  const view = (e.state && e.state.view) ? e.state.view : 'availability';
+  // If we're in the editor, go back to profiles; otherwise go to the popped view
+  const current = document.querySelector('.view.active');
+  const currentId = current ? current.id.replace('view-', '') : '';
+  if (currentId === 'editor') {
+    showView('profiles', true);
+  } else {
+    showView(view, true);
+  }
+});
+/* Seed initial history entry so there's always something to pop back to */
+if (!history.state) history.replaceState({ view: 'availability' }, '', '');
 
 /* =========================================================
    AVATAR — auto-crop face area: scale down on top third of photo
