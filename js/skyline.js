@@ -544,7 +544,8 @@ function fireKissShower() {
   }, 3200);
 }
 // Bind to the header logo specifically (the PIN lock has a .logo-badge too — it appears first in the DOM)
-(document.querySelector('header.app .logo-badge') || document.querySelector('.brand .logo-badge')).addEventListener('click', fireKissShower);
+{ const _logo = document.querySelector('header.app .logo-badge') || document.querySelector('.brand .logo-badge');
+  if (_logo) _logo.addEventListener('click', fireKissShower); }
 
 /* =========================================================
    BACKGROUND CHOICES
@@ -937,3 +938,23 @@ function initials(name) {
 /* =========================================================
    PROFILES LIST
    ========================================================= */
+
+/* ── Easter-egg peekers ─────────────────────────────────────────────────────
+   Guy peeks from left, girl from right. Triggered randomly every 4–10 minutes.
+   Each peek lasts 5s (CSS animation), then class is removed.                  */
+(function initPeekers() {
+  function doPeek() {
+    const guy  = document.getElementById('peekerGuy');
+    const girl = document.getElementById('peekerGirl');
+    const targets = Math.random() < 0.4 ? [guy, girl] : (Math.random() < 0.5 ? [guy] : [girl]);
+    targets.forEach(el => {
+      if (!el) return;
+      el.classList.remove('peek-go');
+      void el.offsetWidth;
+      el.classList.add('peek-go');
+      setTimeout(() => el.classList.remove('peek-go'), 5500);
+    });
+    setTimeout(doPeek, (4 + Math.random() * 6) * 60 * 1000);
+  }
+  setTimeout(doPeek, (90 + Math.random() * 60) * 1000);
+})();
