@@ -1,6 +1,191 @@
-/* js/quotes.js — auto-extracted from index.html */
-(function initTateQuotes() {
-  const quotes = [
+/* js/quotes.js — all quote/text content: TOASTS, TINDER_OPENERS, PHILOSOPHICAL_QUOTES, TATE_QUOTES + wiring */
+/* Load order: after data.js + skyline.js, BEFORE snippets.js / profiles.js.
+   TOASTS / TINDER_OPENERS / PHILOSOPHICAL_QUOTES / TATE_QUOTES must exist before profiles.js runs.
+   showView / showToast are defined in profiles.js (loaded after), so we wrap lazily. */
+
+const TOASTS = [
+  "You're on fire today 🔥","Statistically, you're winning",
+  "She's definitely thinking about you","Jakarta's a small town, be kind",
+  "Plot twist incoming","Time to message someone you forgot about",
+  "New week, new vibes","Hydrate. Then text.","Your stamina is impressive",
+  "Cream of the crop ✨","Audit your roster, king","Tuesday is the new Friday",
+  "Don't forget to actually have fun","Triple-text energy 📲",
+  "The bold get the brunch","Reply faster, live louder",
+  "Wear the nicer cologne tonight","Eye contact is a love language",
+  "Don't @ her at 3am 🌙","Confidence is a haircut away",
+  "Order the cocktail, not the beer","Your future self says thanks",
+  "Date with intention, not desperation","The right ones make it easy",
+  "Walk her to the Grab 🚖","Tip generously, always",
+  "Charm > looks. Always.","Smile first. Talk second.",
+  "A great date is half listening","Compliment the laugh, not the looks",
+  "Show up. The rest is noise.","Be the man you'd swipe right on",
+  "Quality > quantity, always","Boredom is a choice",
+  "Manifest, then message","She likes guys who read books",
+  "Cancel the date you're dreading","Sunday brunch wins again 🥂",
+  "Buy the flowers. Just once.","Today's mood: main character",
+  "Touch grass between texts 🌱","Iced coffee fixes 80% of things",
+  "Take the stairs, take the chance","Sleep is also self-care",
+  "Be early. It impresses everyone.","Don't explain. Just do.",
+  "Less swiping, more meeting","The roster respects discipline",
+  "You're not late. They're early.","Romance the city itself 🌃",
+  "Eat the spicy noodles 🌶️","Forgive yourself for last night",
+  "Some risks are just stories","Be kind to baristas",
+  "Take her somewhere with stars","Walk slowly when it rains",
+  "Memorize her coffee order","Compliments cost nothing"
+];
+
+const TINDER_OPENERS = [
+  '"Roses are red, violets are fine, you be the 6, I\'ll be the 9"',
+  '"Are you Indonesian? Because you\'re Indo-mie nice"',
+  '"Do you have a map? I keep getting lost in your eyes"',
+  '"Is your name Wi-Fi? Because I\'m feeling a connection"',
+  '"Hi, I\'m writing a phone book. Can I get your number?"',
+  '"Are you a parking ticket? You\'ve got fine written all over you"',
+  '"Do you believe in love at first swipe?"',
+  '"Was your dad a boxer? Because you\'re a knockout"',
+  '"If I were a cat I\'d spend all 9 lives with you"',
+  '"On a scale of 1 to America, how free are you tonight?"',
+  '"Was your dad a baker? Because you\'ve got nice buns"',
+  '"Quick — what\'s your favorite kind of nasi goreng?"',
+  '"Two truths and a lie. Go."',
+  '"Sudirman or Kemang for the first date?"',
+  '"I bet your bio is more interesting than mine"',
+  '"You look like trouble. I like trouble."',
+  '"Be honest — what\'s your red flag?"',
+  '"Are you a magician? Because everyone else disappears when I see you"',
+  '"Pineapple on pizza — yes or war crime?"',
+  '"You\'re the Monas to my Jakarta"',
+  '"Quick question: who hurt you?"',
+  '"If we got married, would you take my last name or hyphenate?"',
+  '"What\'s your most controversial food opinion?"',
+  '"You\'re cute. That\'s a problem."',
+  '"Do you do this often? (date guys with my exact vibe)"',
+  '"Coffee, drinks, or instant chaos?"',
+  '"What\'s your toxic trait?"',
+  '"Hello. This is the part where you say hi back."',
+  '"You\'re the first match I\'ve actually messaged this week. Make it count."',
+  '"Tell me your zodiac so I can pretend to care"'
+];
+
+const PHILOSOPHICAL_QUOTES = [
+  { t: "The unexamined life is not worth living.", a: "Socrates" },
+  { t: "We suffer more in imagination than in reality.", a: "Seneca" },
+  { t: "Waste no more time arguing what a good man should be. Be one.", a: "Marcus Aurelius" },
+  { t: "It is not death that a man should fear, but he should fear never beginning to live.", a: "Marcus Aurelius" },
+  { t: "No man ever steps in the same river twice.", a: "Heraclitus" },
+  { t: "Happiness depends upon ourselves.", a: "Aristotle" },
+  { t: "I know that I know nothing.", a: "Socrates" },
+  { t: "The best revenge is not to be like your enemy.", a: "Marcus Aurelius" },
+  { t: "Luck is what happens when preparation meets opportunity.", a: "Seneca" },
+  { t: "Difficulties strengthen the mind, as labour does the body.", a: "Seneca" },
+  { t: "When you realize there is nothing lacking, the whole world belongs to you.", a: "Lao Tzu" },
+  { t: "A journey of a thousand miles begins with a single step.", a: "Lao Tzu" },
+  { t: "Knowing yourself is the beginning of all wisdom.", a: "Aristotle" },
+  { t: "It does not matter how slowly you go as long as you do not stop.", a: "Confucius" },
+  { t: "The mind is everything. What you think you become.", a: "Buddha" },
+  { t: "You only lose what you cling to.", a: "Buddha" },
+  { t: "Be yourself; everyone else is already taken.", a: "Oscar Wilde" },
+  { t: "We are all in the gutter, but some of us are looking at the stars.", a: "Oscar Wilde" },
+  { t: "Not all those who wander are lost.", a: "J.R.R. Tolkien" },
+  { t: "Tell me, what is it you plan to do with your one wild and precious life?", a: "Mary Oliver" },
+  { t: "The privilege of a lifetime is to become who you truly are.", a: "Carl Jung" },
+  { t: "To love at all is to be vulnerable.", a: "C.S. Lewis" },
+  { t: "The heart has its reasons of which reason knows nothing.", a: "Blaise Pascal" },
+  { t: "Lovers don't finally meet somewhere. They're in each other all along.", a: "Rumi" },
+  { t: "The wound is the place where the light enters you.", a: "Rumi" },
+  { t: "Do not regret what you have done.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Accept everything just the way it is.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Today is victory over yourself of yesterday.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "In all things have no preferences.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Do nothing which is of no use.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "The way is in training.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Think lightly of yourself and deeply of the world.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "You can only fight the way you practice.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Truth is not what you want it to be; it is what it is.", a: "🇯🇵 Miyamoto Musashi ⛩️" },
+  { t: "Always pass on what you have learned.", a: "Yoda" },
+  { t: "The opposite of love is not hate, it's indifference.", a: "Elie Wiesel" },
+  { t: "A man who chases two rabbits catches neither.", a: "Confucius" },
+
+  // Sun Tzu — Art of War
+  { t: "Supreme excellence consists in breaking the enemy's resistance without fighting.", a: "☯️ Sun Tzu — Art of War" },
+  { t: "Appear weak when you are strong, and strong when you are weak.", a: "☯️ Sun Tzu — Art of War" },
+  { t: "He who knows when he can fight and when he cannot will be victorious.", a: "☯️ Sun Tzu — Art of War" },
+  { t: "The greatest victory is that which requires no battle.", a: "☯️ Sun Tzu — Art of War" },
+  { t: "Victorious warriors win first and then go to war, while defeated warriors go to war first and then seek to win.", a: "☯️ Sun Tzu — Art of War" },
+  { t: "Move swift as the wind, and closely formed as the wood. Attack like the fire, and be still as the mountain.", a: "☯️ Sun Tzu — Art of War" },
+  { t: "Know thy self, know thy enemy. A thousand battles, a thousand victories.", a: "☯️ Sun Tzu — Art of War" },
+  { t: "The wise warrior avoids the battle.", a: "☯️ Sun Tzu — Art of War" },
+
+  // Seneca — more
+  { t: "Begin at once to live, and count each separate day as a separate life.", a: "Seneca" },
+  { t: "It is not that I'm so brave, it's just that I'm busy.", a: "Seneca" },
+  { t: "Omnia aliena sunt, tempus tantum nostrum est. — All things are alien; time alone is ours.", a: "Seneca" },
+  { t: "If you wish to be loved, love.", a: "Seneca" },
+  { t: "The part of life we really live is small. All the rest is not life, but merely time.", a: "Seneca" },
+  { t: "He who is brave is free.", a: "Seneca" },
+  { t: "Life is long if you know how to use it.", a: "Seneca" },
+  { t: "Retire into yourself as much as possible. Associate with those who are likely to make you better.", a: "Seneca" },
+
+  // Epictetus
+  { t: "Make the best use of what is in your power, and take the rest as it happens.", a: "Epictetus" },
+  { t: "Seek not that the things which happen should happen as you wish; but wish the things which happen to be as they are, and you will have a tranquil flow of life.", a: "Epictetus" },
+  { t: "He is a wise man who does not grieve for the things which he has not, but rejoices for those which he has.", a: "Epictetus" },
+  { t: "First say to yourself what you would be; and then do what you have to do.", a: "Epictetus" },
+  { t: "We cannot choose our external circumstances, but we can always choose how we respond to them.", a: "Epictetus" },
+  { t: "No man is free who is not master of himself.", a: "Epictetus" },
+
+  // Nietzsche
+  { t: "He who has a why to live can bear almost any how.", a: "Nietzsche" },
+  { t: "That which does not kill us makes us stronger.", a: "Nietzsche" },
+  { t: "Without music, life would be a mistake.", a: "Nietzsche" },
+  { t: "The higher we soar, the smaller we appear to those who cannot fly.", a: "Nietzsche" },
+  { t: "One must still have chaos in oneself to be able to give birth to a dancing star.", a: "Nietzsche" },
+  { t: "It is not a lack of love, but a lack of friendship that makes unhappy marriages.", a: "Nietzsche" },
+
+  // Viktor Frankl
+  { t: "When we are no longer able to change a situation, we are challenged to change ourselves.", a: "Viktor Frankl" },
+  { t: "Between stimulus and response there is a space. In that space is our power to choose our response.", a: "Viktor Frankl" },
+  { t: "Those who have a 'why' to live, can bear with almost any 'how'.", a: "Viktor Frankl" },
+  { t: "Everything can be taken from a man but one thing: the last of the human freedoms — to choose one's attitude in any given set of circumstances.", a: "Viktor Frankl" },
+
+  // Naval Ravikant
+  { t: "Seek wealth, not money or status. Wealth is having assets that earn while you sleep.", a: "Naval Ravikant" },
+  { t: "The most important skill for getting rich is becoming a perpetual learner.", a: "Naval Ravikant" },
+  { t: "Desire is a contract you make with yourself to be unhappy until you get what you want.", a: "Naval Ravikant" },
+  { t: "A fit body, a calm mind, a house full of love. These things cannot be bought — they must be earned.", a: "Naval Ravikant" },
+  { t: "Play long-term games with long-term people.", a: "Naval Ravikant" },
+  { t: "Reading is the original download.", a: "Naval Ravikant" },
+
+  // Marcus Aurelius — more
+  { t: "You have power over your mind, not outside events. Realize this, and you will find strength.", a: "Marcus Aurelius" },
+  { t: "Very little is needed to make a happy life; it is all within yourself, in your way of thinking.", a: "Marcus Aurelius" },
+  { t: "The impediment to action advances action. What stands in the way becomes the way.", a: "Marcus Aurelius" },
+  { t: "Never esteem anything as of advantage to you that will make you break your word or lose your self-respect.", a: "Marcus Aurelius" },
+  { t: "If it is not right, do not do it; if it is not true, do not say it.", a: "Marcus Aurelius" },
+
+  // Dostoevsky
+  { t: "Beauty will save the world.", a: "Dostoevsky" },
+  { t: "Pain and suffering are always inevitable for a large intelligence and a deep heart.", a: "Dostoevsky" },
+  { t: "To love someone means to see them as God intended them.", a: "Dostoevsky" },
+
+  // Albert Camus
+  { t: "You will never be happy if you continue to search for what happiness consists of.", a: "Albert Camus" },
+  { t: "In the midst of winter, I found there was, within me, an invincible summer.", a: "Albert Camus" },
+  { t: "Don't walk behind me; I may not lead. Don't walk in front of me; I may not follow. Just walk beside me and be my friend.", a: "Albert Camus" },
+
+  // Ernest Hemingway
+  { t: "The world breaks everyone, and afterward, some are strong at the broken places.", a: "Ernest Hemingway" },
+  { t: "There is no friend as loyal as a book.", a: "Ernest Hemingway" },
+  { t: "Courage is grace under pressure.", a: "Ernest Hemingway" },
+
+  // Carl Jung
+  { t: "You are what you do, not what you say you'll do.", a: "Carl Jung" },
+  { t: "Until you make the unconscious conscious, it will direct your life and you will call it fate.", a: "Carl Jung" },
+  { t: "Who looks outside, dreams; who looks inside, awakes.", a: "Carl Jung" }
+];
+
+
+const TATE_QUOTES = [
     "If you’re not in control of your own time, you’re not in control of your life.",
     "You must put in the effort. There are no shortcuts to the top.",
     "The man who goes to the gym every single day has already won half the battle.",
@@ -38,443 +223,27 @@
     "Loser rolls with losers. Winner rolls with winners.",
     "I think I’m the man. I find that a source of motivation."
   ];
-  const band = document.getElementById('tateQuoteBand');
-  const tEl  = document.getElementById('tateQuoteText');
-  const aEl  = document.getElementById('tateQuoteAttr');
-  if (!band || !tEl) return;
-  let idx = Math.floor(Math.random() * quotes.length);
-  function showQuote() {
-    band.classList.remove('visible');
-    setTimeout(() => {
-      tEl.textContent = quotes[idx];
-      if (aEl) aEl.textContent = 'Andrew Tate';
-      band.classList.add('visible');
-      idx = (idx + 1) % quotes.length;
-    }, 700);
+
+(function wireFortunesAndOpeners() {
+  function fortune() {
+    if (typeof showToast === 'function' && TOASTS.length)
+      showToast(TOASTS[Math.floor(Math.random() * TOASTS.length)]);
   }
-  showQuote();
-  setInterval(showQuote, 12000);
-  band.addEventListener('click', showQuote);
-})();
-
-// ═══════════════════════════════════════════════════════════════════
-// EASTER EGGS
-// ═══════════════════════════════════════════════════════════════════
-
-// ── 1. Triple-tap the clock → play a random song ──────────────────
-(function eggClockTripleTap() {
-  const clock = document.getElementById('headerClock');
-  if (!clock) return;
-  let taps = 0, tapTimer = null;
-  clock.addEventListener('click', () => {
-    taps++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => { taps = 0; }, 500);
-    if (taps >= 3) {
-      taps = 0;
-      const pool = SHUFFLE_POOL.length ? SHUFFLE_POOL : ['back-in-black','jarvis','mask','heman','goodtimes'];
-      const key  = pool[Math.floor(Math.random() * pool.length)];
-      stopMusic();
-      playLocalMp3(key);
-      const t = document.getElementById('easterToast');
-      if (t) { t.textContent = '🎵 ' + key.replace(/-/g,' ').replace(/\w/g,c=>c.toUpperCase()); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+  function opener() {
+    if (typeof showToast === 'function' && TINDER_OPENERS.length)
+      showToast(TINDER_OPENERS[Math.floor(Math.random() * TINDER_OPENERS.length)]);
+  }
+  // Wrap showView lazily — defer to after all scripts have loaded (profiles.js defines it)
+  setTimeout(() => {
+    if (typeof showView === 'function') {
+      const orig = showView;
+      window.showView = function(name) {
+        orig(name);
+        if (Math.random() < 0.12) setTimeout(fortune, 400);
+        if (Math.random() < 0.30) setTimeout(opener, 500);
+      };
     }
-  });
+  }, 0);
+  setTimeout(opener, 8000 + Math.random() * 7000);
+  setInterval(() => { if (Math.random() < 0.55) opener(); }, 45000 + Math.random() * 45000);
 })();
-
-// ── 2. Hold moon icon 2s → toggle blood moon ──────────────────────
-(function eggBloodMoon() {
-  const moonEl = document.getElementById('moon');
-  const overlay = document.getElementById('bloodMoonOverlay');
-  if (!moonEl || !overlay) return;
-  let holdTimer = null;
-  let active = false;
-  moonEl.style.cursor = 'pointer';
-  moonEl.style.pointerEvents = 'all';
-  function startHold(e) {
-    e.stopPropagation();
-    holdTimer = setTimeout(() => {
-      active = !active;
-      overlay.classList.toggle('active', active);
-      document.body.classList.toggle('blood-moon', active);
-      if (navigator.vibrate) navigator.vibrate(active ? [40,30,80] : [20]);
-      const t = document.getElementById('easterToast');
-      if (t) { t.textContent = active ? '🔴 Blood Moon' : '🌙 Moon restored'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
-    }, 2000);
-  }
-  function cancelHold() { clearTimeout(holdTimer); }
-  moonEl.addEventListener('mousedown', startHold);
-  moonEl.addEventListener('touchstart', startHold, { passive: true });
-  moonEl.addEventListener('mouseup',   cancelHold);
-  moonEl.addEventListener('touchend',  cancelHold);
-  moonEl.addEventListener('mouseleave',cancelHold);
-})();
-
-// ── 3. Tap Tate quote → fireworks ─────────────────────────────────
-// (band already has click → showQuote; add fireworks on top)
-(function eggTateFireworks() {
-  const band = document.getElementById('tateQuoteBand');
-  if (!band) return;
-  band.addEventListener('click', () => { _chConfetti(); });
-})();
-
-// ── 4. Tap "Rotation" title 5× → Hall of Fame ────────────────────
-(function eggHallOfFame() {
-  const h1 = document.querySelector('.brand-text h1');
-  const overlay = document.getElementById('hofOverlay');
-  const list    = document.getElementById('hofList');
-  const closeBtn = document.getElementById('hofClose');
-  if (!h1 || !overlay || !list) return;
-
-  function buildHOF() {
-    // Count past dates per profile
-    const today = new Date(); today.setHours(0,0,0,0);
-    const counts = {};   // profileId → { total, lastDate }
-    const streaks = {};  // profileId → current streak (consecutive weeks)
-    Object.keys(state.dates).forEach(dateKey => {
-      const d = new Date(dateKey + 'T00:00:00');
-      if (d > today) return;
-      (state.dates[dateKey] || []).forEach(e => {
-        if (!e.profileId) return;
-        const id = e.profileId;
-        counts[id] = counts[id] || { total: 0, lastDate: null };
-        counts[id].total++;
-        if (!counts[id].lastDate || d > counts[id].lastDate) counts[id].lastDate = d;
-      });
-    });
-
-    const profiles = state.profiles.filter(p => counts[p.id]);
-    profiles.sort((a,b) => (counts[b.id].total || 0) - (counts[a.id].total || 0));
-
-    list.innerHTML = '';
-    if (!profiles.length) {
-      list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px 0">No dates logged yet.</div>';
-      return;
-    }
-    const medals = ['🥇','🥈','🥉'];
-    profiles.forEach((p, i) => {
-      const c = counts[p.id];
-      const idx = (typeof p.primaryPhotoIdx === 'number') ? p.primaryPhotoIdx : 0;
-      const thumb = p.photos && p.photos[idx] ? p.photos[idx] : '';
-      const lastSeen = c.lastDate ? c.lastDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
-      const row = document.createElement('div');
-      row.className = 'hof-row';
-      row.innerHTML = `
-        <div class="hof-rank">${medals[i] || (i+1)}</div>
-        <div class="hof-thumb" ${thumb ? `style="background-image:url('${thumb}')"` : ''}>${thumb ? '' : (p.name||'?')[0].toUpperCase()}</div>
-        <div style="flex:1">
-          <div class="hof-name">${escapeHtml(p.name || 'Untitled')}</div>
-          <div class="hof-stats">Last seen ${lastSeen}</div>
-        </div>
-        <div class="hof-count">${c.total}×</div>`;
-      list.appendChild(row);
-    });
-  }
-
-  let taps = 0, tapTimer = null;
-  h1.style.cursor = 'pointer';
-  h1.addEventListener('click', () => {
-    taps++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => { taps = 0; }, 700);
-    if (taps >= 5) {
-      taps = 0;
-      buildHOF();
-      overlay.classList.add('show');
-    }
-  });
-  if (closeBtn) closeBtn.addEventListener('click', () => overlay.classList.remove('show'));
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('show'); });
-})();
-
-// ── 5. Long-press Dates tab 1.5s → nuke dates banner ──────────
-(function eggNukeDates() {
-  const datesBtn = document.querySelector('nav.tabs button[data-view="calendar"]');
-  const banner   = document.getElementById('nukeDatesBanner');
-  const yesBtn   = document.getElementById('nukeDatesYes');
-  const noBtn    = document.getElementById('nukeDatesNo');
-  if (!datesBtn || !banner) return;
-  let holdTimer = null;
-  function startHold(e) {
-    holdTimer = setTimeout(() => {
-      banner.classList.add('show');
-      if (navigator.vibrate) navigator.vibrate([30,20,60]);
-    }, 1500);
-  }
-  function cancelHold() { clearTimeout(holdTimer); }
-  datesBtn.addEventListener('mousedown',  startHold);
-  datesBtn.addEventListener('touchstart', startHold, { passive: true });
-  datesBtn.addEventListener('mouseup',    cancelHold);
-  datesBtn.addEventListener('touchend',   cancelHold);
-  datesBtn.addEventListener('mouseleave', cancelHold);
-  // Don't attach cancelHold to click — that fires AFTER mouseup and would cancel the hold action itself
-  if (yesBtn) yesBtn.addEventListener('click', () => {
-    banner.classList.remove('show');
-    _nukeDatesWithExplosions(() => {
-      state.dates = {};
-      saveState();
-      if (typeof renderCalendar === 'function') renderCalendar();
-      if (typeof renderAvailability === 'function') renderAvailability();
-      const t = document.getElementById('easterToast');
-      if (t) { t.textContent = '☢️ All dates nuked'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
-    });
-  });
-  if (noBtn) noBtn.addEventListener('click', () => banner.classList.remove('show'));
-})();
-
-/* Fiery TNT explosion effect — Sega Megadrive boss-fight style */
-function _nukeDatesWithExplosions(onDone) {
-  const targets = [
-    ...document.querySelectorAll('.date-entry, .day-col, .avail-row, .cal-event, .cal-day.has-event')
-  ].filter(el => el.offsetParent !== null);
-
-  const canvas = document.createElement('canvas');
-  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:200;image-rendering:pixelated';
-  const W = window.innerWidth, H = window.innerHeight;
-  canvas.width = W; canvas.height = H;
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-  ctx.imageSmoothingEnabled = false;
-
-  const FIRE   = ['#ff4400','#ff7700','#ffaa00','#ffcc00','#ff2200','#ffffff','#ff0055','#ffdd00'];
-  const PLASMA = ['#00ffff','#ff00ff','#ff4400','#ffaa00','#ffffff','#00ff88'];
-  const explosions = [];
-  let tickRunning = false;
-
-  function spawnExplosion(cx, cy, radius, palette, count) {
-    const sparks = [];
-    for (let i = 0; i < count; i++) {
-      const ang = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 0.4;
-      const sp  = 1.2 + Math.random() * (radius * 0.18);
-      sparks.push({
-        x: cx, y: cy,
-        vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 1.5,
-        color: palette[Math.floor(Math.random() * palette.length)],
-        life: 1, decay: 0.010 + Math.random() * 0.014,
-        r: 1 + Math.random() * 3
-      });
-    }
-    // Debris chunks — bigger blocky pixels for Megadrive feel
-    const chunks = [];
-    for (let i = 0; i < 12; i++) {
-      const ang = Math.random() * Math.PI * 2;
-      const sp  = 2 + Math.random() * 5;
-      chunks.push({
-        x: cx, y: cy,
-        vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 3,
-        w: 3 + Math.floor(Math.random() * 5),
-        h: 3 + Math.floor(Math.random() * 5),
-        rot: Math.random() * Math.PI,
-        vrot: (Math.random() - 0.5) * 0.3,
-        color: palette[Math.floor(Math.random() * palette.length)],
-        life: 1, decay: 0.008 + Math.random() * 0.01
-      });
-    }
-    explosions.push({ sparks, chunks, shockR: 0, shockAlpha: 1, cx, cy, radius });
-    if (!tickRunning) { tickRunning = true; requestAnimationFrame(tick); }
-  }
-
-  function tick() {
-    ctx.clearRect(0, 0, W, H);
-    let anyAlive = false;
-    explosions.forEach(exp => {
-      // Shockwave
-      if (exp.shockAlpha > 0) {
-        exp.shockR += 5;
-        exp.shockAlpha -= 0.045;
-        if (exp.shockAlpha > 0) {
-          ctx.beginPath();
-          ctx.arc(exp.cx, exp.cy, exp.shockR, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(255,160,0,${exp.shockAlpha.toFixed(2)})`;
-          ctx.lineWidth = 4;
-          ctx.stroke();
-          // Inner bright ring
-          ctx.beginPath();
-          ctx.arc(exp.cx, exp.cy, exp.shockR * 0.6, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(255,255,180,${(exp.shockAlpha * 0.5).toFixed(2)})`;
-          ctx.lineWidth = 2;
-          ctx.stroke();
-          anyAlive = true;
-        }
-      }
-      // Sparks
-      exp.sparks.forEach(s => {
-        if (s.life <= 0) return;
-        s.x += s.vx; s.y += s.vy; s.vy += 0.14; s.vx *= 0.975;
-        s.life -= s.decay;
-        if (s.life > 0) {
-          ctx.globalAlpha = Math.max(0, s.life);
-          ctx.fillStyle = s.color;
-          ctx.fillRect(Math.round(s.x), Math.round(s.y), Math.ceil(s.r), Math.ceil(s.r));
-          anyAlive = true;
-        }
-      });
-      // Debris chunks
-      exp.chunks.forEach(c => {
-        if (c.life <= 0) return;
-        c.x += c.vx; c.y += c.vy; c.vy += 0.22; c.vx *= 0.97;
-        c.rot += c.vrot; c.life -= c.decay;
-        if (c.life > 0) {
-          ctx.save();
-          ctx.globalAlpha = Math.max(0, c.life);
-          ctx.fillStyle = c.color;
-          ctx.translate(Math.round(c.x), Math.round(c.y));
-          ctx.rotate(c.rot);
-          ctx.fillRect(-c.w/2, -c.h/2, c.w, c.h);
-          ctx.restore();
-          anyAlive = true;
-        }
-      });
-    });
-    ctx.globalAlpha = 1;
-    if (anyAlive) requestAnimationFrame(tick);
-    else { canvas.remove(); onDone(); }
-  }
-
-  // BOSS FIGHT sequence when no visible date targets (empty calendar)
-  function bossExplosionSequence() {
-    if (navigator.vibrate) navigator.vibrate([60,40,80,40,120,40,60]);
-    // Screen flash white
-    const flash = document.createElement('div');
-    flash.style.cssText = 'position:fixed;inset:0;background:#fff;pointer-events:none;z-index:199;opacity:0;transition:opacity .04s';
-    document.body.appendChild(flash);
-    // Wave of explosions spreading from centre — 3 waves
-    const cx = W/2, cy = H/2;
-    const WAVE_DATA = [
-      // [delay_ms, positions_array, palette, count_per]
-      [0,   [[cx, cy]], FIRE, 90],
-      [200, [[cx*0.3,cy*0.4],[cx*1.7,cy*0.4],[cx*0.3,cy*1.6],[cx*1.7,cy*1.6]], FIRE, 70],
-      [450, [[cx*0.7,cy*0.2],[cx*1.3,cy*0.2],[cx,cy*1.8],[cx*0.2,cy],[cx*1.8,cy]], PLASMA, 80],
-      [700, [[cx*0.15,cy*0.15],[cx*1.85,cy*0.85],[cx*0.5,cy*1.85],[cx*1.5,cy*0.15],[cx*1.85,cy*1.85]], FIRE, 65],
-      [980, [[cx*0.4,cy*0.6],[cx*1.6,cy*0.6],[cx*0.4,cy*1.4],[cx*1.6,cy*1.4],[cx,cy*0.5],[cx,cy*1.5]], PLASMA, 75],
-      [1280,[[cx*0.2,cy*0.9],[cx*1.8,cy*0.9],[cx*0.8,cy*0.15],[cx*1.2,cy*1.85],[cx*0.15,cy*1.3],[cx*1.85,cy*0.4]], FIRE, 60],
-    ];
-    // Screen flashes in sync with wave 0 and wave 2
-    [0, 450, 980].forEach(d => {
-      setTimeout(() => {
-        flash.style.opacity = '0.6';
-        setTimeout(() => { flash.style.opacity = '0'; }, 60);
-        if (navigator.vibrate) navigator.vibrate(50);
-      }, d);
-    });
-    WAVE_DATA.forEach(([delay, positions, pal, cnt]) => {
-      setTimeout(() => {
-        positions.forEach(([px, py]) => {
-          spawnExplosion(Math.max(20, Math.min(W-20, px)), Math.max(20, Math.min(H-20, py)), 60, pal, cnt);
-        });
-      }, delay);
-    });
-    setTimeout(() => flash.remove(), 2000);
-    setTimeout(() => {
-      if (canvas.parentNode) { canvas.remove(); onDone(); }
-    }, 5000);
-  }
-
-  if (!targets.length) {
-    bossExplosionSequence();
-    return;
-  }
-
-  // Normal mode: blow up each visible date entry one by one then continue boss sequence
-  targets.forEach((el, i) => {
-    setTimeout(() => {
-      const rect = el.getBoundingClientRect();
-      el.style.transition = 'none';
-      el.style.transform = 'scale(1.1) rotate(-3deg)';
-      el.style.filter = 'brightness(4) saturate(0)';
-      setTimeout(() => {
-        el.style.transform = 'scale(0) rotate(20deg)';
-        el.style.opacity = '0';
-        el.style.transition = 'transform 0.3s ease-in, opacity 0.2s ease-in';
-      }, 70);
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      spawnExplosion(cx, cy, Math.max(rect.width, rect.height), FIRE, 75);
-      if (navigator.vibrate) navigator.vibrate(25);
-    }, i * 200);
-  });
-
-  // After individual explosions, go boss mode
-  setTimeout(() => bossExplosionSequence(), targets.length * 200 + 100);
-  // Hard safety timeout
-  setTimeout(() => { if (canvas.parentNode) { canvas.remove(); onDone(); } }, targets.length * 200 + 6000);
-}
-
-// ── 6. Tap weather icon 7× fast → thunderstorm ───────────────────
-(function eggThunderstorm() {
-  const btn = document.getElementById('headerWeather');
-  if (!btn) return;
-  let taps = 0, tapTimer = null;
-  btn.addEventListener('click', (e) => {
-    // Don't interfere with the normal single-tap hourly weather popup
-    taps++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => { taps = 0; }, 900);
-    if (taps >= 7) {
-      taps = 0;
-      triggerEggThunderstorm();
-    }
-  }, true); // capture phase so we can check taps before openHourlyWeather fires
-
-  function triggerEggThunderstorm() {
-    if (navigator.vibrate) navigator.vibrate([20,15,20,15,60]);
-    const t = document.getElementById('easterToast');
-    if (t) { t.textContent = '⛈ THUNDERSTORM'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
-
-    // Darken the sky overlay
-    const dyn = document.getElementById('skyDynamic');
-    const origFill = dyn ? dyn.getAttribute('fill') : null;
-    const origOp   = dyn ? dyn.getAttribute('opacity') : null;
-    if (dyn) { dyn.setAttribute('fill','#0a0a18'); dyn.setAttribute('opacity','0.72'); }
-
-    // Flash lightning 4 times
-    const flashEl = document.createElement('div');
-    flashEl.style.cssText = 'position:fixed;inset:0;background:#fff;pointer-events:none;z-index:160;opacity:0;transition:opacity .05s';
-    document.body.appendChild(flashEl);
-    const flashes = [200, 600, 900, 1400];
-    flashes.forEach((delay, i) => {
-      setTimeout(() => {
-        flashEl.style.opacity = '0.55';
-        if (navigator.vibrate) navigator.vibrate(30);
-        setTimeout(() => { flashEl.style.opacity = '0'; }, 80);
-      }, delay);
-    });
-
-    // Make the rain heavy for 8 seconds
-    const rainEl = document.getElementById('weatherRain');
-    const origClass = rainEl ? rainEl.className : '';
-    if (rainEl) { rainEl.classList.add('heavy'); rainEl.style.display=''; }
-
-    setTimeout(() => {
-      flashEl.remove();
-      if (dyn && origFill) { dyn.setAttribute('fill', origFill); dyn.setAttribute('opacity', origOp || '0'); }
-      if (rainEl) { rainEl.className = origClass; }
-    }, 8000);
-  }
-})();
-
-// === SAFE TAIL (added by recovery) — replaces missing trailing JS so the document loads cleanly ===
-// Original renderCalendarToCanvas / shareCalendarImage and many late features were truncated.
-// We attach lightweight shims so the visible UI keeps working.
-async function renderCalendarToCanvas() { return null; }
-async function shareCalendarImage() {
-  alert('Calendar screenshot share is being rebuilt. Use Settings -> Share with friend to send your roster as a code.');
-}
-const sc = document.getElementById('shareCalBtn');
-if (sc) sc.addEventListener('click', shareCalendarImage);
-
-// Restore Sort pills on the Roster (Priority/Recent/Stale)
-function applySortPills() {
-  document.querySelectorAll('.sort-pill').forEach(b =>
-    b.classList.toggle('active', b.dataset.sort === (state.rosterSort || 'priority')));
-}
-document.querySelectorAll('.sort-pill').forEach(btn => {
-  btn.addEventListener('click', () => {
-    state.rosterSort = btn.dataset.sort;
-    saveState(); applySortPills(); renderAvailability();
-  });
-});
-applySortPills();
-
-// Boot: render the default view
-renderAvailability();
