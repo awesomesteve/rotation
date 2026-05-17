@@ -3805,18 +3805,27 @@
       </div>
       <div class="hint">Generates a code with your roster, schedules, dates &amp; tags (no photos). Send it over WhatsApp. Friend pastes it into the same screen on their app to merge in your data.</div>
 
-      <label style="margin-top:14px">Your data</label>
-      <div class="actions-row" style="margin-top:6px">
-        <button class="btn secondary" id="exportFileBtn">Export to file</button>
-        <button class="btn secondary" id="importFileBtn">Import from file</button>
+      <label style="margin-top:14px">🛡 Data backup</label>
+      <div id="backupStatusLine" style="font-size:12px;color:var(--muted);margin:4px 0 10px;min-height:16px">Checking…</div>
+
+      <div class="actions-row" style="margin-top:0">
+        <button class="btn" id="exportFileBtn" style="flex:1">📥 Export to file</button>
+        <button class="btn secondary" id="importFileBtn" style="flex:1">📤 Import backup</button>
       </div>
-      <input type="file" id="importFileInput" accept="application/json,.rotation" style="display:none" />
-      <div class="actions-row">
-        <button class="btn secondary" id="saveDriveBtn">Save to Google Drive</button>
+      <input type="file" id="importFileInput" accept="application/json,.json,.rotation" style="display:none" />
+
+      <div class="actions-row" style="margin-top:8px">
+        <button class="btn secondary" id="pickFolderBtn" style="flex:1">📁 Pick auto-save folder</button>
+        <button class="btn ghost small" id="clearFolderBtn" style="flex:0 0 auto; padding:8px 12px">✕</button>
       </div>
-      <div class="hint">
-        Export saves everything (profiles, photos, schedules, dates, tags) to a small file on your phone.
-        "Save to Google Drive" opens the share sheet — pick Drive from the list. To restore later, tap Import.
+      <div class="hint" style="margin-top:6px">
+        <strong>Auto-save folder</strong> (Chrome on Android/desktop): pick a folder once — your data saves there automatically on every change. Best option.<br><br>
+        <strong>Export to file</strong>: manual backup with full photos — do this before ever clearing browser data.<br><br>
+        ⚠️ <em>Clearing browser data wipes all app data.</em> Always keep a recent backup in Google Drive or your Files app.
+      </div>
+
+      <div class="actions-row" style="margin-top:8px">
+        <button class="btn secondary" id="saveDriveBtn" style="flex:1">☁️ Download + Drive instructions</button>
       </div>
 
       <label>Startup music 🎸</label>

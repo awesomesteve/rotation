@@ -641,40 +641,222 @@ document.querySelectorAll('[data-bg]').forEach(btn => {
 });
 
 /* =========================================================
-   EXPORT / IMPORT FILE + GOOGLE DRIVE
+   DATA SAFETY — export / import / auto-folder / backup nag
+   =========================================================
+
+   Strategy:
+   • localStorage is a *cache* — treat it as disposable.
+   • Real source of truth = a .json file the user controls.
+   • Three layers of protection:
+       1. Export to file  (manual, always works)
+       2. Auto-folder     (File System Access API — Chrome on Android/desktop)
+                          User picks a folder once; we write there on every save.
+       3. Backup nag      (toast after 7 days without an export)
+   • On startup: if localStorage is empty but profiles were known to exist,
+     show a "looks like data was wiped — import a backup?" prompt.
    ========================================================= */
+
 function buildFullExport() {
   return JSON.stringify({ ...state, _exportedAt: new Date().toISOString(), _v: 2 }, null, 2);
 }
 function makeFilename() {
   const d = new Date();
   const stamp = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
-  return `rotation-${stamp}.json`;
+  return `F-Rotation-${stamp}.json`;
 }
-_skyOn('exportFileBtn', 'click', () => {
+
+/* ── Trigger a plain file download ── */
+function downloadBackup() {
   const blob = new Blob([buildFullExport()], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
   a.href = url; a.download = makeFilename();
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-});
-_skyOn('saveDriveBtn', 'click', async () => {
-  const json = buildFullExport();
-  if (navigator.canShare && navigator.canShare({ files: [new File([json], makeFilename(), {type:'application/json'})] })) {
-    try {
-      await navigator.share({
-        title: 'Rotation backup',
-        text: 'Rotation data backup',
-        files: [new File([json], makeFilename(), {type:'application/json'})]
-      });
-      return;
-    } catch (e) { /* fall through */ }
+  try { localStorage.setItem('rotation.lastExport', Date.now()); } catch(_) {}
+  updateBackupStatus();
+}
+
+/* ── File System Access API: pick a folder, remember the handle ──
+   The handle is stored in IndexedDB (survives page reloads, unlike memory).
+   On every saveState() we write the latest JSON into that folder.          */
+const IDB_DB  = 'rotation-fs';
+const IDB_KEY = 'folderHandle';
+
+function openFsDb() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(IDB_DB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('handles');
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+}
+async function getFolderHandle() {
+  try {
+    const db = await openFsDb();
+    return await new Promise((res, rej) => {
+      const tx  = db.transaction('handles', 'readonly');
+      const req = tx.objectStore('handles').get(IDB_KEY);
+      req.onsuccess = () => res(req.result || null);
+      req.onerror   = () => rej(req.error);
+    });
+  } catch(_) { return null; }
+}
+async function setFolderHandle(handle) {
+  try {
+    const db = await openFsDb();
+    await new Promise((res, rej) => {
+      const tx  = db.transaction('handles', 'readwrite');
+      tx.objectStore('handles').put(handle, IDB_KEY);
+      tx.oncomplete = res; tx.onerror = rej;
+    });
+  } catch(_) {}
+}
+async function clearFolderHandle() {
+  try {
+    const db = await openFsDb();
+    await new Promise((res, rej) => {
+      const tx  = db.transaction('handles', 'readwrite');
+      tx.objectStore('handles').delete(IDB_KEY);
+      tx.oncomplete = res; tx.onerror = rej;
+    });
+  } catch(_) {}
+}
+
+/* Write latest JSON to the auto-folder (silent, called from saveState hook) */
+async function autoSaveToFolder() {
+  const handle = await getFolderHandle();
+  if (!handle) return;
+  try {
+    const perm = await handle.queryPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') {
+      const req = await handle.requestPermission({ mode: 'readwrite' });
+      if (req !== 'granted') return;
+    }
+    const fileHandle = await handle.getFileHandle('F-Rotation-latest.json', { create: true });
+    const writable   = await fileHandle.createWritable();
+    await writable.write(buildFullExport());
+    await writable.close();
+    try { localStorage.setItem('rotation.lastExport', Date.now()); } catch(_) {}
+    updateBackupStatus();
+  } catch(e) {
+    if (e.name === 'NotFoundError' || e.name === 'NotAllowedError') {
+      await clearFolderHandle();
+      updateBackupStatus();
+    }
   }
-  // Fallback: regular download (user can move to Drive manually)
-  const efb = document.getElementById('exportFileBtn'); if (efb) efb.click();
-  alert('No share sheet available on this device — downloaded the file instead. Move it to Google Drive manually.');
+}
+
+/* Hook into saveState so auto-folder write happens on every save */
+(function patchSaveState() {
+  const _orig = window.saveState;
+  window.saveState = function() { _orig(); autoSaveToFolder(); };
+})();
+
+/* ── Backup nag: toast after 7 days without export ── */
+function checkBackupNag() {
+  try {
+    const last = parseInt(localStorage.getItem('rotation.lastExport') || '0', 10);
+    const days = (Date.now() - last) / 86400000;
+    if (days > 7 && state.profiles && state.profiles.length > 0) {
+      setTimeout(() => {
+        const t = document.getElementById('easterToast');
+        if (t) {
+          t.textContent = '⚠️ No backup in 7+ days — tap Settings → Export to file!';
+          t.style.background = 'linear-gradient(135deg,#e74c3c,#c0392b)';
+          t.classList.add('show');
+          setTimeout(() => { t.classList.remove('show'); t.style.background = ''; }, 7000);
+        }
+      }, 5000);
+    }
+  } catch(_) {}
+}
+
+/* ── Startup wipe detector ── */
+function checkDataWipe() {
+  try {
+    const hadData = localStorage.getItem('rotation.hadData');
+    const hasData = state.profiles && state.profiles.length > 0;
+    if (hasData) {
+      localStorage.setItem('rotation.hadData', '1');
+    } else if (hadData && !hasData) {
+      setTimeout(() => {
+        const yes = confirm(
+          '⚠️ Your profile data appears to have been cleared (possibly by "Clear browsing data").\n\n' +
+          'Do you have a backup file (F-Rotation-*.json) to restore from?\n\n' +
+          'Tap OK to pick a file now, or Cancel to start fresh.'
+        );
+        if (yes) { const ifi = document.getElementById('importFileInput'); if (ifi) ifi.click(); }
+        else { localStorage.removeItem('rotation.hadData'); }
+      }, 800);
+    }
+  } catch(_) {}
+}
+
+/* ── Update backup status line in Settings ── */
+async function updateBackupStatus() {
+  const el = document.getElementById('backupStatusLine');
+  if (!el) return;
+  try {
+    const last   = parseInt(localStorage.getItem('rotation.lastExport') || '0', 10);
+    const handle = await getFolderHandle();
+    let folderNote = '';
+    if (handle) {
+      try {
+        const perm = await handle.queryPermission({ mode: 'readwrite' });
+        folderNote = perm === 'granted' ? ' → ' + handle.name + '/' : ' (folder permission needed — tap Pick Folder)';
+      } catch(_) { folderNote = ' (folder disconnected)'; }
+    }
+    if (!last) {
+      el.textContent = handle ? 'Auto-folder active' + folderNote + ' — no export yet' : '⚠️ Never backed up — export now!';
+      el.style.color = '#e74c3c';
+    } else {
+      const mins = Math.round((Date.now() - last) / 60000);
+      const ago  = mins < 2 ? 'just now' : mins < 60 ? mins + 'm ago' : Math.round(mins/60) + 'h ago';
+      el.textContent = handle ? 'Auto-folder' + folderNote + ' · last saved ' + ago : 'Last export: ' + ago;
+      el.style.color = 'var(--muted)';
+    }
+  } catch(_) {}
+}
+
+/* ── Button wiring ── */
+
+_skyOn('exportFileBtn', 'click', () => downloadBackup());
+
+_skyOn('pickFolderBtn', 'click', async () => {
+  if (!window.showDirectoryPicker) {
+    alert('Your browser doesn\'t support folder picking. Use "Export to file" and save to Google Drive or Files manually.');
+    return;
+  }
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
+    await setFolderHandle(handle);
+    await autoSaveToFolder();
+    updateBackupStatus();
+    alert('✅ Auto-save folder set to "' + handle.name + '".\n\nF-Rotation-latest.json will update there every time you save a profile or date.');
+  } catch(e) {
+    if (e.name !== 'AbortError') alert('Could not access that folder: ' + e.message);
+  }
 });
+
+_skyOn('clearFolderBtn', 'click', async () => {
+  await clearFolderHandle();
+  updateBackupStatus();
+  alert('Auto-save folder cleared. Use Export to file for manual backups.');
+});
+
+_skyOn('saveDriveBtn', 'click', () => {
+  downloadBackup();
+  setTimeout(() => alert(
+    '📥 File downloaded!\n\n' +
+    'To save to Google Drive:\n' +
+    '1. Open the Files app\n' +
+    '2. Find the downloaded F-Rotation-*.json file\n' +
+    '3. Long-press → Share → Save to Drive\n\n' +
+    'Or tap "Pick auto-save folder" and choose your Drive folder directly (Android Chrome only).'
+  ), 400);
+});
+
 _skyOn('importFileBtn', 'click', () => { const ifi = document.getElementById('importFileInput'); if (ifi) ifi.click(); });
 _skyOn('importFileInput', 'change', async (e) => {
   const f = e.target.files && e.target.files[0]; if (!f) return;
@@ -682,21 +864,36 @@ _skyOn('importFileInput', 'change', async (e) => {
     const text = await f.text();
     const data = JSON.parse(text);
     if (!data.profiles || !Array.isArray(data.profiles)) throw new Error('not a rotation file');
-    if (!confirm('Replace all current data with this backup? Your current data will be lost.')) return;
+    const dateStr = data._exportedAt ? new Date(data._exportedAt).toLocaleString() : 'unknown date';
+    if (!confirm('Restore from backup?\n\nThis will replace all current data with the backup from ' + dateStr + '.\n\nYour current data will be lost.')) return;
     state = Object.assign(defaultState(), data);
     saveState(); applyTheme(); applyBg();
-    alert('Imported successfully.');
+    localStorage.setItem('rotation.hadData', '1');
+    alert('✅ Restored successfully!');
     showView('profiles');
-  } catch (err) { alert('That file doesn\'t look like a Rotation backup.'); }
+  } catch(err) { alert('That file doesn\'t look like a Rotation backup. Make sure it\'s an F-Rotation-*.json file.'); }
   e.target.value = '';
 });
+
 _skyOn('wipeAllBtn', 'click', () => {
   if (!confirm('This deletes ALL profiles, schedules, dates, and photos. Are you sure?')) return;
   if (!confirm('Really sure? This cannot be undone.')) return;
   localStorage.removeItem(STORE_KEY);
   localStorage.removeItem('rotation.v1');
+  localStorage.removeItem('rotation.hadData');
+  localStorage.removeItem('rotation.lastExport');
   location.reload();
 });
+
+window.addEventListener('DOMContentLoaded', () => {
+  checkDataWipe();
+  checkBackupNag();
+  updateBackupStatus();
+});
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.dataset && e.target.dataset.view === 'settings') updateBackupStatus();
+});
+
 
 /* =========================================================
    TABS
@@ -719,6 +916,9 @@ function showView(name) {
   if (name === 'profiles') renderProfilesList();
   if (name === 'calendar') renderCalendar();
   if (name === 'tools') showToolsLanding();
+  // Toggle floating brand bars per view
+  document.getElementById('floatBarRoster').classList.toggle('show', name === 'availability');
+  document.getElementById('floatBarProfiles').classList.toggle('show', name === 'profiles');
   window.scrollTo({top:0, behavior:'instant'});
 }
 document.querySelectorAll('nav.tabs button').forEach(b => {
