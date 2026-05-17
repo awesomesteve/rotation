@@ -761,10 +761,23 @@ function checkBackupNag() {
       setTimeout(() => {
         const t = document.getElementById('easterToast');
         if (t) {
-          t.textContent = '⚠️ No backup in 7+ days — tap Settings → Export to file!';
+          t.textContent = '⚠️ No backup in 7+ days — tap here to export now!';
           t.style.background = 'linear-gradient(135deg,#e74c3c,#c0392b)';
+          t.style.cursor = 'pointer';
           t.classList.add('show');
-          setTimeout(() => { t.classList.remove('show'); t.style.background = ''; }, 7000);
+          const _nagHandler = () => {
+            t.classList.remove('show');
+            t.style.background = '';
+            t.style.cursor = '';
+            t.removeEventListener('click', _nagHandler);
+            showView('settings');
+            setTimeout(() => {
+              const el = document.getElementById('backupStatusLine');
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 150);
+          };
+          t.addEventListener('click', _nagHandler);
+          setTimeout(() => { t.classList.remove('show'); t.style.background = ''; t.style.cursor = ''; t.removeEventListener('click', _nagHandler); }, 7000);
         }
       }, 5000);
     }
@@ -828,11 +841,11 @@ _skyOn('pickFolderBtn', 'click', async () => {
     return;
   }
   try {
-    const handle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'downloads' });
     await setFolderHandle(handle);
     await autoSaveToFolder();
     updateBackupStatus();
-    alert('✅ Auto-save folder set to "' + handle.name + '".\n\nF-Rotation-latest.json will update there every time you save a profile or date.');
+    alert('✅ Auto-save folder set to "' + handle.name + '".\n\nTip: for a tidier Downloads folder, create an "F-Rotation" subfolder first and pick that.\n\nF-Rotation-latest.json will update there on every save.');
   } catch(e) {
     if (e.name !== 'AbortError') alert('Could not access that folder: ' + e.message);
   }
