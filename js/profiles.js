@@ -33,7 +33,7 @@ function initMedalSparkles() {
 
 /* Fire a staggered sparkle burst on all medals+diamonds once per calendar day */
 function _launchDaySparkle() {
-  const todayKey = 'sparkle_day_' + new Date().toISOString().slice(0,10);
+  const todayKey = 'sparkle_day_' + new Date().toISOString().slice(0,13); // hourly key e.g. 2026-05-17T10
   if (sessionStorage.getItem(todayKey)) return; // already fired this session
   // Check localStorage for "already done today"
   try { if (localStorage.getItem(todayKey)) return; } catch(_) {}
@@ -195,18 +195,18 @@ function renderProfilesList() {
           <span class="name-text">${escapeHtml(p.name || 'Untitled')}</span>
           ${p.age ? `<span class="age">${escapeHtml(String(p.age))}</span>` : ''}
           ${p.cream ? `<span class="cream-icon" title="Cream of the crop" style="--sparkle-delay:${(Math.random()*2).toFixed(2)}"><svg width="32" height="20" viewBox="0 0 48 24"><defs><linearGradient id="diaList_${escapeHtml(p.id)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#a0e7ff"/><stop offset="100%" stop-color="#5ec2ee"/></linearGradient><linearGradient id="diaList2_${escapeHtml(p.id)}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bdf2ff"/><stop offset="100%" stop-color="#3a9ec8"/></linearGradient></defs><polygon points="8,9 13,2 35,2 40,9" fill="url(#diaList_${escapeHtml(p.id)})" stroke="#2d80a8" stroke-width=".5"/><polygon points="8,9 40,9 24,22" fill="url(#diaList2_${escapeHtml(p.id)})" stroke="#2d80a8" stroke-width=".5"/><line x1="8" y1="9" x2="24" y2="22" stroke="#1f6b8a" stroke-width=".4" opacity=".5"/><line x1="40" y1="9" x2="24" y2="22" stroke="#1f6b8a" stroke-width=".4" opacity=".5"/><line x1="21" y1="9" x2="24" y2="22" stroke="#1f6b8a" stroke-width=".3" opacity=".4"/><line x1="27" y1="9" x2="24" y2="22" stroke="#1f6b8a" stroke-width=".3" opacity=".4"/><polygon points="16,5 20,3.5 19,7" fill="#ffffff" opacity=".75"/></svg></span>` : ''}
+          ${flagCount > 0 ? `<span class="mini-tag red-flag-pill" title="${flagCount} red flag${flagCount===1?'':'s'}">🚩 ${flagCount}</span>` : ''}
           ${(() => {
             const todayCycle = p.cycle && p.cycle.lastPeriod ? classifyCycleDay(new Date(), p.cycle) : null;
             const cycleLabel = {period:'🩸 period', peak:'⚠️ peak', ovulation:'⚠️ ovulation', fertile:'fertile', elevated:'elevated', safer:'✓ safe'}[todayCycle] || '';
             const cycleTitleMap = {period:'On her period',peak:'Peak fertility — high pregnancy risk',ovulation:'Ovulation day — peak risk',fertile:'Fertile window (high risk)',elevated:'Elevated risk day',safer:'Lower-risk part of cycle'};
             const cycleBadge = (todayCycle && cycleLabel)
               ? `<span class="cycle-stage-badge ${todayCycle}" title="${cycleTitleMap[todayCycle]||''}">${cycleLabel}</span>` : '';
-            const hasBadges = medalRow || distance || flagCount > 0 || cycleBadge;
+            const hasBadges = medalRow || distance || cycleBadge;
             return hasBadges ? `<div class="badge-row">
               ${medalRow}
-              ${cycleBadge}
+              ${cycleBadge ? `<span class="badge-spacer"></span>${cycleBadge}` : ''}
               ${distance ? `<span class="mini-tag distance-pill" title="${distance} min by car">🚗 ${distance} min</span>` : ''}
-              ${flagCount > 0 ? `<span class="mini-tag red-flag-pill" title="${flagCount} red flag${flagCount===1?'':'s'}">🚩 ${flagCount}</span>` : ''}
             </div>` : '';
           })()}
         </div>
@@ -1086,7 +1086,7 @@ function buildAvailRow(p, dayKey, jsDate) {
   if (cycleClass) {
     const flag = document.createElement('div');
     flag.className = 'cycle-flag ' + cycleClass;
-    const cycleLabels = {period:'🩸 period', peak:'⚠️ peak', ovulation:'⚠️ ovulation', fertile:'fertile', elevated:'elevated', safer:'✓ safe'};
+    const cycleLabels = {period:'🩸', peak:'⚠️', ovulation:'⚠️', fertile:'🌡', elevated:'〜', safer:'✓ safe'};
     const cycleTitles = {period:'On her period', peak:'Peak fertility — high pregnancy risk', ovulation:'Ovulation day — peak risk', fertile:'Fertile window (high risk)', elevated:'Elevated risk day', safer:'Lower-risk part of cycle'};
     flag.title = cycleTitles[cycleClass] || '';
     flag.textContent = cycleLabels[cycleClass] || cycleClass;

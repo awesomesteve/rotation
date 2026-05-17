@@ -623,7 +623,7 @@
   .cycle-flag.ovulation{ background: rgba(201,42,42,.6);  color: #ffc9c9; border: 1px solid rgba(255,100,100,.6); box-shadow: 0 0 0 2px rgba(255,143,165,.25); }
   .cycle-flag.fertile  { background: rgba(253,126,20,.35); color: #ffa94d; border: 1px solid rgba(253,126,20,.5); }
   .cycle-flag.elevated { background: rgba(255,212,59,.25); color: #ffe066; border: 1px solid rgba(255,212,59,.45); }
-  .cycle-flag.safer   { background: rgba(81,207,102,.18); color: #69db7c; border: 1px solid rgba(81,207,102,.4); animation: safeGlowTrace 20s linear infinite; }
+  .cycle-flag.safer   { background: rgba(81,207,102,.18); color: #69db7c; border: 1px solid rgba(81,207,102,.4); box-shadow: 0 0 0 1px rgba(81,207,102,.25); animation: safeTextSparkle 3s ease-in-out infinite; }
   .cycle-flag svg { width: 11px; height: 11px; flex: none; }
   /* Danger pulse — period/peak/ovulation/fertile/elevated badges breathe once a minute */
   @keyframes dangerPulse {
@@ -643,6 +643,10 @@
     60%      { box-shadow: none; }
     100%     { box-shadow: none; }
   }
+  @keyframes safeTextSparkle {
+    0%,100% { opacity: .7; text-shadow: none; }
+    50%     { opacity: 1;  text-shadow: 0 0 6px rgba(81,207,102,.9), 0 0 12px rgba(81,207,102,.5); }
+  }
   .cycle-flag.period,
   .cycle-flag.peak,
   .cycle-flag.ovulation,
@@ -650,9 +654,9 @@
   .cycle-flag.elevated { animation: dangerPulse 60s ease-in-out infinite; }
   /* Profile card cycle badge — slightly more compact */
   .cycle-stage-badge {
-    display: inline-flex; align-items: center; gap: 3px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 3px;
     border-radius: 5px; flex: none;
-    padding: 2px 5px;
+    padding: 2px 5px; min-width: 52px;
     font-size: 9px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
     white-space: nowrap;
   }
@@ -661,7 +665,7 @@
   .cycle-stage-badge.ovulation{ background: rgba(201,42,42,.6);  color: #ffc9c9; border: 1px solid rgba(255,100,100,.6); animation: dangerPulse 60s ease-in-out infinite; animation-delay: -20s; }
   .cycle-stage-badge.fertile  { background: rgba(253,126,20,.35); color: #ffa94d; border: 1px solid rgba(253,126,20,.5); animation: dangerPulse 60s ease-in-out infinite; animation-delay: -30s; }
   .cycle-stage-badge.elevated { background: rgba(255,212,59,.25); color: #ffe066; border: 1px solid rgba(255,212,59,.45); animation: dangerPulse 60s ease-in-out infinite; animation-delay: -40s; }
-  .cycle-stage-badge.safer    { background: rgba(81,207,102,.18); color: #69db7c; border: 1px solid rgba(81,207,102,.4); animation: safeGlowTrace 20s linear infinite; }
+  .cycle-stage-badge.safer    { background: rgba(81,207,102,.18); color: #69db7c; border: 1px solid rgba(81,207,102,.4); box-shadow: 0 0 0 1px rgba(81,207,102,.25); animation: safeTextSparkle 3s ease-in-out infinite; }
 
   /* Slowly-rotating philosophical quote band on the Roster */
   .quote-band {
@@ -1497,6 +1501,8 @@
     width: 100%;
     margin-top: 2px;
   }
+  .badge-spacer { flex: 0 0 4px; }
+  .badge-inline { vertical-align: middle; }
   .profile-card .sub { font-size: 11px; color: var(--muted); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; }
   .profile-card .mini-tag {
     background: var(--chip); color: var(--chip-text); padding: 2px 8px; border-radius: 6px;
@@ -1969,10 +1975,10 @@
   }
   .avail-row .av-name { font-weight: 700; font-size: 14px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .avail-row .av-thumb { width: 38px; height: 38px; border-radius: 50%; background-size: cover; background-position: center 30%; background-color: var(--chip); flex: none; display: flex; align-items: center; justify-content: center; color: var(--muted); font-weight: 700; font-size: 14px; }
-  .slot-pills { display: flex; gap: 4px; }
+  .slot-pills { display: flex; flex-direction: row; gap: 3px; align-items: center; }
   .slot-pill {
-    font-size: 10px; padding: 3px 6px; border-radius: 6px; background: var(--border); color: var(--muted);
-    font-weight: 700; text-transform: uppercase;
+    font-size: 10px; padding: 2px 5px; border-radius: 5px; background: var(--border); color: var(--muted);
+    font-weight: 700; text-transform: uppercase; text-align: center;
   }
   .slot-pill.on.lunch { background: var(--warn); color: white; }
   .slot-pill.on.evening { background: var(--accent); color: white; }
