@@ -230,15 +230,26 @@ const TATE_QUOTES = [
       showToast(TOASTS[Math.floor(Math.random() * TOASTS.length)]);
   }
   function opener() {
-    if (typeof showToast === 'function' && TINDER_OPENERS.length)
-      showToast(TINDER_OPENERS[Math.floor(Math.random() * TINDER_OPENERS.length)]);
+    const t = document.getElementById('easterToast');
+    if (!t || !TINDER_OPENERS.length) return;
+    const text = TINDER_OPENERS[Math.floor(Math.random() * TINDER_OPENERS.length)];
+    t.textContent = text;
+    t.style.background = 'linear-gradient(135deg, #ff6eb0 0%, #ff3d8a 100%)';
+    t.style.boxShadow = '0 8px 24px rgba(255,61,138,.45)';
+    t.style.cursor = '';
+    t.classList.add('show');
+    const ms = Math.min(7000, Math.max(3200, text.length * 50));
+    setTimeout(() => {
+      t.classList.remove('show');
+      setTimeout(() => { t.style.background = ''; t.style.boxShadow = ''; }, 500);
+    }, ms);
   }
   // Wrap showView lazily — defer to after all scripts have loaded (profiles.js defines it)
   setTimeout(() => {
     if (typeof showView === 'function') {
       const orig = showView;
-      window.showView = function(name) {
-        orig(name);
+      window.showView = function(name, _fromPop) {
+        orig(name, _fromPop);
         if (Math.random() < 0.12) setTimeout(fortune, 400);
         if (Math.random() < 0.30) setTimeout(opener, 500);
       };

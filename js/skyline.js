@@ -809,9 +809,25 @@ function checkBackupNag() {
             t.removeEventListener('click', _nagHandler);
             showView('settings');
             setTimeout(() => {
-              const el = document.getElementById('backupStatusLine');
-              if (el) { const top = el.getBoundingClientRect().top + window.scrollY - 120; window.scrollTo({ top, behavior: 'smooth' }); }
-            }, 150);
+              const btn = document.getElementById('exportFileBtn');
+              if (btn) {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Flash the button so user knows exactly what to tap
+                btn.style.transition = 'box-shadow .15s, transform .15s';
+                let flashes = 0;
+                const flash = setInterval(() => {
+                  btn.style.boxShadow = flashes % 2 === 0
+                    ? '0 0 0 4px #e74c3c, 0 0 20px rgba(231,76,60,.7)'
+                    : '0 0 0 0px transparent';
+                  btn.style.transform = flashes % 2 === 0 ? 'scale(1.06)' : 'scale(1)';
+                  if (++flashes >= 6) {
+                    clearInterval(flash);
+                    btn.style.boxShadow = '';
+                    btn.style.transform = '';
+                  }
+                }, 220);
+              }
+            }, 350);
           };
           t.addEventListener('click', _nagHandler);
           setTimeout(() => { t.classList.remove('show'); t.style.background = ''; t.style.cursor = ''; t.removeEventListener('click', _nagHandler); }, 7000);

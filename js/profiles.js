@@ -1183,14 +1183,14 @@ _on('addDateModal', 'click', (e) => {
    DATE CALENDAR — simplified: just who, no time dropdown
    ========================================================= */
 _on('weeksAhead', 'input', (e) => {
-  const days = parseInt(e.target.value, 10) || 4;
-  document.getElementById('weeksLabel').textContent = days + ' day' + (days === 1 ? '' : 's');
+  const days = parseInt(e.target.value, 10) || 3;
+  document.getElementById('weeksLabel').textContent = days;
   renderCalendar();
 });
 
 function renderCalendar() {
-  const totalDays = parseInt(document.getElementById('weeksAhead').value, 10) || 4;
-  document.getElementById('weeksLabel').textContent = totalDays + ' day' + (totalDays === 1 ? '' : 's');
+  const totalDays = parseInt(document.getElementById('weeksAhead').value, 10) || 3;
+  document.getElementById('weeksLabel').textContent = totalDays;
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
   const today = new Date(); today.setHours(0,0,0,0);
@@ -1593,14 +1593,21 @@ document.addEventListener('click', function(e) {
   const chip = e.target.closest('.tools-quick-chip[data-jump]');
   if (chip) {
     showToolsLinks();
-    requestAnimationFrame(() => {
+    // Two rAFs: first lets the sub-page render, second lets layout settle
+    requestAnimationFrame(() => requestAnimationFrame(() => {
       const target = document.getElementById(chip.dataset.jump);
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Measure actual sticky header + nav height so scroll lands correctly
+        const header = document.querySelector('header.app');
+        const nav    = document.querySelector('nav.tabs');
+        const offset = (header ? header.offsetHeight : 60) +
+                       (nav    ? nav.offsetHeight    : 50) + 12;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
         target.classList.add('jump-flash');
         setTimeout(() => target.classList.remove('jump-flash'), 1400);
       }
-    });
+    }));
   }
 });
 

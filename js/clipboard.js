@@ -46,7 +46,13 @@ function renderClipboard() {
       pill.innerHTML = `${group.emoji} ${group.label}`;
       pill.addEventListener('click', () => {
         const el = document.getElementById(anchorId);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (!el) return;
+        const header = document.querySelector('header.app');
+        const nav    = document.querySelector('nav.tabs');
+        const offset = (header ? header.offsetHeight : 60) +
+                       (nav    ? nav.offsetHeight    : 50) + 12;
+        const top = el.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
       });
       jumps.appendChild(pill);
     }
@@ -57,7 +63,19 @@ function renderClipboard() {
     header.id = anchorId;
     header.innerHTML = `<span class="snippet-group-emoji">${group.emoji}</span>
       <span class="snippet-group-label">${group.label}</span>
-      <span class="snippet-group-count">${group.items.length}</span>`;
+      <button class="snippet-top-btn" title="Back to top">↑</button>`;
+    // Back-to-top scrolls the clipboard sub-page to the jump pills
+    header.querySelector('.snippet-top-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const jumps = document.getElementById('clipboardJumps');
+      if (jumps) {
+        const hdr  = document.querySelector('header.app');
+        const nav  = document.querySelector('nav.tabs');
+        const offset = (hdr ? hdr.offsetHeight : 60) + (nav ? nav.offsetHeight : 50) + 8;
+        const top = jumps.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      }
+    });
     list.appendChild(header);
 
     // Group item container (drag within this)
